@@ -1,8 +1,8 @@
 // MSDropDown - jquery.dd.js
 // author: Marghoob Suleman - Search me on google
-// Date: 12th Aug, 2009, {18 Dec, 2010 (2.36)}
-// Version: 2.37 {date: 17 June, 2011}
-// Revision: 33
+// Date: 12th Aug, 2009, {18 Dec, 2010 (2.36)}, {date: 02 July, 2011}
+// Version: 2.37.5
+// Revision: 34
 // web: www.giftlelo.com | www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -775,7 +775,7 @@
 				if(wf.opp==true) {
 					$("#"+childid).animate({
 										height:0,
-										top: top,
+										top: top
 										}, function() {
 												$("#"+childid).css({height:oldHeight+'px', display:'none'});
 												fireCloseEvent();
