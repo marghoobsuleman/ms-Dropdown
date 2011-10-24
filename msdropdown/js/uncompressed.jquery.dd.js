@@ -551,6 +551,10 @@
 			};
 		};
 		//alert(getElement(elementid).selectedIndex);
+		
+		// Trigger the CHANGE event because updating SELECTED via JS does not
+		$(getElement(elementid)).trigger('change');
+		
 		var sIndex = getElement(elementid).selectedIndex;
 		$this.ddProp["selectedIndex"]= sIndex;
 		//alert("selectedIndex "+ $this.ddProp["selectedIndex"] + " sIndex "+sIndex);
