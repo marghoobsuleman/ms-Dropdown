@@ -8,6 +8,11 @@
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
 // it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
 */
+
+// https://github.com/campbell/ms-Dropdown
+// Modified to trigger CHANGE events
+// Minified via http://jscompress.com/ */
+
 ;(function($) { 
 		   
    var msOldDiv = ""; 
