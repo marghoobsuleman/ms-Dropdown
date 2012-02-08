@@ -271,7 +271,7 @@
 		if(ddList) {
 			$("#"+childid).bind("mouseover", function(event) {if(!actionSettings.keyboardAction) {
 																 actionSettings.keyboardAction = true;
-																 $(document).bind("keydown", function(event) {
+																 $(document).bind("keydown.dd", function(event) {
 																									var keyCode = event.keyCode;	
 																									actionSettings.currentKey = keyCode;
 																									if(keyCode==39 || keyCode==40) {
@@ -290,7 +290,7 @@
 																 
 																 }});
 		};
-		$("#"+childid).bind("mouseout", function(event) {setInsideWindow(false);$(document).unbind("keydown");actionSettings.keyboardAction = false;actionSettings.currentKey=null;});
+		$("#"+childid).bind("mouseout", function(event) {setInsideWindow(false);$(document).unbind("keydown.dd");actionSettings.keyboardAction = false;actionSettings.currentKey=null;});
 		$("#"+titleid).bind("click", function(event) {
 											  setInsideWindow(false);
 												if($("#"+childid+":visible").length==1) {
@@ -416,7 +416,7 @@
 					break;
 					case "mouseup": 
 					//has in close mthod
-					$("#"+mainid).bind("mouseup", function(event) {
+					$("#"+mainid).bind("mouseup.dd", function(event) {
 													   //getElement(elementid).onmouseup();
 													   $("#"+elementid).trigger("mouseup");
 													   //setValue();
@@ -580,11 +580,11 @@
 			$("#"+elementid).trigger("mouseup");
 		};
 		if(has_handler('blur')==true) { 
-			$(document).bind("mouseup", function(evt) {
+			$(document).bind("mouseup.dd", function(evt) {
 												   $("#"+elementid).focus();
 												   $("#"+elementid)[0].blur();
 												   setValue();
-												   $(document).unbind("mouseup");
+												   $(document).unbind("mouseup.dd");
 												});
 		};
 	};
@@ -680,8 +680,9 @@
 			//keyboard action
 			var sText ="";
 			oldHeight = $("#"+childid).height();
-			$("#"+childid +" a").show();
-			$(document).bind("keydown", function(event) {
+			$("#" + childid + " a").show();
+			
+			$(document).bind("keydown.dd", function(event) {
 													var keyCode = event.keyCode;
 													//alert("keyCode "+keyCode);
 													
@@ -731,7 +732,7 @@
 													};				
 												});
 					
-			$(document).bind("keyup", function(event) {
+			$(document).bind("keyup.dd", function(event) {
 				if($("#"+elementid).prop("onkeyup")!=undefined) {
 					//$("#"+elementid).keyup();
 					getElement(elementid).onkeyup();
@@ -740,11 +741,11 @@
 			//end keyboard action
 			
 			//close onmouseup
-			$(document).bind("mouseup", function(evt){
+			$(document).bind("mouseup.dd", function(evt){
 													if(getInsideWindow()==false) {
 													//alert("evt.target: "+evt.target);
 													 //$this.data("dd").close();
-													 $this.close();
+													    $this.close();
 													};
 												 });													  
 			
@@ -789,9 +790,9 @@
 																});
 				};
 				setTitleImageSprite();
-				$(document).unbind("keydown");
-				$(document).unbind("keyup");
-				$(document).unbind("mouseup");				
+				$(document).unbind("keydown.dd");
+				$(document).unbind("keyup.dd");
+				$(document).unbind("mouseup.dd");							
 		
 	};
 	this.selectedIndex = function(i) {
