@@ -66,7 +66,7 @@
 	};
 	var getOptionsProperties = function (option) {
 		var currentOption = option;
-		var styles = $(currentOption).prop("style");
+		var styles = $(currentOption).attr("style");
 		return styles;
 	};
 	var matchIndex = function (index) {
