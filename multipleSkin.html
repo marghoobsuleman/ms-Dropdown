@@ -74,7 +74,12 @@ function showvalue(arg) {
 }
 
 $(document).ready(function() {
-
+$("#websites3").msDropDown();
+		$("#websites2").msDropDown({mainCSS:'dd2'});
+		//alert($.msDropDown.version);
+		//$.msDropDown.create("body select");
+		$("#ver").html($.msDropDown.version);
+/*
 try {
 		$("#websites3").msDropDown();
 		$("#websites2").msDropDown({mainCSS:'dd2'});
@@ -84,6 +89,7 @@ try {
 		} catch(e) {
 			alert("Error: "+e.message);
 		}
+*/
 })
 		
 

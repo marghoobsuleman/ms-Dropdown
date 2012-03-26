@@ -5,7 +5,7 @@
 <title>Image Dropdown</title>
 <link rel="stylesheet" type="text/css" href="msdropdown/dd.css" />
 <script type="text/javascript" src="msdropdown/js/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="msdropdown/js/jquery.dd.js"></script>
+<script type="text/javascript" src="msdropdown/js/uncompressed.jquery.dd.js"></script>
 <style type="text/css">
 .toplinks{	font-family:Arial, Helvetica, sans-serif;
 	font-size:12px;
@@ -35,8 +35,9 @@
 </table>
 <form name="myform" id="myform"  action="getvalue.php" enctype="multipart/form-data" method="post">
   <h1>Javascript image dropdown <span id="ver"></span> <a class="small" href="http://www.marghoobsuleman.com/jquery-image-dropdown" title="Download">Download</a> </h1>
+ 
   <p>
-    <select style="width:200px" class="mydds" name="myimge">
+  <select style="width:200px" class="mydds" name="myimge">
       <option value="calendar" selected="selected" title="icons/icon_calendar.gif">Calendar</option>
       <option value="shopping_cart" title="icons/icon_cart.gif">Shopping Cart</option>
       <option value="cd" title="icons/icon_cd.gif">CD</option>
@@ -48,12 +49,29 @@
       <option value="graph" title="icons/icon_sales.gif">Graph</option>
       <option value="secured" title="icons/icon_secure.gif">Secured</option>
       <option value="video" title="icons/icon_video.gif">Video</option>
+    </select>
+   <br />
+    <br />
+  </p>
+   <p id="dpholder" >
+   <h3>With title: used json style in title attribute. ie: title="{image:'icons/icon_cart.gif', title:'Shopping Cart'}" </h3>
+    <select style="width:200px" class="mydds" name="myimge">
+      <option value="calendar" selected="selected" title="{image:'icons/icon_calendar.gif', title:'Calendar'}">Calendar</option>
+      <option value="shopping_cart" title="{image:'icons/icon_cart.gif', title:'Shopping Cart'}">Shopping Cart</option>
+      <option value="cd" title="{image:'icons/icon_cd.gif', title:'CD'}">CD</option>
+      <option value="email" title="{image:'icons/icon_email.gif', title:'Email'}">Email</option>
+      <option value="faq" title="{image:'icons/icon_faq.gif', title:'FAQ'}">FAQ</option>
+      <option value="games" title="{image:'icons/icon_games.gif', title:'Games'}">Games</option>
+      <option value="music" title="{image:'icons/icon_music.gif', title:'Music'}">Music</option>
+      <option value="phone" title="{image:'icons/icon_phone.gif', title:'Phone'}">Phone</option>
+      <option value="graph" title="{image:'icons/icon_sales.gif', title:'Graph'}">Graph</option>
+      <option value="secured" title="{image:'icons/icon_secure.gif', title:'Secured'}">Secured</option>
+      <option value="video" title="{image:'icons/icon_video.gif', title:'Video'}">Video</option>
     </select> 
     <br />
     <br />
   </p>
-  
-  <p>
+  <p style="clear:both">
     <input type="submit" value="Submit Value" />
   </p>
 </form>
@@ -77,7 +95,11 @@ try {
 			alert("Error: "+e.message);
 		}
 })
-		
+/*
+$(document).bind("keydown", function() {
+	console.log("document keydown");
+})
+*/
 </script>
                <div class="node-links" style="padding:10px; border:1px solid #c3c3c3;background:#222222; margin-top:40px">
               <div class="adsense">

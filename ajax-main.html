@@ -22,6 +22,7 @@
 <script type="text/javascript">
 var oHandler, oHandler2; //will be used below
 var counter = 0;
+var h = 1;
 function loadAjaxFile(val) {
 	//console.debug(val);
 	var url = val;
@@ -45,6 +46,8 @@ function loadAjaxFile(val) {
 					json_data[i].text = json_data[i].text +" " + (counter);
 					oHandler2.add(json_data[i]);//adding
 				}
+				oHandler2.showRows(json_data.length*h);
+				h++;
 				//remove first item
 				if(counter==1) {
 					oHandler2.remove(0);
@@ -82,7 +85,7 @@ function loadAjaxFile(val) {
       <td><select class="mydds" name="ajaxdd" id="ajaxdd" onchange="loadAjaxFile(this.value)">
         <option value="0" selected="selected">Choose One</option>
         <option value="ajax-date.html" title="icons/icon_calendar.gif">Load date file</option>
-        <option value="ajax-shoppingcart.html" title="icons/icon_cart.gif">Load shopping cart</option>
+        <option style="background:#333;color:#fff" value="ajax-shoppingcart.html" title="icons/icon_cart.gif">Load shopping cart</option>
         <option value="ajax-cd.html" title="icons/icon_cd.gif">Load CD file</option>
         <option value="4" title="icons/enabled.gif">Add dynamic json data</option>
       </select></td>

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Image Dropdown</title>
 <link rel="stylesheet" type="text/css" href="msdropdown/dd.css" />
-<script type="text/javascript" src="msdropdown/js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="msdropdown/js/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="msdropdown/js/jquery.dd.js"></script>
 <script type="text/javascript" src="msdropdown/js/test.js"></script>
 <style type="text/css">
@@ -418,5 +418,10 @@ $(document).ready(function(arg) {
               </div>
             </div>
 
+<div class="spaceship" data-ship-id="92432"
+     data-weapons="laser 2" data-shields="50%"
+     data-x="30" data-y="10" data-z="90">
+ <button class="fire" onclick="alert(this.parentNode.dataset.shipId)"> Fire </button>
+</div>
 </body>
 </html>
