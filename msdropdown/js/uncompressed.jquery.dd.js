@@ -96,7 +96,7 @@
 		 
 		} else {
 		 arrow = $(currentOptOption).prop("title");
-		 arrow = (arrow.length==0) ? "" : '<img src="'+arrow+'" align="absmiddle" /> ';																 
+		 arrow = (arrow==undefined || arrow.length==0) ? "" : '<img src="'+arrow+'" align="absmiddle" /> ';																 
 		};
 		var sText = $(currentOptOption).text();
 		var sValue = $(currentOptOption).val();
@@ -178,7 +178,7 @@
 			sText = $("#"+elementid+" option:selected").text();
 			arrow = $("#"+elementid+" option:selected").prop("title");
 		};
-		arrow = (arrow.length==0 || arrow==undefined || options.showIcon==false || options.useSprite!=false) ? "" : '<img src="'+arrow+'" align="absmiddle" /> ';		
+		arrow = (arrow==undefined || arrow.length==0 || options.showIcon==false || options.useSprite!=false) ? "" : '<img src="'+arrow+'" align="absmiddle" /> ';		
 		var sDiv = '<div id="'+titleid+'" class="'+styles.ddTitle+'"';
 		sDiv += '>';
 		sDiv += '<span id="'+arrowid+'" class="'+styles.arrow+'"></span><span class="'+styles.ddTitleText+'" id="'+titletextid+'">'+arrow + '<span class="'+styles.ddTitleText+'">'+sText+'</span></span></div>';
