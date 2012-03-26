@@ -8,6 +8,11 @@
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
 // it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
 */
+
+// https://github.com/campbell/ms-Dropdown
+// Modified to trigger CHANGE events
+// Minified via http://jscompress.com/ */
+
 ;(function($) { 
 		   
    var msOldDiv = ""; 
@@ -531,11 +536,13 @@
 		//alert("setValue "+elementid);
 		var childid = getPostID("postChildID");
 		var allSelected = $("#"+childid + " a."+styles.selected);
+		var changed = false;
 		if(allSelected.length==1) {
 			var sText = $("#"+childid + " a."+styles.selected).text();
 			var selectedA = $("#"+childid + " a."+styles.selected).prop("id");
 			if(selectedA!=undefined) {
 				var sValue = a_array[selectedA].value;
+				changed = getElement(elementid).selectedIndex != a_array[selectedA].index;
 				getElement(elementid).selectedIndex = a_array[selectedA].index;
 			};
 			//set image on title if using sprite
@@ -547,10 +554,17 @@
 			for(var i=0;i<allSelected.length;i++) {
 				var selectedA = $(allSelected[i]).prop("id");
 				var index = a_array[selectedA].index;
+				
+				// Note: the check for CHANGED below has not been verified
+				if (getElement(elementid).options[index].selected != "selected") changed = true;
 				getElement(elementid).options[index].selected = "selected";
 			};
 		};
 		//alert(getElement(elementid).selectedIndex);
+		
+		// Trigger the CHANGE event because updating SELECTED via JS does not
+		if (changed) $(getElement(elementid)).trigger('change');
+		
 		var sIndex = getElement(elementid).selectedIndex;
 		$this.ddProp["selectedIndex"]= sIndex;
 		//alert("selectedIndex "+ $this.ddProp["selectedIndex"] + " sIndex "+sIndex);
