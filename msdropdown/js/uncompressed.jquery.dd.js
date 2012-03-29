@@ -1,8 +1,8 @@
 // MSDropDown - uncompressed.jquery.dd
 // author: Marghoob Suleman - Search me on google
 // Date: 12th Aug, 2009, {18 Dec, 2010 (2.36)}, {date: 02 July, 2011}
-// Version: 2.38
-// Revision: 35
+// Version: 2.38.1 
+// Revision: 36
 // web: www.giftlelo.com | www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -637,10 +637,9 @@
 			$("#"+arrowid).css({backgroundPosition:'0 0'});
 	};
 	var setOriginalProperties = function() {
-		//properties = {};
-		//alert($this.data("dd"));
+		//properties = {};		
 		for(var i in getElement(elementid)) {
-			if(typeof(getElement(elementid)[i])!='function' && getElement(elementid)[i]!==undefined && getElement(elementid)[i]!==null) {
+			if(typeof(getElement(elementid)[i])!=='function' && typeof(getElement(elementid)[i])!=="undefined" && typeof(getElement(elementid)[i])!=="null") {
 				$this.set(i, getElement(elementid)[i], true);//true = setting local properties
 			};
 		};
@@ -858,7 +857,7 @@
 	//update properties
 	this.set = function(prop, val, isLocal) {
 		//alert("- set " + prop + " : "+val);
-		if(prop==undefined || val==undefined) throw {message:"set to what?"}; 
+		if(typeof prop=="undefined" || typeof val=="undefined") return false; 
 		$this.ddProp[prop] = val;
 		if(isLocal!=true) { 
 			switch(prop) {
@@ -1063,7 +1062,7 @@
 	};
 	//static
 	$.msDropDown = {
-		version: '2.38',
+		version: '2.38.1',
 		author: "Marghoob Suleman",
 		counter:20,
 		debug: function(v) {
