@@ -789,9 +789,9 @@
 																});
 				};
 				setTitleImageSprite();
-				$(document).unbind("keydown");
-				$(document).unbind("keyup");
-				$(document).unbind("mouseup");				
+				//$(document).unbind("keydown");
+				//$(document).unbind("keyup");
+				//$(document).unbind("mouseup");				
 		
 	};
 	this.selectedIndex = function(i) {
