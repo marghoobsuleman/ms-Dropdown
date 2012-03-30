@@ -1,8 +1,8 @@
 // MSDropDown - uncompressed.jquery.dd
 // author: Marghoob Suleman - Search me on google
-// Date: 12th Aug, 2009, {18 Dec, 2010 (2.36)}, {date: 02 July, 2011}
-// Version: 2.38.1 
-// Revision: 36
+// Date: 12th Aug, 2009
+// Version: 2.38.2 
+// Revision: 37
 // web: www.giftlelo.com | www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -678,18 +678,15 @@
 		var wH = $(window).height();
 		var st = $(window).scrollTop();
 		var cH = $("#"+childid).height();
-		var css = {zIndex:options.zIndex, top:(pos.top+mH)+"px", display:"none"};
+		var css = {zIndex:options.zIndex, top:(mH)+"px", display:"none"};
 		var ani = options.animStyle;
 		var opp = false;
 		var borderTop = styles.noBorderTop;
 		$("#"+childid).removeClass(styles.noBorderTop);
 		$("#"+childid).removeClass(styles.borderTop);
 		if( (wH+st) < Math.floor(cH+mH+pos.top) ) {
-			var tp = pos.top-cH;
-			if((pos.top-cH)<0) {
-				tp = 10;
-			};
-			css = {zIndex:options.zIndex, top:tp+"px", display:"none"};
+			var tp = cH;
+			css = {zIndex:options.zIndex, top:"-"+tp+"px", display:"none"};
 			ani = "show";
 			opp = true;
 			borderTop = styles.borderTop;
@@ -1062,7 +1059,7 @@
 	};
 	//static
 	$.msDropDown = {
-		version: '2.38.1',
+		version: '2.38.2',
 		author: "Marghoob Suleman",
 		counter:20,
 		debug: function(v) {
