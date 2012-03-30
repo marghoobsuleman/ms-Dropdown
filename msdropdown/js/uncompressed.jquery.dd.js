@@ -54,6 +54,7 @@
 		var currentP = 0;
 		var isFilter = false;
 		var oldHeight;
+		var isClosing = false;
 		var cacheElement = {};
 		var inputText = "";
 	
@@ -810,6 +811,8 @@
 	};
 	this.close = function() {
 				var childid = getPostID("postChildID");
+				if ( !$("#"+childid).is(":visible") || isClosing ) return;
+				isClosing = true;
 				//console.log("calling close " + $("#"+childid).css("display"));
 				if($("#"+childid).css("display")=="none") {return false;};
 				var top = $("#"+getPostID("postTitleID")).position().top;
@@ -823,6 +826,7 @@
 										}, function() {
 												$("#"+childid).css({height:oldHeight+'px', display:'none'});
 												fireCloseEvent();
+												isClosing = false;
 										});
 				} 
 				else {
@@ -830,6 +834,7 @@
 																fireCloseEvent();
 																$("#"+childid).css({zIndex:'0'});
 																$("#"+childid).css({height:oldHeight+'px'});
+																isClosing = false;
 																});
 				};
 				setTitleImageSprite();
