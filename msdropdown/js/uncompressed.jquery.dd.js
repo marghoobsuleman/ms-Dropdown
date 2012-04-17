@@ -1,8 +1,8 @@
 // MSDropDown - uncompressed.jquery.dd
 // author: Marghoob Suleman - Search me on google
 // Date: 12th Aug, 2009
-// Version: 2.38.2 
-// Revision: 37
+// Version: 2.38.4 
+// Revision: 38
 // web: www.giftlelo.com | www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -839,8 +839,8 @@
 				};
 				setTitleImageSprite();
 				$(document).unbind("keydown", d_onkeydown);
-				$(document).unbind("keyup", d_onmouseup);
-				$(document).unbind("mouseup", d_onkeyup);
+				$(document).unbind("keyup", d_onkeyup);
+				$(document).unbind("mouseup", d_onmouseup);
 	};
 	this.selectedIndex = function(i) {
 		if(typeof(i)=="undefined") {
@@ -1064,7 +1064,7 @@
 	};
 	//static
 	$.msDropDown = {
-		version: '2.38.2',
+		version: '2.38.4',
 		author: "Marghoob Suleman",
 		counter:20,
 		debug: function(v) {
