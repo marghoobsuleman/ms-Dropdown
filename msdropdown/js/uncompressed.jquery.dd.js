@@ -57,7 +57,8 @@
 		var isClosing = false;
 		var cacheElement = {};
 		var inputText = "";
-	
+		var selectedItem;
+		
 	var getElement = function(ele) {
 		if(typeof(cacheElement[ele])=="undefined") {
 			cacheElement[ele] = document.getElementById(ele);
@@ -73,16 +74,19 @@
 		return (typeof styles=="undefined") ? "" : styles.cssText;
 	};
 	var matchIndex = function (index) {
-		var selectedIndex = $("#"+elementid+" option:selected");
-		if(selectedIndex.length>1) {
-			for(var i=0;i<selectedIndex.length;i++) {
-				if(index == selectedIndex[i].index) {
-					return true;
-				};
-			};
-		} else if(selectedIndex.length==1) {
-			if(selectedIndex[0].index==index) {
-				return true;
+		// For performance, store last selected item once in a local variable rather than looking it up
+		// everytime matchIndex is called
+ 		if (typeof this.selectedItem === 'undefined')
+                	this.selectedItem = $("#" + elementid + " option:selected");
+            	if (this.selectedItem.length > 1) {
+                	for (var i = 0; i < this.selectedItem.length; i++) {
+	                    	if (index == this.selectedItem[i].index) {
+	                        	return true;
+	                    	};
+                	};
+		} else if (this.selectedItem.length == 1) {
+			if (this.selectedItem[0].index == index) {
+			    return true;
 			};
 		};
 		return false;
