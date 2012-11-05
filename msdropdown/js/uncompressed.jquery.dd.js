@@ -105,7 +105,7 @@
 		 if(options.jsonTitle==true && isJson==true) {			 
 				 if(arrow.length!=0) {
 					 var obj = eval("["+arrow+"]");
-					 img = (typeof obj[0].image=="undefined") ? "" : obj[0].image;
+					 var img = (typeof obj[0].image=="undefined") ? "" : obj[0].image;
 					 t = (typeof obj[0].title=="undefined") ? "" : obj[0].title;
 					 pH = (typeof obj[0].postHTML=="undefined") ? "" : obj[0].postHTML;
 					 arrow = (img.length==0) ? "" : '<img src="'+img+'" align="absmiddle" /> ';
@@ -179,7 +179,7 @@
 		var id = getPostID("postID");
 		var childid = getPostID("postChildID");
 		var sStyle = options.style;
-		sDiv = "";
+		var sDiv = "";
 		sDiv += '<div id="'+childid+'" class="'+styles.ddChild+'"';
 		if(!ddList) {
 			sDiv += (sStyle!="") ? ' style="'+sStyle+'"' : ''; 
