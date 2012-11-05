@@ -15,7 +15,7 @@
    {
 		var sElement = element;
 		var $this =  this; //parent this
-		var options = $.extend({
+		options = $.extend({
 			height:120,
 			visibleRows:7,
 			rowHeight:23,
@@ -268,7 +268,7 @@
 			$("#"+elementid).after(sDiv);
 		};
 		if(ddList) {
-			var titleid = getPostID("postTitleID");	
+			titleid = getPostID("postTitleID");
 			$("#"+titleid).hide();
 		};
 		
