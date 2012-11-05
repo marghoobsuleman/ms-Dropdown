@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Event handler with jQuery 1.8</title>
+    <link rel="stylesheet" type="text/css" href="msdropdown/dd.css" />
+    <script type="text/javascript" src="msdropdown/js/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="msdropdown/js/uncompressed.jquery.dd.js"></script>
+</head>
+<body>
+  <p id="selection1">Selection1</p>
+  <p id="selection2">Selection2</p>
+  <select id="dropdown1">
+    <option value="foo">Foo</option>
+    <option value="bar">Bar</option>
+  </select>
+  <select id="dropdown2">
+    <option value="lol">Lol</option>
+    <option value="bal">Bal</option>
+  </select>
+  <script>
+    (function ($) {
+      $(function () {
+        $('#dropdown1').msDropDown({ events: { change: showSelectionIn('#selection1') } });
+
+        $('#dropdown2').on('change', showSelectionIn('#selection2'));
+        $('#dropdown2').msDropDown({ events: { change: true } });
+
+        function showSelectionIn(selector) {
+          return function (event) {
+            $(selector).text($(event.currentTarget).val());
+          };
+        }
+      });
+    })(jQuery);
+  </script>
+</body>
