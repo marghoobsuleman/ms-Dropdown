@@ -15,8 +15,8 @@ Fork Changes:
 * When openning with select value the select is scrolled to the value position
 
 * Changed defaults: 
-*     Visible rows is 10.
-*     Removed animations: Animation is only show. Animation speed is 0.1
+* -Visible rows is 10.
+* -Removed animations: Animation is only show. Animation speed is 0.1
 
 * Copies original wrapped element classes
 * The wrpped div - ddOutOfVision is now set at the end of the - acts nicer with twitter bootstrap scaffolding
@@ -24,8 +24,8 @@ Fork Changes:
 * slideUp is set by the option.animSpeed instead of fast
 
 * Css changes:
-*     Updated the background image to a more elegent grey
-*     If the first child is disabled - makes hides it
+* -Updated the background image to a more elegent grey
+* -If the first child is disabled - makes hides it
 
 
 LICENSING:
