@@ -15,7 +15,7 @@
    {
 		var sElement = element;
 		var $this =  this; //parent this
-		var options = $.extend({
+		options = $.extend({
 			height:120,
 			visibleRows:7,
 			rowHeight:23,
@@ -25,6 +25,7 @@
 			useSprite:false,
 			animStyle:'slideDown',
 			onInit:'',
+			events: {},
 			jsonTitle:true,
 			style:''
 		}, options);
@@ -57,6 +58,7 @@
 		var isClosing = false;
 		var cacheElement = {};
 		var inputText = "";
+		var eventHandlers = options.events;
 	
 	var getElement = function(ele) {
 		if(typeof(cacheElement[ele])=="undefined") {
@@ -105,7 +107,7 @@
 		 if(options.jsonTitle==true && isJson==true) {			 
 				 if(arrow.length!=0) {
 					 var obj = eval("["+arrow+"]");
-					 img = (typeof obj[0].image=="undefined") ? "" : obj[0].image;
+					 var img = (typeof obj[0].image=="undefined") ? "" : obj[0].image;
 					 t = (typeof obj[0].title=="undefined") ? "" : obj[0].title;
 					 pH = (typeof obj[0].postHTML=="undefined") ? "" : obj[0].postHTML;
 					 arrow = (img.length==0) ? "" : '<img src="'+img+'" align="absmiddle" /> ';
@@ -179,7 +181,7 @@
 		var id = getPostID("postID");
 		var childid = getPostID("postChildID");
 		var sStyle = options.style;
-		sDiv = "";
+		var sDiv = "";
 		sDiv += '<div id="'+childid+'" class="'+styles.ddChild+'"';
 		if(!ddList) {
 			sDiv += (sStyle!="") ? ' style="'+sStyle+'"' : ''; 
@@ -268,7 +270,7 @@
 			$("#"+elementid).after(sDiv);
 		};
 		if(ddList) {
-			var titleid = getPostID("postTitleID");	
+			titleid = getPostID("postTitleID");
 			$("#"+titleid).hide();
 		};
 		
@@ -421,60 +423,14 @@
 		var actions_array = attributes.actions.split(",");
 		for(var iCount=0;iCount<actions_array.length;iCount++) {
 			var action = actions_array[iCount];
-			//var actionFound = $("#"+elementid).prop(action);
-			var actionFound = has_handler(action);
-			if(actionFound==true) {
-				switch(action) {
-					case "focus": 
-					$("#"+mainid).bind("mouseenter", function(event) {
-													   getElement(elementid).focus();
-													   //$("#"+elementid).focus();
-													   });
-					break;
-					case "click": 
-					$("#"+mainid).bind("click", function(event) {
-													   //getElement(elementid).onclick();
-													   $("#"+elementid).trigger("click");
-													   });
-					break;
-					case "dblclick": 
-					$("#"+mainid).bind("dblclick", function(event) {
-													   //getElement(elementid).ondblclick();
-													   $("#"+elementid).trigger("dblclick");
-													   });
-					break;
-					case "mousedown": 
-					$("#"+mainid).bind("mousedown", function(event) {
-													   //getElement(elementid).onmousedown();
-													   $("#"+elementid).trigger("mousedown");
-													   });
-					break;
-					case "mouseup": 
-					//has in close mthod
-					$("#"+mainid).bind("mouseup", function(event) {
-													   //getElement(elementid).onmouseup();
-													   $("#"+elementid).trigger("mouseup");
-													   //setValue();
-													   });
-					break;
-					case "mouseover": 
-					$("#"+mainid).bind("mouseover", function(event) {
-													   //getElement(elementid).onmouseover();													   
-													   $("#"+elementid).trigger("mouseover");
-													   });
-					break;
-					case "mousemove": 
-					$("#"+mainid).bind("mousemove", function(event) {
-													   //getElement(elementid).onmousemove();
-													   $("#"+elementid).trigger("mousemove");
-													   });
-					break;
-					case "mouseout": 
-					$("#"+mainid).bind("mouseout", function(event) {
-													   //getElement(elementid).onmouseout();
-													   $("#"+elementid).trigger("mouseout");
-													   });
-					break;					
+			if (action == "focus" && hasEventHandler("focus")) {
+				$("#"+mainid).bind("mouseenter", function(event) {
+					getElement(elementid).focus();
+				});
+			} else {
+				var eventHandler = eventHandlerFor(action);
+				if (eventHandler) {
+					$("#"+mainid).bind(action, eventHandler);
 				};
 			};
 		};
@@ -593,16 +549,45 @@
 		$this.ddProp["selectedIndex"]= sIndex;
 		//alert("selectedIndex "+ $this.ddProp["selectedIndex"] + " sIndex "+sIndex);
 	};
-	var has_handler = function (name) {
+	var hasEventHandler = function (name) {
+		var element = $("#"+elementid);
 		// True if a handler has been added in the html.
-		if ($("#"+elementid).prop("on" + name) != undefined) {
+		if (element.prop("on" + name)) {
 			return true;
 		};
-		// True if a handler has been added using jQuery.
-		var evs = $("#"+elementid).data("events");
+		// True or function if a handler has been added using jQuery < 1.8.
+		var evs = element.data("events");
 		if (evs && evs[name]) {
 			return true;
 		};
+		// Function if a handler has been added at construction.
+		evs = eventHandlers[name];
+		if (evs) {
+			return evs;
+		}
+		return false;
+	};
+	var eventHandlerFor = function (name) {
+		var handler = hasEventHandler(name);
+		var element;
+		if (handler) {
+			element = $("#"+elementid);
+			if ($.isFunction(handler)) {
+				return function(event) {
+					handler.call(element[0], $.Event(name, {
+						currentTarget: element[0],
+						delegateTarget: element[0],
+						pageX: event && event.pageX,
+						pageY: event && event.pageY,
+						originalEvent: event,
+						target: element[0],
+						which: event && event.which
+					}));
+				};
+			} else {
+				return function() { element.trigger(name); };
+			}
+		}
 		return false;
 	};
 	var blur_m = function(evt) {
@@ -615,17 +600,19 @@
 	var checkMethodAndApply = function () {
 		//console.log("calling checkMethodAndApply");
 		var childid = getPostID("postChildID");
-		if(has_handler('change')==true) {
+		var handler = eventHandlerFor('change');
+		if (handler) {
 			//alert(1);
 			var currentSelectedValue = a_array[$("#"+childid +" a.selected").prop("id")].text;
 			if($.trim(oldSelectedValue) !== $.trim(currentSelectedValue) && oldSelectedValue!==""){
-				$("#"+elementid).trigger("change");
+				handler();
 			};
 		};
-		if(has_handler('mouseup')==true) {
-			$("#"+elementid).trigger("mouseup");
+		handler = eventHandlerFor('mouseup');
+		if (handler) {
+			handler();
 		};
-		if(has_handler('blur')==true) { 
+		if (hasEventHandler('blur')) {
 			$(document).bind("mouseup", blur_m);
 		};
 		return false;
@@ -750,7 +737,7 @@
 				};
 			break;
 		};
-		if(has_handler("keydown")==true) {
+		if (hasEventHandler("keydown")) {
 			getElement(elementid).onkeydown();
 		};
 		return false;
