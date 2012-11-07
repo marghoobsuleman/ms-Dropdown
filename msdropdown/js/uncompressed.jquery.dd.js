@@ -612,7 +612,7 @@
 		if (handler) {
 			handler();
 		};
-		if (hasEventHandler('mouseup')) {
+		if (hasEventHandler('blur')) {
 			$(document).bind("mouseup", blur_m);
 		};
 		return false;
