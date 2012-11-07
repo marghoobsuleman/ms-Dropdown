@@ -1,5 +1,6 @@
 msDropDown - JavaScript custom dropdown - JavaScript image combobox
 ======================================================
+Full info available http://www.marghoobsuleman.com/jquery-image-dropdown
 Feature at glance:
 
 * Fully Skin-able
