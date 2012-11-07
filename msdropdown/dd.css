@@ -1,26 +1,39 @@
 /************** Skin 1 *********************/
 .dd {
-	/*display:inline-block !important;*/
 	text-align:left;
 	background-color:#fff;
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:12px;
 	position:relative;
+	display: inline-block;
+	border-radius:3px;
 }
 .dd .ddTitle {
-	background:#f2f2f2;
+	background-image: linear-gradient(bottom, #E6E6E6 4%, #FFFFFF 45%);
+	background-image: -o-linear-gradient(bottom, #E6E6E6 4%, #FFFFFF 45%);
+	background-image: -moz-linear-gradient(bottom, #E6E6E6 4%, #FFFFFF 45%);
+	background-image: -webkit-linear-gradient(bottom, #E6E6E6 4%, #FFFFFF 45%);
+	background-image: -ms-linear-gradient(bottom, #E6E6E6 4%, #FFFFFF 45%);
 	border:1px solid #c3c3c3;
-	padding:3px;
+	margin: 0;
 	text-indent:0;
 	cursor:default;
 	overflow:hidden;
-	height:16px;
-}
-.dd .ddTitle span.arrow {
-	background:url(dd_arrow.gif) no-repeat 0 0; float:right; display:inline-block;width:16px; height:16px; cursor:pointer; 
+	height: 29px;
+	border-radius:3px;
 }
 
-.dd .ddTitle span.ddTitleText {text-indent:1px; overflow:hidden; line-height:16px;}
+.dd .ddTitle:hover {
+	cursor: pointer;
+}
+
+.dd .ddTitle span.arrow {
+	background:url(../img/dd_arrow.gif) no-repeat 0 0; float:right; display:inline-block;width:16px; height:16px; cursor:pointer; 
+	margin: 6px 5px 0 0;
+}
+
+.dd .ddTitle span.ddTitleText {
+	text-indent:1px; overflow:hidden; line-height:23px; padding: 0px 4px; 
+	vertical-align: middle;
+}
 .dd .ddTitle span.ddTitleText img{text-align:left; padding:0 2px 0 0}
 .dd .ddTitle img.selected {
 	padding:0 3px 0 0;
@@ -40,30 +53,36 @@
 .dd .ddChild .opta a, .dd .ddChild .opta a:visited {padding-left:10px}
 .dd .ddChild a {
 	display:block;
-	padding:2px 0 2px 3px;
+	padding:0 0 0px 3px;
 	text-decoration:none;
-	color:#000;
+	color:#4e4e4e;
 	overflow:hidden;
 	white-space:nowrap;
 	cursor:pointer;
 }
-.dd .ddChild a:hover {
-	background-color:#66CCFF;
+.dd .ddChild a:not(:first-child):hover {
+	background-color:#9fc9eb;
 }
 .dd .ddChild a img {
 	border:0;
 	padding:0 2px 0 0;
 	vertical-align:middle;
 }
-.dd .ddChild a.selected {
-	background-color:#66CCFF;
-	
+/* The following shows the selected only for those who are not the
+   first child - assuming first child would be disabled */
+.dd .ddChild a:not(:first-child).selected {
+	background-color:#9fc9eb;
+}
+/**
+	The following hides the first - disabled child
+*/
+.dd .ddChild a.disabled {
+	display: none !important;
 }
 .hidden {display:none;}
 
 .dd .borderTop{border-top:1px solid #c3c3c3 !important;}
 .dd .noBorderTop{border-top:none 0  !important}
-
 /************** Skin 2 *********************/
 .dd2 {
 	/*display:inline-block !important;*/
