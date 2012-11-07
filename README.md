@@ -24,7 +24,7 @@ Fork Changes:
 * slideUp is set by the option.animSpeed instead of fast
 
 * Css changes:
-  Updated the background image to a more elegent grey
+  Updated the background image to a more elegent grey.
   If the first child is disabled - makes hides it
 
 
