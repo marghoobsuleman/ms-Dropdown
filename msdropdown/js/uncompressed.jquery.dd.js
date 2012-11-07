@@ -4,7 +4,15 @@
 // Version: 2.38.4 
 // Revision: 38
 // web: www.giftlelo.com | www.marghoobsuleman.com
-/*
+/* 
+// Fork made by rootux | www.galbracha.com | https://github.com/rootux/ms-Dropdown
+// When openning with select value the select is scrolled to the value position
+// Changed defaults:  visible rows is 10. Removed animations: animation is only show  animation speed is 0.1
+// Copies original wrapped element classes
+// The wrpped div - ddOutOfVision is now set at the end of the - acts nicer with twitter bootstrap scaffolding
+// Made minimum width of child the width of the father
+// slideUp is set by the option.animSpeed instead of fast 
+//
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
 // it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
 */
@@ -17,13 +25,14 @@
 		var $this =  this; //parent this
 		var options = $.extend({
 			height:120,
-			visibleRows:7,
+			visibleRows:10,
 			rowHeight:23,
 			showIcon:true,
 			zIndex:9999,
 			mainCSS:'dd',
 			useSprite:false,
-			animStyle:'slideDown',
+			animStyle:'show',
+			animSpeed: 0.1,
 			onInit:'',
 			jsonTitle:true,
 			style:''
@@ -36,7 +45,7 @@
 		actionSettings.currentKey = null;
 		var ddList = false;
 		var config = {postElementHolder:'_msddHolder', postID:'_msdd', postTitleID:'_title',postTitleTextID:'_titletext',postChildID:'_child',postAID:'_msa',postOPTAID:'_msopta',postInputID:'_msinput', postArrowID:'_arrow', postInputhidden:'_inp'};
-		var styles = {dd:options.mainCSS, ddTitle:'ddTitle', arrow:'arrow', ddChild:'ddChild', ddTitleText:'ddTitleText', disabled:.30, ddOutOfVision:'ddOutOfVision', borderTop:'borderTop', noBorderTop:'noBorderTop', selected:'selected'};
+		var styles = {dd:options.mainCSS, ddTitle:'ddTitle', arrow:'arrow', ddChild:'ddChild', ddTitleText:'ddTitleText', disabled:1, ddOutOfVision:'ddOutOfVision', borderTop:'borderTop', noBorderTop:'noBorderTop', selected:'selected'};
 		var attributes = {actions:"focus,blur,change,click,dblclick,mousedown,mouseup,mouseover,mousemove,mouseout,keypress,keydown,keyup", prop:"size,multiple,disabled,tabindex"};
 		this.onActions = new Object();
 		var elementid = $(sElement).prop("id");
@@ -45,6 +54,8 @@
 			elementid = "msdrpdd"+$.msDropDown.counter++;//I guess it makes unique for the page.
 			$(sElement).attr("id", elementid);
 		};
+		//Copy origin element classes
+		var originClass = $(element).attr('class');
 		var inlineCSS = $(sElement).prop("style");
 		options.style += (inlineCSS==undefined) ? "" : inlineCSS;
 		var allOptions = $(sElement).children();
@@ -215,7 +226,7 @@
 		} else {
 			arrow = (arrow.length==0 || arrow==undefined || options.showIcon==false || options.useSprite!=false) ? "" : '<img src="'+arrow+'" align="absmiddle" /> ';
 		};
-		var sDiv = '<div id="'+titleid+'" class="'+styles.ddTitle+'"';
+		var sDiv = '<div id="'+titleid+'" class="'+styles.ddTitle +'"';
 		sDiv += '>';
 		sDiv += '<span id="'+arrowid+'" class="'+styles.arrow+'"></span><span class="'+styles.ddTitleText+'" id="'+titletextid+'">'+arrow + '<span class="'+styles.ddTitleText+'">'+sText+'</span></span></div>';
 		return sDiv;
@@ -251,7 +262,7 @@
 			$("#"+id).remove();
 			changeInsertionPoint = true;
 		};
-		var sDiv = '<div id="'+id+'" class="'+styles.dd+'"';
+		var sDiv = '<div id="'+id+'" class="'+styles.dd+ ' ' + originClass + '"';
 		sDiv += (sStyle!="") ? ' style="'+sStyle+'"' : '';
 		sDiv += '>';
 		//create title bar
@@ -263,17 +274,16 @@
 		sDiv += "</div>";
 		if(changeInsertionPoint==true) {
 			var sid =getPostID("postElementHolder");
-			$("#"+sid).after(sDiv);
+			$("#"+sid).before(sDiv);
 		} else {
-			$("#"+elementid).after(sDiv);
+			$("#"+elementid).before(sDiv);
 		};
 		if(ddList) {
 			var titleid = getPostID("postTitleID");	
 			$("#"+titleid).hide();
 		};
 		
-		$("#"+id).css("width", iWidth+"px");
-		$("#"+childid).css("width", (iWidth-2)+"px");
+		$("#"+childid).css("min-width", (iWidth-2)+"px");
 		if(allOptions.length>options.visibleRows) {
 			var margin = parseInt($("#"+childid+" a:first").css("padding-bottom")) + parseInt($("#"+childid+" a:first").css("padding-top"));
 			var iHeight = ((options.rowHeight)*options.visibleRows) - margin;
@@ -332,6 +342,7 @@
 													$("#"+childid).unbind("mouseover");
 												} else {
 													$("#"+childid).bind("mouseover", function(event) {setInsideWindow(true);});
+													$("#"+childid).css("min-width",$("#" + elementid + '_msdd').width() - 2);
 													//alert("open "+elementid + $this);
 													//$this.data("dd").openMe();
 													$this.open();
@@ -638,7 +649,7 @@
 			$("#"+arrowid).css({backgroundPosition:'0 0'});
 	};
 	var setOriginalProperties = function() {
-		//properties = {};		
+		//properties = {};
 		for(var i in getElement(elementid)) {
 			if(typeof(getElement(elementid)[i])!=='function' && typeof(getElement(elementid)[i])!=="undefined" && typeof(getElement(elementid)[i])!=="null") {
 				$this.set(i, getElement(elementid)[i], true);//true = setting local properties
@@ -775,7 +786,7 @@
 		if(($this.get("disabled", true) == true) || ($this.get("options", true).length==0)) return;
 		var childid = getPostID("postChildID");
 		if(msOldDiv!="" && childid!=msOldDiv) { 
-			$("#"+msOldDiv).slideUp("fast");
+			$("#"+msOldDiv).slideUp(options.animSpeed);
 			$("#"+msOldDiv).css({zIndex:'0'});
 		};
 		if($("#"+childid).css("display")=="none") {
@@ -799,7 +810,7 @@
 				$("#"+childid).addClass(wf.border);
 				fireOpenEvent();
 			} else {
-				$("#"+childid)[wf.ani]("fast", function() {
+				$("#"+childid)[wf.ani](options.animSpeed, function() {
 														  $("#"+childid).addClass(wf.border);
 														  fireOpenEvent();
 														  });
@@ -807,6 +818,12 @@
 			if(childid != msOldDiv) {
 				msOldDiv = childid;
 			};
+
+			//own patch to scroll to correct position
+			selectedIndexPosition = $("#"+childid +" a.selected").index() - 1;
+			lineHeight = parseInt($("#"+childid).css('line-height'));
+			yToScroll = selectedIndexPosition * lineHeight;
+			$("#"+childid).scrollTop(yToScroll);
 		};
 	};
 	this.close = function() {
@@ -830,7 +847,7 @@
 										});
 				} 
 				else {
-					$("#"+childid).slideUp("fast", function(event) {
+					$("#"+childid).slideUp(options.animSpeed, function(event) {
 																fireCloseEvent();
 																$("#"+childid).css({zIndex:'0'});
 																$("#"+childid).css({height:oldHeight+'px'});
