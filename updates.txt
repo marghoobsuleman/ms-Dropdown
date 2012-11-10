@@ -1,7 +1,0 @@
-1. document keydown/keyup bug fixed
-2. added json support in title. {image:'', title:''}
-3. onchange bug fixed on onclose
-
-
-
- 
