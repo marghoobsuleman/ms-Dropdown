@@ -2,7 +2,7 @@
 // author: Marghoob Suleman - http://www.marghoobsuleman.com/
 // Date: 10 Nov, 2012
 // Version: 3.0
-// Revision: 15
+// Revision: 16
 // web: www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -173,14 +173,15 @@ function dd(element, settings) {
 				imagePath = (isJson && _settings.jsonTitle) ? obj[0].image : attrTitle;
 				imagecss = (isJson && _settings.jsonTitle) ? obj[0].imagecss : imagecss;
 			};
+
 			text = opt.text || '';
 			value = opt.value || '';
 			className = opt.className || "";
-			//ignore title attribute if playing with data tags
-			title = $(opt).data("title") || (title || "");
-			description = $(opt).data("description") || (description || "");
-			imagePath = $(opt).data("image") || (imagePath || "");
-			imagecss = $(opt).data("imagecss") || (imagecss || "");
+			//ignore title attribute if playing with data tags			
+			title = $(opt).prop("data-title") || $(opt).data("title") || (title || "");
+			description = $(opt).prop("data-description") || $(opt).data("description") || (description || "");
+			imagePath = $(opt).prop("data-image") || $(opt).data("image") || (imagePath || "");
+			imagecss = $(opt).prop("data-imagecss") || $(opt).data("imagecss") || (imagecss || "");
 			
 		};
 		var o = {image: imagePath, title: title, description: description, value: value, text: text, className: className, imagecss:imagecss};
