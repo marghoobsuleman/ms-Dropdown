@@ -13,7 +13,7 @@
 <body>
 <table width="100%" border="0" cellspacing="1" cellpadding="5" class="topmenu">
   <tr>
-    <td colspan="7"><h1>Javascript image dropdown <span id="ver"></span> <a title="Download" href="http://www.marghoobsuleman.com/jquery-image-dropdown" class="small">Download</a> </h1></td>
+    <td colspan="8"><h1>Javascript image dropdown <span id="ver"></span> <a title="Download" href="http://www.marghoobsuleman.com/jquery-image-dropdown" class="small">Download</a></h1></td>
   </tr>
   <tr>
     <td><a href="index.html">Normal</a></td>
@@ -21,6 +21,7 @@
     <td><a href="multiple-skin.html">Multiple Skin</a></td>
     <td><a href="css-sprite.html">CSS Sprite</a></td>
     <td><a href="object-oriented-approach.html">Object Oriented Approach</a></td>
+    <td><a href="use-checkbox.html">Use Checkbox</a></td>
     <td><a href="mouse-events.html">Mouse Events</a></td>
     <td><a href="help.html">Documentation</a></td>
   </tr>
@@ -54,7 +55,7 @@ $(document).ready(function(e) {
 	$("#payments").msDropdown({visibleRows:4});
 	$("#tech").msDropdown();//{animStyle:'none'} /{animStyle:'slideDown'} {animStyle:'show'}
 	//no use
-	$("#ver").html(msBeautify.version);
+	$("#ver").html(msBeautify.version.msDropdown);
 });
 </script>
 

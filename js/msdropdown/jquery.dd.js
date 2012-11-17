@@ -1,8 +1,8 @@
 // MSDropDown - jquery.dd.js
 // author: Marghoob Suleman - http://www.marghoobsuleman.com/
 // Date: 10 Nov, 2012
-// Version: 3.0
-// Revision: 16
+// Version: 3.1
+// Revision: 17
 // web: www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
 var msBeautify = msBeautify || {};
 (function ($) {
 msBeautify = {
-	version: '3.0',
+	version: {msDropdown:'3.1'},
 	author: "Marghoob Suleman",
 	counter: 20,
 	debug: function (v) {
@@ -66,6 +66,9 @@ function dd(element, settings) {
 		style: '',
 		disabledOpacity: 0.7,
 		disabledOptionEvents: true,
+		childWidth:0,
+		enableCheckbox:false, //this needs to multiple or it will set element to multiple
+		checkboxNameSuffix:'_mscheck',
 		on: {create: null,open: null,close: null,add: null,remove: null,change: null,blur: null,click: null,dblclick: null,mousemove: null,mouseover: null,mouseout: null,focus: null,mousedown: null,mouseup: null}
 		}, settings);								  
 	var _this = this; //this class	 
@@ -134,6 +137,11 @@ function dd(element, settings) {
 		_element = element.id;
 		_this._element = _element;
 		_isDisabled = getElement(_element).disabled;
+		var useCheckbox = $("#"+_element).data("enablecheckbox") || _settings.enableCheckbox;
+		if(Boolean(useCheckbox)===true) {
+			getElement(_element).multiple = true;
+			_settings.enableCheckbox = true;
+		};
 		_isList = (getElement(_element).size>1 || getElement(_element).multiple==true) ? true : false;
 		var hasMainCSS = $("#"+_element).data("maincss");
 		if(hasMainCSS){
@@ -318,6 +326,15 @@ function dd(element, settings) {
 		var oTitleText = _createElement("span", {
 			className: _styles.label
 		}, sText);
+		//checkbox
+		if(_settings.enableCheckbox===true) {
+			var chkbox = _createElement("input", {
+			type: 'checkbox', name:_element+_settings.checkboxNameSuffix+'[]', value:opt.value||""}); //this can be used for future
+			li.appendChild(chkbox);
+			if(_settings.enableCheckbox===true) {
+				chkbox.checked = (opt.selected) ? true : false;
+			};
+		};
 		if (oIcon) {
 			li.appendChild(oIcon);
 		};
@@ -339,6 +356,10 @@ function dd(element, settings) {
 		if (_isList == false) {
 			obj.style = "z-index: " + _settings.zIndex;
 		};
+		var childWidth = $("#"+_element).data("childwidth") || _settings.childWidth;
+		if(childWidth) {
+			obj.style =  (obj.style || "") + ";width:"+childWidth;
+		};		
 		var oDiv = _createElement("div", obj);
 		var ul = _createElement("ul");
 		if (_settings.useSprite != false) {
@@ -386,7 +407,7 @@ function dd(element, settings) {
 				$("#" + childid).css({visibility:'hidden',display:'block'}); //hack for first child
 				_settings.rowHeight = Math.round($("#" + childid + " li:first").height());
 				$("#" + childid).css({visibility:'visible'});
-				if(!_isList) {
+				if(!_isList || _settings.enableCheckbox===true) {
 					$("#" + childid).css({display:'none'});
 				};
 			};
@@ -408,7 +429,9 @@ function dd(element, settings) {
 			};
 		});
 		$("#" + childid + " li." + _styles.enabled).on("click", function (e) {
-			_close(this);
+			if(e.target.nodeName.toLowerCase() !== "input") {
+				_close(this);
+			};
 		});
 		$("#" + childid + " li." + _styles.enabled).on("mousedown", function (e) {
 			if (_isDisabled == true) return false;
@@ -416,6 +439,12 @@ function dd(element, settings) {
 			_lastTarget = this;
 			e.preventDefault();
 			e.stopPropagation();
+			//select current input
+			if(_settings.enableCheckbox===true) {
+				if(e.target.nodeName.toLowerCase() === "input") {
+					_controlHolded = true;
+				};	
+			};
 			if (_isList === true) {
 				if (_isMultiple) {
 					if (_shiftHolded === true) {
@@ -433,19 +462,27 @@ function dd(element, settings) {
 							for (var i = Math.min(ind1, ind2); i <= Math.max(ind1, ind2); i++) {
 								var current = items[i];
 								if ($(current).hasClass(_styles.enabled)) {
-									$(current).addClass(_styles.selected);
+									$(current).addClass(_styles.selected);									
 								};
 							};
 						};
 					} else if (_controlHolded === true) {
-						$(this).toggleClass(_styles.selected);
+						$(this).toggleClass(_styles.selected); //toggle
+						if(_settings.enableCheckbox===true) {
+							var checkbox = this.childNodes[0];
+							checkbox.checked = !checkbox.checked; //toggle
+						};
 					} else {
 						$("#" + childid + " li." + _styles.selected).removeClass(_styles.selected);
+						$("#" + childid + " input:checkbox").prop("checked", false);
 						$(this).addClass(_styles.selected);
+						if(_settings.enableCheckbox===true) {
+							this.childNodes[0].checked = true;
+						};
 					};
 				} else {
 					$("#" + childid + " li." + _styles.selected).removeClass(_styles.selected);
-					$(this).addClass(_styles.selected);
+					$(this).addClass(_styles.selected);					
 				};
 				//fire event on mouseup
 			} else {
@@ -462,6 +499,9 @@ function dd(element, settings) {
 			if (_lastTarget != null) {
 				if (_isMultiple) {
 					$(this).addClass(_styles.selected);
+					if(_settings.enableCheckbox===true) {
+						this.childNodes[0].checked = true;
+					};
 				};
 			};
 		});
@@ -479,6 +519,9 @@ function dd(element, settings) {
 			if (_isDisabled == true) return false;
 			e.preventDefault();
 			e.stopPropagation();
+			if(_settings.enableCheckbox===true) {
+				_controlHolded = false;
+			};
 			var selected = $("#" + childid + " li." + _styles.selected).length;
 			_forcedTrigger = (_oldSelected.length != selected || selected == 0) ? true : false;
 			//trace(" _forcedTrigger "+_forcedTrigger)
@@ -549,12 +592,14 @@ function dd(element, settings) {
 	var _fixedForList = function () {
 		var id = _getPostID("postID");
 		var childid = _getPostID("postChildID");		
-		if (_isList === true) {
+		if (_isList === true && _settings.enableCheckbox===false) {
 			$("#" + id + " ." + _styles.ddTitle).hide();
 			$("#" + childid).css({display: 'block', position: 'relative'});	
 			//_open();
 		} else {
-			_isMultiple = false; //set multiple off if this is not a list
+			if(_settings.enableCheckbox===false) {
+				_isMultiple = false; //set multiple off if this is not a list
+			};
 			$("#" + id + " ." + _styles.ddTitle).show();
 			$("#" + childid).css({display: 'none', position: 'absolute'});
 			//set value
@@ -1012,7 +1057,7 @@ function dd(element, settings) {
 		_isOpen = false;
 		var id = _getPostID("postID");
 		var childid = _getPostID("postChildID");
-		if (_isList === false) {
+		if (_isList === false || _settings.enableCheckbox===true) {
 			$("#" + childid).css({display: "none"});
 			$("#" + id).removeClass("borderRadiusTp borderRadiusBtm").addClass("borderRadius");
 			//do it onclick
@@ -1054,7 +1099,7 @@ function dd(element, settings) {
 			};
 		};
 		_this.selectedText = (_orginial.selectedIndex >= 0) ? _orginial.options[_orginial.selectedIndex].text : "";
-		_this.version = msBeautify.version;
+		_this.version = msBeautify.version.msDropdown;
 		_this.author = msBeautify.author;
 	};
 	var _getDataAndUIByOption = function (opt) {
