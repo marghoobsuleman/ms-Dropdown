@@ -1,9 +1,11 @@
 ### v3.1 updates:
+
 - Child width can be alter
 - New multiple is introduced. Its multiple but with the checkbox.
-- *Bonus:* elementname*_mscheck* will be posted along with the form post/get. i.e. if element name is &quot;tech&quot; checkbox *tech_mscheck[]* is created. However you can set the suffix using 'checkboxNameSuffix' parameter.
+- *Bonus:* elementname*_mscheck* will be posted along with the form post/get. i.e. if element name is &quot;tech&quot; checkbox <strong>tech_mscheck[]</strong> is created. However you can set the suffix using 'checkboxNameSuffix' parameter.
 
 ### v3.0 updates:
+
 <ul>
   <li>Written from scratch</li>
   <li>Improved performance and UI</li>
