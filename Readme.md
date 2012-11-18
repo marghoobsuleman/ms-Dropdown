@@ -1,3 +1,4 @@
+<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif" />
 ### v3.1 updates:
 - Child width can be alter
 - New multiple is introduced. Its multiple but with the checkbox.
