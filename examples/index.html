@@ -45,7 +45,7 @@
         <option value="Visa" data-image="../images/msdropdown/icons/Visa-56.png" data-description="All you need...">Visa</option>
         <option value="Paypal" data-image="../images/msdropdown/icons/Paypal-56.png" data-description="Pay and get paid...">Paypal</option>
     </select> &nbsp;
-    <select style="width:200px" class="tech" name="tech" id="tech">
+    <select name="tech" class="tech" id="tech" style="width:200px">
       <option value="calendar" data-image="../images/msdropdown/icons/icon_calendar.gif">Calendar</option>
       <option value="shopping_cart" data-image="../images/msdropdown/icons/icon_cart.gif">Shopping Cart</option>
       <option value="cd" data-image="../images/msdropdown/icons/icon_cd.gif" name="cd">CD</option>
@@ -101,9 +101,10 @@ $(document).ready(function(e) {
 <p>&nbsp;</p>
 
 <script>
+//var tc;
 $(document).ready(function(e) {
 	$("#payments").msDropdown({visibleRows:4});
-	$("#tech").msDropdown();//{animStyle:'none'} /{animStyle:'slideDown'} {animStyle:'show'}
+	$("#tech").msDropdown().data("dd");//{animStyle:'none'} /{animStyle:'slideDown'} {animStyle:'show'}
 	//no use
 	$("#ver").html(msBeautify.version.msDropdown);
 });

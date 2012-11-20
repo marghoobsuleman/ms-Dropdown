@@ -48,7 +48,7 @@
         <option value="Visa" data-image="images/msdropdown/icons/Visa-56.png" data-description="All you need...">Visa</option>
         <option value="Paypal" data-image="images/msdropdown/icons/Paypal-56.png" data-description="Pay and get paid...">Paypal</option>
     </select> &nbsp;
-    <select style="width:200px" class="tech" name="tech" id="tech">
+    <select style="width:200px" class="tech" name="tech" id="tech" onchange="showValue(this)">
       <option value="calendar" data-image="images/msdropdown/icons/icon_calendar.gif">Calendar</option>
       <option value="shopping_cart" data-image="images/msdropdown/icons/icon_cart.gif">Shopping Cart</option>
       <option value="cd" data-image="images/msdropdown/icons/icon_cd.gif" name="cd">CD</option>
@@ -370,12 +370,21 @@ function createByJson() {
 					];
 	$("#byjson").msDropDown({byJson:{data:jsonData, name:'payments2'}}).data("dd");
 }
+var ds;
 $(document).ready(function(e) {	
 	$("select").msDropdown();
 	createByJson();
+	ds = $("#tech").data("dd");
 	//no use
 	$("#ver").html(msBeautify.version);
 });
+function showValue(h) {
+	console.log(h.name, h.value);
+}
+$("#tech").change(function() {
+	console.log("by jquery: ", this.value);
+})
+//
 </script>
 
 </body>

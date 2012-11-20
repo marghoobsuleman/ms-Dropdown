@@ -1,8 +1,8 @@
 // MSDropDown - jquery.dd.js
 // author: Marghoob Suleman - http://www.marghoobsuleman.com/
 // Date: 10 Nov, 2012
-// Version: 3.1
-// Revision: 17
+// Version: 3.1.1
+// Revision: 18
 // web: www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
 var msBeautify = msBeautify || {};
 (function ($) {
 msBeautify = {
-	version: {msDropdown:'3.1'},
+	version: {msDropdown:'3.1.1'},
 	author: "Marghoob Suleman",
 	counter: 20,
 	debug: function (v) {
@@ -128,7 +128,7 @@ function dd(element, settings) {
 				};
 		};			
 	};
-	var _construct = function() {		
+	var _construct = function() {
 		 //set properties
 		 _createByJson();
 		if (!element.id) {
@@ -149,13 +149,12 @@ function dd(element, settings) {
 		};
 		//trace("_isList "+_isList);
 		if (_isList) {_isMultiple = getElement(_element).multiple;};			
-		_mergeAllProp();
-		_overrideMethods();
+		_mergeAllProp();		
 		//create layout
 		_createLayout();
 		//set ui prop
 		_updateProp("uiData", _getDataAndUI());
-		_updateProp("selectedOptions", $("#"+_element +" option:selected"));
+		_updateProp("selectedOptions", $("#"+_element +" option:selected"));				
 	 };	
 	 /********************************************************************************************/	
 	var _getPostID = function (id) {
@@ -446,7 +445,7 @@ function dd(element, settings) {
 				};	
 			};
 			if (_isList === true) {
-				if (_isMultiple) {
+				if (_isMultiple) {					
 					if (_shiftHolded === true) {
 						$(this).addClass(_styles.selected);
 						var selected = $("#" + childid + " li." + _styles.selected);
@@ -462,7 +461,7 @@ function dd(element, settings) {
 							for (var i = Math.min(ind1, ind2); i <= Math.max(ind1, ind2); i++) {
 								var current = items[i];
 								if ($(current).hasClass(_styles.enabled)) {
-									$(current).addClass(_styles.selected);									
+									$(current).addClass(_styles.selected);
 								};
 							};
 						};
@@ -479,18 +478,16 @@ function dd(element, settings) {
 						if(_settings.enableCheckbox===true) {
 							this.childNodes[0].checked = true;
 						};
-					};
+					};					
 				} else {
 					$("#" + childid + " li." + _styles.selected).removeClass(_styles.selected);
-					$(this).addClass(_styles.selected);					
+					$(this).addClass(_styles.selected);
 				};
 				//fire event on mouseup
 			} else {
 				$("#" + childid + " li." + _styles.selected).removeClass(_styles.selected);
 				$(this).addClass(_styles.selected);
-			};
-	
-	
+			};		
 		});
 		$("#" + childid + " li." + _styles.enabled).on("mouseenter", function (e) {
 			if (_isDisabled == true) return false;
@@ -522,11 +519,10 @@ function dd(element, settings) {
 			if(_settings.enableCheckbox===true) {
 				_controlHolded = false;
 			};
-			var selected = $("#" + childid + " li." + _styles.selected).length;
-			_forcedTrigger = (_oldSelected.length != selected || selected == 0) ? true : false;
-			//trace(" _forcedTrigger "+_forcedTrigger)
+			var selected = $("#" + childid + " li." + _styles.selected).length;			
+			_forcedTrigger = (_oldSelected.length != selected || selected == 0) ? true : false;			
 			_fireAfterItemClicked();
-			_unbind_on_events(); //remove old one			 
+			_unbind_on_events(); //remove old one
 			_bind_on_events();
 			_lastTarget = null;
 		});
@@ -647,31 +643,42 @@ function dd(element, settings) {
 	};
 	var _selectMutipleOptions = function (bySelected) {
 		var childid = _getPostID("postChildID");
-		var selected = bySelected || $("#" + childid + " li." + _styles.selected);
+		var selected = bySelected || $("#" + childid + " li." + _styles.selected); //bySelected or by argument
 		for (var i = 0; i < selected.length; i++) {
 			var ind = _getIndex(selected[i]);
 			getElement(_element).options[ind].selected = "selected";
 		};
+		_setValue(selected);
 	};
 	var _fireAfterItemClicked = function () {
 		var childid = _getPostID("postChildID");
-		var selected = $("#" + childid + " li." + _styles.selected);
+		var selected = $("#" + childid + " li." + _styles.selected);		
 		if (_isMultiple && (_shiftHolded || _controlHolded) || _forcedTrigger) {
 			getElement(_element).selectedIndex = -1; //reset old
 		};
+		var index;
 		if (selected.length == 0) {
 			index = -1;
 		} else if (selected.length > 1) {
 			//selected multiple
 			_selectMutipleOptions(selected);
-			var index = $("#" + childid + " li." + _styles.selected);
+			//index = $("#" + childid + " li." + _styles.selected);
+			
 		} else {
 			//if one selected
-			var index = _getIndex($("#" + childid + " li." + _styles.selected));
-		};
-		if (getElement(_element).selectedIndex != index || _forcedTrigger) {
+			index = _getIndex($("#" + childid + " li." + _styles.selected));
+		};		
+		if ((getElement(_element).selectedIndex != index || _forcedTrigger) && selected.length<=1) {			
+			_forcedTrigger = false;			
+			var evt = has_handler("change");
+			getElement(_element).selectedIndex = index;	
 			_setValue(index);
-			$("#" + _element).trigger("change");
+			//local
+			if (typeof _settings.on.change == "function") {
+				var d = _getDataAndUI();
+				_settings.on.change(d.data, d.ui);
+			};			
+			$("#" + _element).trigger("change");			
 		};
 	};
 	var _setValue = function (index, byvalue) {
@@ -692,7 +699,7 @@ function dd(element, settings) {
 					_updateTitleUI(undefined, value);
 					value = value.value; //for bottom
 				} else {
-					//this is multiple
+					//this is multiple					
 					selectedIndex = getElement(_element).selectedIndex;
 					value = getElement(_element).value;
 					selectedText = getElement(_element).options[getElement(_element).selectedIndex].text || "";
@@ -710,10 +717,16 @@ function dd(element, settings) {
 		//True if a handler has been added in the html.
 		var evt = {byElement: false, byJQuery: false, hasEvent: false};
 		var obj = $("#" + _element);
-		if (obj.prop("on" + name) != undefined) {
-			evt.hasEvent = true;
-			evt.byElement = true;
-		};
+		//console.log(name)
+		try {
+			//console.log(obj.prop("on" + name) + " "+name);
+			if (obj.prop("on" + name) !== null) {
+				evt.hasEvent = true;
+				evt.byElement = true;
+			};
+		} catch(e) {
+			//console.log(e.message);
+		}
 		// True if a handler has been added using jQuery.
 		var evs;
 		if (typeof $._data == "function") { //1.8
@@ -1016,6 +1029,14 @@ function dd(element, settings) {
 			$("#" + childid).css({top: top + "px", zIndex: _settings.zIndex});
 			$("#" + id).removeClass("borderRadius borderRadiusBtm").addClass("borderRadiusTp");
 		};
+		//hack for ie zindex
+		//i hate ie :D
+		if($.browser.msie) {
+			if(parseInt($.browser.version)<=7) {
+				$('div.ddcommon').css("zIndex", _settings.zIndex-10);
+				$("#" + id).css("zIndex", _settings.zIndex+5);
+			};
+		};		
 	};
 	var _open = function (e) {
 		if (_isDisabled == true) return false;
@@ -1073,24 +1094,7 @@ function dd(element, settings) {
 		_childHeight(_childHeight()); //its needed after filter applied
 		$("#" + childid).css({zIndex:1})		
 	};
-	/*********************** </layout> *************************************/
-	var on_change = function () {
-		if (_orginial.onchange != null) {
-			_orginial.onchange.apply(this, arguments)
-		};
-		_this.selectedIndex = this.selectedIndex;
-		_this.value = this.value;
-		_this.selectedText = (this.selectedIndex >= 0) ? this.options[this.selectedIndex].text : "";
-		if (typeof _settings.on.change == "function") {
-			var d = _getDataAndUI();
-			_settings.on.change(d.data, d.ui);
-		};
-	};
-	var _overrideMethods = function () {
-		//override old change	
-		getElement(_element).onchange = on_change;
-	};
-	
+	/*********************** </layout> *************************************/	
 	var _mergeAllProp = function () {
 		_orginial = $.extend(true, {}, getElement(_element));
 		for (var i in _orginial) {
@@ -1252,10 +1256,8 @@ function dd(element, settings) {
 	
 	this.add = function () {
 		var text, value, title, image, description;
-		var obj = arguments[0];
-		if (obj instanceof HTMLOptionElement) {
-			opt = obj; // i need to check if this works in ie6
-		} else if (typeof obj == "string") {
+		var obj = arguments[0];		
+		if (typeof obj == "string") {
 			text = obj;
 			value = text;
 			opt = new Option(text, value);
@@ -1294,12 +1296,13 @@ function dd(element, settings) {
 			case "size":
 				getElement(_element)[prop] = val;
 				if (val == 0) {
-					getElement(_element).multiple = false;
+					getElement(_element).multiple = false; //if size is zero multiple should be false
 				};
 				_isList = (getElement(_element).size > 1 || getElement(_element).multiple == true) ? true : false;
 				_fixedForList();
 				break;
 			case "multiple":
+				getElement(_element)[prop] = val;
 				_isList = (getElement(_element).size > 1 || getElement(_element).multiple == true) ? true : false;
 				_isMultiple = getElement(_element).multiple;
 				_fixedForList();

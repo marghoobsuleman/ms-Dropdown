@@ -364,12 +364,14 @@ $(document).ready(function(e) {
 <p>&nbsp;</p>
 
 <script>
-$(document).ready(function(e) {
-	$("#sample").msDropdown(); // this one already has data-usesprite in SELECT
-	$("#sample2").msDropdown({useSprite:'smallIcons'});
+$(document).ready(function(e) {	
 	$("#countries").msDropdown(); //image can have css class; Please check source code.
+	$("#sample2").msDropdown({useSprite:'smallIcons'});
+	$("#sample").msDropdown(); // this one already has data-usesprite in SELECT
 	//no use
 	$("#ver").html(msBeautify.version.msDropdown);
+	
+	
 });
 </script>
 
