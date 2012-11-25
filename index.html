@@ -16,17 +16,22 @@
 <body>
 <table width="100%" border="0" cellspacing="1" cellpadding="5" class="topmenu">
   <tr>
-    <td colspan="8"><h1>Javascript image dropdown <span id="ver"></span> <a title="Download" href="http://www.marghoobsuleman.com/jquery-image-dropdown" class="small">Download</a> </h1></td>
+    <td colspan="2" class="top"><h1>Javascript image dropdown <span id="ver"></span> <a title="Download" href="http://www.marghoobsuleman.com/jquery-image-dropdown" class="small">Download</a></h1></td>
   </tr>
   <tr>
-    <td><a href="examples/index.html">Normal</a></td>
-    <td><a href="examples/byjson.html">By Json Data</a></td>
-    <td><a href="examples/multiple-skin.html">Multiple Skin</a></td>
-    <td><a href="examples/css-sprite.html">CSS Sprite</a></td>
-    <td><a href="examples/object-oriented-approach.html">Object Oriented Approach</a></td>
-    <td><a href="examples/use-checkbox.html">Use Checkbox</a></td>
-    <td><a href="examples/mouse-events.html">Mouse Events</a></td>
-    <td><a href="examples/help.html">Documentation</a></td>
+    <td width="25%"><select style="width:250px"  name="pages" id="pages">
+      <option value="" selected="selected">Choose a sample page</option>
+      <option value="examples/index.html">Normal</option>
+      <option value="examples/byjson.html">By Json Data</option>
+      <option value="examples/multiple-skin.html">Multiple Skin</option>
+      <option value="examples/css-sprite.html">CSS Sprite</option>
+      <option value="examples/object-oriented-approach.html">Object Oriented Approach</option>
+      <option value="examples/object-oriented-approach-more.html">Object Oriented Approach - More</option>
+      <option value="examples/use-checkbox.html">Use Checkbox</option>
+      <option value="examples/mouse-events.html">Mouse Events</option>
+      <option value="examples/help.html">Documentation</option>
+    </select></td>
+    <td align="left"><a href="help.html">Documentation</a></td>
   </tr>
 </table>
 <form action="examples/submitdata.php" method="post" enctype="multipart/form-data" name="frmdata">
@@ -370,13 +375,29 @@ function createByJson() {
 					];
 	$("#byjson").msDropDown({byJson:{data:jsonData, name:'payments2'}}).data("dd");
 }
-var ds;
-$(document).ready(function(e) {	
+$(document).ready(function(e) {		
+	//no use
+	try {
+		var pages = $("#pages").msDropdown({on:{change:function(data, ui) {
+												var val = data.value;
+												if(val!="")
+													window.location = val;
+											}}}).data("dd");
+
+		var pagename = document.location.pathname.toString();
+		pagename = pagename.split("/");
+		pages.setIndexByValue(pagename[pagename.length-1]);
+		$("#ver").html(msBeautify.version.msDropdown);
+	} catch(e) {
+		//console.log(e);	
+	}
+	
+	$("#ver").html(msBeautify.version.msDropdown);
+		
+	//convert
 	$("select").msDropdown();
 	createByJson();
-	ds = $("#tech").data("dd");
-	//no use
-	$("#ver").html(msBeautify.version);
+	$("#tech").data("dd");
 });
 function showValue(h) {
 	console.log(h.name, h.value);

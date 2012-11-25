@@ -1,8 +1,8 @@
 // MSDropDown - jquery.dd.js
 // author: Marghoob Suleman - http://www.marghoobsuleman.com/
 // Date: 10 Nov, 2012
-// Version: 3.1.1
-// Revision: 19
+// Version: 3.2
+// Revision: 21
 // web: www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
 var msBeautify = msBeautify || {};
 (function ($) {
 msBeautify = {
-	version: {msDropdown:'3.1.1'},
+	version: {msDropdown:'3.2'},
 	author: "Marghoob Suleman",
 	counter: 20,
 	debug: function (v) {
@@ -69,6 +69,8 @@ function dd(element, settings) {
 		childWidth:0,
 		enableCheckbox:false, //this needs to multiple or it will set element to multiple
 		checkboxNameSuffix:'_mscheck',
+		append:'',
+		prepend:'',
 		on: {create: null,open: null,close: null,add: null,remove: null,change: null,blur: null,click: null,dblclick: null,mousemove: null,mouseover: null,mouseout: null,focus: null,mousedown: null,mouseup: null}
 		}, settings);								  
 	var _this = this; //this class	 
@@ -79,6 +81,23 @@ function dd(element, settings) {
 	var DOWN_ARROW = 40, UP_ARROW = 38, LEFT_ARROW=37, RIGHT_ARROW=39, ESCAPE = 27, ENTER = 13, ALPHABETS_START = 47, SHIFT=16 , CONTROL = 17;
 	var _shiftHolded=false, _controlHolded=false,_lastTarget=null,_forcedTrigger=false, _oldSelected, _isCreated = false;
 	var _doc = document;
+	
+	var _checkDataSetting = function() {
+		_settings.mainCSS = $("#"+_element).data("maincss") || _settings.mainCSS;
+		_settings.visibleRows = $("#"+_element).data("visiblerows") || _settings.visibleRows;
+		if($("#"+_element).data("showicon")==false) {_settings.showIcon = $("#"+_element).data("showicon");};
+		_settings.useSprite = $("#"+_element).data("usesprite") || _settings.useSprite;
+		_settings.animStyle = $("#"+_element).data("animstyle") || _settings.animStyle;
+		_settings.event = $("#"+_element).data("event") || _settings.event;
+		_settings.openDirection = $("#"+_element).data("opendirection") || _settings.openDirection;
+		_settings.jsonTitle = $("#"+_element).data("jsontitle") || _settings.jsonTitle;
+		_settings.disabledOpacity = $("#"+_element).data("disabledopacity") || _settings.disabledOpacity;
+		_settings.childWidth = $("#"+_element).data("childwidth") || _settings.childWidth;
+		_settings.enableCheckbox = $("#"+_element).data("enablecheckbox") || _settings.enableCheckbox;
+		_settings.checkboxNameSuffix = $("#"+_element).data("checkboxnamesuffix") || _settings.checkboxNameSuffix;
+		_settings.append = $("#"+_element).data("append") || _settings.append;
+		_settings.prepend = $("#"+_element).data("prepend") || _settings.prepend;		
+	};	
 	var getElement = function(ele) {
 		if (_cacheElement[ele] === undefined) {
 			_cacheElement[ele] = _doc.getElementById(ele);
@@ -128,7 +147,7 @@ function dd(element, settings) {
 				};
 		};			
 	};
-	var _construct = function() {
+	var _construct = function() {		
 		 //set properties
 		 _createByJson();
 		if (!element.id) {
@@ -136,17 +155,14 @@ function dd(element, settings) {
 		};						
 		_element = element.id;
 		_this._element = _element;
+		_checkDataSetting();		
 		_isDisabled = getElement(_element).disabled;
-		var useCheckbox = $("#"+_element).data("enablecheckbox") || _settings.enableCheckbox;
+		var useCheckbox = _settings.enableCheckbox;
 		if(Boolean(useCheckbox)===true) {
 			getElement(_element).multiple = true;
 			_settings.enableCheckbox = true;
 		};
 		_isList = (getElement(_element).size>1 || getElement(_element).multiple==true) ? true : false;
-		var hasMainCSS = $("#"+_element).data("maincss");
-		if(hasMainCSS){
-			_styles.dd = hasMainCSS;
-		};
 		//trace("_isList "+_isList);
 		if (_isList) {_isMultiple = getElement(_element).multiple;};			
 		_mergeAllProp();		
@@ -267,7 +283,7 @@ function dd(element, settings) {
 	
 		var parsed = _parseOption(selectedOption);
 		var arrowPath = parsed.image;
-		var sText = parsed.text || "";
+		var sText = parsed.text || "";		
 		if (arrowPath != "" && _settings.showIcon) {
 			var oIcon = _createElement("img");
 			oIcon.src = arrowPath;
@@ -354,6 +370,8 @@ function dd(element, settings) {
 		var obj = {className: _styles.ddChild + " ddchild_ " + _styles_i.ddChildMore, id: childid};
 		if (_isList == false) {
 			obj.style = "z-index: " + _settings.zIndex;
+		} else {
+			obj.style = "z-index:1";
 		};
 		var childWidth = $("#"+_element).data("childwidth") || _settings.childWidth;
 		if(childWidth) {
@@ -419,7 +437,7 @@ function dd(element, settings) {
 	var _applyChildEvents = function () {
 		var childid = _getPostID("postChildID");
 		$("#" + childid).on("click", function (e) {
-			if (_isDisabled == true) return false;
+			if (_isDisabled === true) return false;
 			//prevent body click
 			e.preventDefault();
 			e.stopPropagation();
@@ -433,7 +451,7 @@ function dd(element, settings) {
 			};
 		});
 		$("#" + childid + " li." + _styles.enabled).on("mousedown", function (e) {
-			if (_isDisabled == true) return false;
+			if (_isDisabled === true) return false;
 			_oldSelected = $("#" + childid + " li." + _styles.selected);
 			_lastTarget = this;
 			e.preventDefault();
@@ -490,7 +508,7 @@ function dd(element, settings) {
 			};		
 		});
 		$("#" + childid + " li." + _styles.enabled).on("mouseenter", function (e) {
-			if (_isDisabled == true) return false;
+			if (_isDisabled === true) return false;
 			e.preventDefault();
 			e.stopPropagation();
 			if (_lastTarget != null) {
@@ -504,23 +522,23 @@ function dd(element, settings) {
 		});
 	
 		$("#" + childid + " li." + _styles.enabled).on("mouseover", function (e) {
-			if (_isDisabled == true) return false;
+			if (_isDisabled === true) return false;
 			$(this).addClass(_styles.hover);
 		});
 		$("#" + childid + " li." + _styles.enabled).on("mouseout", function (e) {
-			if (_isDisabled == true) return false;
+			if (_isDisabled === true) return false;
 			$("#" + childid + " li." + _styles.hover).removeClass(_styles.hover);
 		});
 	
 		$("#" + childid + " li." + _styles.enabled).on("mouseup", function (e) {
-			if (_isDisabled == true) return false;
+			if (_isDisabled === true) return false;
 			e.preventDefault();
 			e.stopPropagation();
 			if(_settings.enableCheckbox===true) {
 				_controlHolded = false;
 			};
 			var selected = $("#" + childid + " li." + _styles.selected).length;			
-			_forcedTrigger = (_oldSelected.length != selected || selected == 0) ? true : false;			
+			_forcedTrigger = (_oldSelected.length != selected || selected == 0) ? true : false;	
 			_fireAfterItemClicked();
 			_unbind_on_events(); //remove old one
 			_bind_on_events();
@@ -530,27 +548,27 @@ function dd(element, settings) {
 		/* options events */
 		if (_settings.disabledOptionEvents == false) {
 			$("#" + childid + " li." + _styles_i.li).on("click", function (e) {
-				if (_isDisabled == true) return false;
+				if (_isDisabled === true) return false;
 				fireOptionEventIfExist(this, "click");
 			});
 			$("#" + childid + " li." + _styles_i.li).on("mouseenter", function (e) {
-				if (_isDisabled == true) return false;
+				if (_isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mouseenter");
 			});
 			$("#" + childid + " li." + _styles_i.li).on("mouseover", function (e) {
-				if (_isDisabled == true) return false;
+				if (_isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mouseover");
 			});
 			$("#" + childid + " li." + _styles_i.li).on("mouseout", function (e) {
-				if (_isDisabled == true) return false;
+				if (_isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mouseout");
 			});
 			$("#" + childid + " li." + _styles_i.li).on("mousedown", function (e) {
-				if (_isDisabled == true) return false;
+				if (_isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mousedown");
 			});
 			$("#" + childid + " li." + _styles_i.li).on("mouseup", function (e) {
-				if (_isDisabled == true) return false;
+				if (_isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mouseup");
 			});
 		};
@@ -569,7 +587,7 @@ function dd(element, settings) {
 		var id = _getPostID("postID");
 		var childid = _getPostID("postChildID");		
 		$("#" + id).on(_settings.event, function (e) {			
-			if (_isDisabled == true) return false;
+			if (_isDisabled === true) return false;
 			fireEventIfExist("click");
 			//prevent body click
 			e.preventDefault();
@@ -637,6 +655,16 @@ function dd(element, settings) {
 		_hideOriginal(); //hideOriginal
 		_fixedSomeUI();
 		_applyEvents();
+		
+		var childid = _getPostID("postChildID");
+		//append
+		if(_settings.append!='') {
+			$("#" + childid).append(_settings.append);
+		};
+		//prepend
+		if(_settings.prepend!='') {
+			$("#" + childid).prepend(_settings.prepend);
+		};		
 		if (typeof _settings.on.create == "function") {
 			_settings.on.create.apply(_this, arguments);
 		};
@@ -651,6 +679,7 @@ function dd(element, settings) {
 		_setValue(selected);
 	};
 	var _fireAfterItemClicked = function () {
+		//console.log("_fireAfterItemClicked")
 		var childid = _getPostID("postChildID");
 		var selected = $("#" + childid + " li." + _styles.selected);		
 		if (_isMultiple && (_shiftHolded || _controlHolded) || _forcedTrigger) {
@@ -690,6 +719,7 @@ function dd(element, settings) {
 				selectedText = "";
 				_updateTitleUI(-1);
 			} else {
+				//by index or byvalue
 				if (typeof index != "object") {
 					var opt = getElement(_element).options[index];
 					getElement(_element).selectedIndex = index;
@@ -699,10 +729,11 @@ function dd(element, settings) {
 					_updateTitleUI(undefined, value);
 					value = value.value; //for bottom
 				} else {
-					//this is multiple					
-					selectedIndex = getElement(_element).selectedIndex;
-					value = getElement(_element).value;
-					selectedText = getElement(_element).options[getElement(_element).selectedIndex].text || "";
+					//this is multiple or by option					
+					selectedIndex = (byvalue && byvalue.index) || getElement(_element).selectedIndex;
+					value = (byvalue && byvalue.value) || getElement(_element).value;
+					selectedText = (byvalue && byvalue.text) || getElement(_element).options[getElement(_element).selectedIndex].text || "";
+					_updateTitleUI(selectedIndex);
 				};
 			};
 			_updateProp("selectedIndex", selectedIndex);
@@ -818,7 +849,7 @@ function dd(element, settings) {
 				};
 				break;
 		};
-		if (_isDisabled == true) return false;
+		if (_isDisabled === true) return false;
 		fireEventIfExist("keydown");
 	};
 	var on_keyup = function (evt) {
@@ -830,34 +861,34 @@ function dd(element, settings) {
 				_controlHolded = false;
 				break;
 		};
-		if (_isDisabled == true) return false;
+		if (_isDisabled === true) return false;
 		fireEventIfExist("keyup");
 	};
 	var on_dblclick = function (evt) {
-		if (_isDisabled == true) return false;
+		if (_isDisabled === true) return false;
 		fireEventIfExist("dblclick");
 	};
 	var on_mousemove = function (evt) {
-		if (_isDisabled == true) return false;
+		if (_isDisabled === true) return false;
 		fireEventIfExist("mousemove");
 	};
 	
 	var on_mouseover = function (evt) {
-		if (_isDisabled == true) return false;
+		if (_isDisabled === true) return false;
 		evt.preventDefault();
 		fireEventIfExist("mouseover");
 	};
 	var on_mouseout = function (evt) {
-		if (_isDisabled == true) return false;
+		if (_isDisabled === true) return false;
 		evt.preventDefault();
 		fireEventIfExist("mouseout");
 	};
 	var on_mousedown = function (evt) {
-		if (_isDisabled == true) return false;
+		if (_isDisabled === true) return false;
 		fireEventIfExist("mousedown");
 	};
 	var on_mouseup = function (evt) {
-		if (_isDisabled == true) return false;
+		if (_isDisabled === true) return false;
 		fireEventIfExist("mouseup");
 	};
 	var option_has_handler = function (opt, name) {
@@ -1039,7 +1070,7 @@ function dd(element, settings) {
 		};		
 	};
 	var _open = function (e) {
-		if (_isDisabled == true) return false;
+		if (_isDisabled === true) return false;
 		var id = _getPostID("postID");
 		var childid = _getPostID("postChildID");
 		if (!_isOpen) {
@@ -1080,9 +1111,7 @@ function dd(element, settings) {
 		var childid = _getPostID("postChildID");
 		if (_isList === false || _settings.enableCheckbox===true) {
 			$("#" + childid).css({display: "none"});
-			$("#" + id).removeClass("borderRadiusTp borderRadiusBtm").addClass("borderRadius");
-			//do it onclick
-			_fireAfterItemClicked();
+			$("#" + id).removeClass("borderRadiusTp borderRadiusBtm").addClass("borderRadius");			
 		};
 		_unbind_on_events();
 		if (typeof _settings.on.close == "function") {
@@ -1356,13 +1385,13 @@ function dd(element, settings) {
 		return _this[prop] || getElement(_element)[prop]; //return if local else from original
 	};
 	this.visible = function (val) {
-		var id = _getPostID("postID");
-		if (val == true) {
+		var id = _getPostID("postID");		
+		if (val === true) {
 			$("#" + id).show();
-		} else if (val == false) {
+		} else if (val === false) {
 			$("#" + id).hide();
 		} else {
-			return $("#" + id).css("display");
+			return ($("#" + id).css("display")=="none") ? false : true;
 		};
 	};
 	this.debug = function (v) {
@@ -1371,7 +1400,7 @@ function dd(element, settings) {
 	this.close = function () {
 		_close();
 	};
-	this.open = function () {
+	this.open = function () {		
 		_open();
 	};
 	this.showRows = function (r) {
@@ -1400,17 +1429,16 @@ function dd(element, settings) {
 		var opt = getElement(_element).item.apply(getElement(_element), arguments);
 		return _getDataAndUIByOption(opt);
 	};	
+	//v 3.2
+	this.setIndexByValue = function(val) {
+		this.set("value", val);
+	};
 	this.destory = function () {
 		var hidid = _getPostID("postElementHolder");
 		var id = _getPostID("postID");
 		$("#" + id + ", #" + id + " *").off();
 		$("#" + id).remove();
-		$("#" + _element).parent().replaceWith($("#" + _element));
-		getElement(_element).onchange = function () { //restore
-			if (_orginial.onchange != null) {
-				_orginial.onchange.apply(this, arguments)
-			};
-		};
+		$("#" + _element).parent().replaceWith($("#" + _element));		
 		$("#" + _element).data("dd", null);
 	};
 	//Create msDropDown		

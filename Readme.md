@@ -1,4 +1,11 @@
-<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.1.1" />
+<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.2" />
+### v3.2 updates: 26 Nov, 2012
+- All setting parameters can passed throught element's data- attributes. ie. data-maincss="blue"
+- zIndex bug fixed for list and dropdown if both on the same page.
+- Added setIndexByValue method. However same can be done by - handler.set("value", value)
+- Added "append" and "prepend" in setting params. append is used to append the element to the childdiv and prepend do as the name suggest. 
+- Added one more help file for objected oriented approach.
+
 ### v3.1.1 updates:
 - chrome onchange bug fixed
 - zindex bug fixed for msie 

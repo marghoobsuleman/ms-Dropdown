@@ -24,17 +24,22 @@ code.blue{color:#3300FF}
 <body>
 <table width="100%" border="0" cellspacing="1" cellpadding="5" class="topmenu">
   <tr>
-    <td colspan="8"><h1>Javascript image dropdown <span id="ver"></span> <a title="Download" href="http://www.marghoobsuleman.com/jquery-image-dropdown" class="small">Download</a></h1></td>
+    <td colspan="2" class="top"><h1>Javascript image dropdown <span id="ver"></span> <a title="Download" href="http://www.marghoobsuleman.com/jquery-image-dropdown" class="small">Download</a></h1></td>
   </tr>
   <tr>
-    <td><a href="index.html">Normal</a></td>
-    <td><a href="byjson.html">By Json Data</a></td>
-    <td><a href="multiple-skin.html">Multiple Skin</a></td>
-    <td><a href="css-sprite.html">CSS Sprite</a></td>
-    <td><a href="object-oriented-approach.html">Object Oriented Approach</a></td>
-    <td><a href="use-checkbox.html">Use Checkbox</a></td>
-    <td><a href="mouse-events.html">Mouse Events</a></td>
-    <td class="active"><a href="help.html">Documentation</a></td>
+    <td width="25%"><select style="width:250px"  name="pages" id="pages">
+      <option value="" selected="selected">Choose a sample page</option>
+      <option value="index.html">Normal</option>
+      <option value="byjson.html">By Json Data</option>
+      <option value="multiple-skin.html">Multiple Skin</option>
+      <option value="css-sprite.html">CSS Sprite</option>
+      <option value="object-oriented-approach.html">Object Oriented Approach</option>
+      <option value="object-oriented-approach-more.html">Object Oriented Approach - More</option>
+      <option value="use-checkbox.html">Use Checkbox</option>
+      <option value="mouse-events.html">Mouse Events</option>
+      <option value="help.html">Documentation</option>
+    </select></td>
+    <td align="left"><a href="help.html">Documentation</a></td>
   </tr>
 </table>
 <form action="submitdata.php" method="post" enctype="multipart/form-data" name="frmdata">
@@ -151,7 +156,6 @@ code.blue{color:#3300FF}
                 <span style='color:#800080; '>{</span>image<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'../images/msdropdown/icons/Paypal-56.png'</span><span style='color:#808030; '>,</span> description<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'Pay and get paid...'</span><span style='color:#808030; '>,</span> value<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'Paypal'</span><span style='color:#808030; '>,</span> text<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'Paypal'</span><span style='color:#800080; '>}</span>
                 <span style='color:#808030; '>]</span><span style='color:#800080; '>;</span>
 <span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#800080; '>{</span>byJson<span style='color:#800080; '>:</span><span style='color:#800080; '>{</span>data<span style='color:#800080; '>:</span>jsonData<span style='color:#808030; '>,</span> name<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'payments'</span><span style='color:#800080; '>}</span><span style='color:#800080; '>}</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
-
 //Some usefull parameters can be passed while creating msDropdown. 
 //These are default values.
 {
@@ -167,10 +171,12 @@ code.blue{color:#3300FF}
     openDirection: 'auto', //auto || alwaysUp
     enableCheckbox:false, //this needs to multiple or it will set element to multiple
     checkboxNameSuffix:'_mscheck',
-    on: {create: null,open: null,close: null,add: null,remove: null,change: null,blur: null,click: null,dblclick: null,mousemove: null,mouseover: null,mouseout: null,focus: null,mousedown: null,mouseup: null} //event cant be added from here too
+    append:'',
+    prepend:'',
+    on: {create: null,open: null,close: null,add: null,remove: null,change: null,blur: null,click: null,
+    	dblclick: null,mousemove: null,mouseover: null,mouseout: null,focus: null,mousedown: null,mouseup: null} //event cant be added from here too
 }
-        
-  </pre></td>
+</pre></td>
     </tr>
     <tr>
       <td>add</td>
@@ -178,7 +184,8 @@ code.blue{color:#3300FF}
       <td>Adds an option element to the select element.</td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#696969; '>//by traditional option tag</span>
+      <td colspan="3">
+      <pre style='color:#000000;background:#ffffff;'><span style='color:#696969; '>//by traditional option tag</span>
 oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>(</span><span style='color:#800000; font-weight:bold; '>new</span> Option<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
 <span style='color:#696969; '>//or by string</span>
 oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
@@ -186,7 +193,8 @@ oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>
 oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>(</span><span style='color:#800080; '>{</span>text<span style='color:#800080; '>:</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> value<span style='color:#800080; '>:</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#800080; '>}</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
 <span style='color:#696969; '>//or by json with all properties</span>
 oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>(</span><span style='color:#800080; '>{</span>text<span style='color:#800080; '>:</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> value<span style='color:#800080; '>:</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> description<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'Set my calendar'</span><span style='color:#808030; '>,</span> image<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'/images/calendar.gif'</span><span style='color:#808030; '>,</span> className<span style='color:#800080; '>:</span><span style='color:#0000e6; '>''</span> title<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'Calendar'</span><span style='color:#800080; '>}</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
-  </pre></td>
+  </pre>
+  </td>
     </tr>
     <tr>
       <td>remove</td>
@@ -231,13 +239,13 @@ oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>
     </tr>
     <tr>
       <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> <span style='color:#797997; '>index</span> <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>get<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>selectedIndex</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
-<span style='color:#696969; '>//You can get the property without using get mthod</span>
+<span style='color:#696969; '>//You can get the property without using get method</span>
 <span style='color:#800000; font-weight:bold; '>var</span> <span style='color:#797997; '>index</span> <span style='color:#808030; '>=</span> oDropwdown<span style='color:#808030; '>.</span>selectedIndex<span style='color:#800080; '>;</span>
   </pre></td>
     </tr>
     <tr>
       <td>visible</td>
-      <td>&nbsp;</td>
+      <td>boolean/void</td>
       <td>Set and get the visible states.</td>
     </tr>
     <tr>
@@ -310,6 +318,14 @@ oDropdown<span style='color:#808030; '>.</span>act<span style='color:#808030; '>
 <span style='color:#800000; font-weight:bold; '>var</span> opt <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>act<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>namedItem</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span></pre></td>
     </tr>
     <tr>
+      <td>setIndexByValue</td>
+      <td>&nbsp;</td>
+      <td>Set index by value. (v 3.2)</td>
+    </tr>
+    <tr>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown.setIndexByValue(<span style='color:#008c00; '>"calendar"</span><span style='color:#808030; '>);</pre></td>
+    </tr>
+    <tr>
       <td>destory</td>
       <td>&nbsp;</td>
       <td>Restore the original dorpdown.</td>
@@ -330,6 +346,21 @@ oDropdown<span style='color:#808030; '>.</span>act<span style='color:#808030; '>
 <script>
 $(document).ready(function(e) {
 	//no use
+	try {
+		var pages = $("#pages").msDropdown({on:{change:function(data, ui) {
+												var val = data.value;
+												if(val!="")
+													window.location = val;
+											}}}).data("dd");
+
+		var pagename = document.location.pathname.toString();
+		pagename = pagename.split("/");
+		pages.setIndexByValue(pagename[pagename.length-1]);
+		$("#ver").html(msBeautify.version.msDropdown);
+	} catch(e) {
+		//console.log(e);	
+	}
+	
 	$("#ver").html(msBeautify.version.msDropdown);
 });
 </script>

@@ -10,7 +10,9 @@ body{font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif; font-size
 }
 h1, h2, h3{margin:0; padding:0}
 .topmenu{}
-.topmenu td{background:#333; color:#FFFFFF; text-align:center}
+.topmenu td.top{background:#333; color:#FFFFFF; text-align:center}
+.topmenu td{background:#333; color:#FFFFFF; text-align:left}
+.topmenu td.title{background:#666; color:#FFFFFF; text-align:left}
 .topmenu td a, .topmenu td a:visited{color:#fff;}
 .topmenu td.active{background:#090; color:#333}
 .topmenu td.active a, .topmenu td.active a:visited{color:#fff; text-decoration:none}
@@ -18,3 +20,13 @@ h1, h2, h3{margin:0; padding:0}
 pre{overflow-x:auto; overflow-y:hidden; background:#707070; color:#fff; margin:0; padding:20px; max-width:750px}
 .hide, .hidden{display:none}
 code.blue{color:#66CCCC}
+
+#debugger{position:absolute; border:2px solid #c3c3c3; padding:10px; width:400px; background:#fff; max-height:350px; overflow:auto}
+ul.debug{padding:5px 10px; margin:0;}
+#testResults{margin:10px}
+#testResults li.pass { color: green; }
+#testResults li.fail { color: red; }
+.black{color:#000}
+.viewcode{cursor:pointer; text-decoration:underline;}
+.viewcode:hover{background:#f0f0f0; text-decoration:none;}
+.app{padding:10px; background:#333; color:#FFF;}
