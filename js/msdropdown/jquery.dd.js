@@ -1125,7 +1125,7 @@ function dd(element, settings) {
 	};
 	/*********************** </layout> *************************************/	
 	var _mergeAllProp = function () {
-		_orginial = $.extend(true, {}, getElement(_element));
+		_orginial = $.extend(true, {}, $("#"+_element));
 		for (var i in _orginial) {
 			if (typeof _orginial[i] != "function") {
 				_this[i] = _orginial[i]; //properties
