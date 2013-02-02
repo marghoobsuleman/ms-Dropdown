@@ -1,4 +1,9 @@
-<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.2" />
+<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.3" />
+### v3.3 updates: 02 Feb, 2013
+- $.browser - jQuery 1.9 version fixed
+- Keyboard navigation issue has been fixed
+- destory is now destroy - oops typo error
+
 ### v3.2 updates: 26 Nov, 2012
 - All setting parameters can passed throught element's data- attributes. ie. data-maincss="blue"
 - zIndex bug fixed for list and dropdown if both on the same page.

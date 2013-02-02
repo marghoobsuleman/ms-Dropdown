@@ -1,8 +1,8 @@
 // MSDropDown - jquery.dd.js
 // author: Marghoob Suleman - http://www.marghoobsuleman.com/
 // Date: 10 Nov, 2012
-// Version: 3.2
-// Revision: 21
+// Version: 3.3
+// Revision: 22
 // web: www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
 var msBeautify = msBeautify || {};
 (function ($) {
 msBeautify = {
-	version: {msDropdown:'3.2'},
+	version: {msDropdown:'3.3'},
 	author: "Marghoob Suleman",
 	counter: 20,
 	debug: function (v) {
@@ -77,11 +77,19 @@ function dd(element, settings) {
 	var _holderId = {postElementHolder: '_msddHolder', postID: '_msdd', postTitleID: '_title',postTitleTextID: '_titleText', postChildID: '_child'};
 	var _styles = {dd:_settings.mainCSS, ddTitle: 'ddTitle', arrow: 'arrow arrowoff', ddChild: 'ddChild', ddTitleText: 'ddTitleText',disabled: 'disabled', enabled: 'enabled', ddOutOfVision: 'ddOutOfVision', borderTop: 'borderTop', noBorderTop: 'noBorderTop', selected: 'selected', divider: 'divider', optgroup: "optgroup", optgroupTitle: "optgroupTitle", description: "description", label: "ddlabel",hover: 'hover',disabledAll: 'disabledAll'};
 	var _styles_i = {li: '_msddli_',borderRadiusTp: 'borderRadiusTp',ddChildMore: 'border shadow',fnone: "fnone"};
-	var _isList = false, _isMultiple=false,_isDisabled=false, _cacheElement = {}, _element, _orginial, _isOpen=false;
+	var _isList = false, _isMultiple=false,_isDisabled=false, _cacheElement = {}, _element, _orginial = {}, _isOpen=false;
 	var DOWN_ARROW = 40, UP_ARROW = 38, LEFT_ARROW=37, RIGHT_ARROW=39, ESCAPE = 27, ENTER = 13, ALPHABETS_START = 47, SHIFT=16 , CONTROL = 17;
 	var _shiftHolded=false, _controlHolded=false,_lastTarget=null,_forcedTrigger=false, _oldSelected, _isCreated = false;
-	var _doc = document;
-	
+	var _doc = document, _ua = window.navigator.userAgent, _isIE = _ua.match(/msie/i);
+	var msieversion = function()
+   	{      
+      var msie = _ua.indexOf("MSIE");
+      if ( msie > 0 ) {      // If Internet Explorer, return version number
+         return parseInt (_ua.substring (msie+5, _ua.indexOf (".", msie)));
+	  } else {                // If another browser, return 0
+         return 0;
+	  };
+   	};
 	var _checkDataSetting = function() {
 		_settings.mainCSS = $("#"+_element).data("maincss") || _settings.mainCSS;
 		_settings.visibleRows = $("#"+_element).data("visiblerows") || _settings.visibleRows;
@@ -124,7 +132,7 @@ function dd(element, settings) {
 					if (_settings.byJson.size>0) {
 						obj.size = _settings.byJson.size;
 					};
-					obj.multiple = _settings.byJson.multiple;					
+					obj.multiple = _settings.byJson.multiple;
 					var oSelect = _createElement("select", obj);
 					for(var i=0;i<_settings.byJson.data.length;i++) {
 						var current = _settings.byJson.data[i];
@@ -167,10 +175,13 @@ function dd(element, settings) {
 		if (_isList) {_isMultiple = getElement(_element).multiple;};			
 		_mergeAllProp();		
 		//create layout
-		_createLayout();
+		_createLayout();		
 		//set ui prop
 		_updateProp("uiData", _getDataAndUI());
-		_updateProp("selectedOptions", $("#"+_element +" option:selected"));				
+		_updateProp("selectedOptions", $("#"+_element +" option:selected"));
+		var childid = _getPostID("postChildID");
+		_oldSelected = $("#" + childid + " li." + _styles.selected);
+		
 	 };	
 	 /********************************************************************************************/	
 	var _getPostID = function (id) {
@@ -816,6 +827,7 @@ function dd(element, settings) {
 	};
 	var on_keydown = function (evt) {
 		var tid = _getPostID("postTitleTextID");
+		var childid = _getPostID("postChildID");
 		switch (evt.keyCode) {
 			case DOWN_ARROW:
 			case RIGHT_ARROW:
@@ -835,7 +847,12 @@ function dd(element, settings) {
 			case ENTER:
 				evt.preventDefault();
 				evt.stopPropagation();
-				_close();				
+				_close();
+				var selected = $("#" + childid + " li." + _styles.selected).length;	
+				_forcedTrigger = (_oldSelected.length != selected || selected == 0) ? true : false;				
+				_fireAfterItemClicked();
+				_unbind_on_events(); //remove old one				
+				_lastTarget = null;			
 				break;
 			case SHIFT:
 				_shiftHolded = true;
@@ -1062,8 +1079,8 @@ function dd(element, settings) {
 		};
 		//hack for ie zindex
 		//i hate ie :D
-		if($.browser.msie) {
-			if(parseInt($.browser.version)<=7) {
+		if(_isIE) {
+			if(msieversion()<=7) {
 				$('div.ddcommon').css("zIndex", _settings.zIndex-10);
 				$("#" + id).css("zIndex", _settings.zIndex+5);
 			};
@@ -1125,13 +1142,17 @@ function dd(element, settings) {
 	};
 	/*********************** </layout> *************************************/	
 	var _mergeAllProp = function () {
-		_orginial = $.extend(true, {}, getElement(_element));
-		for (var i in _orginial) {
-			if (typeof _orginial[i] != "function") {
-				_this[i] = _orginial[i]; //properties
+		try {
+			_orginial = $.extend(true, {}, getElement(_element));
+			for (var i in _orginial) {
+				if (typeof _orginial[i] != "function") {				
+					_this[i] = _orginial[i]; //properties
+				};
 			};
+		} catch(e) {
+			//silent
 		};
-		_this.selectedText = (_orginial.selectedIndex >= 0) ? _orginial.options[_orginial.selectedIndex].text : "";
+		_this.selectedText = (getElement(_element).selectedIndex >= 0) ? getElement(_element).options[getElement(_element).selectedIndex].text : "";		
 		_this.version = msBeautify.version.msDropdown;
 		_this.author = msBeautify.author;
 	};
@@ -1433,7 +1454,7 @@ function dd(element, settings) {
 	this.setIndexByValue = function(val) {
 		this.set("value", val);
 	};
-	this.destory = function () {
+	this.destroy = function () {
 		var hidid = _getPostID("postElementHolder");
 		var id = _getPostID("postID");
 		$("#" + id + ", #" + id + " *").off();
@@ -1441,7 +1462,7 @@ function dd(element, settings) {
 		$("#" + _element).parent().replaceWith($("#" + _element));		
 		$("#" + _element).data("dd", null);
 	};
-	//Create msDropDown		
+	//Create msDropDown	
 	_construct();
 };
 //bind in jquery
