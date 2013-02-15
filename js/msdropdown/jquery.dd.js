@@ -821,9 +821,15 @@ function dd(element, settings) {
 			_childHeight(_childHeight());
 		} else {
 			$("#" + childid + " li").hide();
-			$("#" + childid + " li:Contains('" + sText + "')").show();	
+			var items = $("#" + childid + " li:Contains('" + sText + "')").show();
 			if ($("#" + childid + " li:visible").length <= _settings.visibleRows) {
 				_childHeight(-1); //set autoheight
+			};
+			if (items.length > 0) {
+				if (!_isList || !_isMultiple) {
+					$("#" + childid + " ." + _styles.selected).removeClass(_styles.selected);
+					$(items[0]).addClass(_styles.selected);
+				};
 			};
 		};		
 	};
@@ -1154,7 +1160,9 @@ function dd(element, settings) {
 		//rest some old stuff
 		_hideFilterBox();
 		_childHeight(_childHeight()); //its needed after filter applied
-		$("#" + childid).css({zIndex:1})		
+		$("#" + childid).css({zIndex:1});
+		//update the title in case the user clicked outside
+		_updateTitleUI(getElement(_element).selectedIndex);
 	};
 	/*********************** </layout> *************************************/	
 	var _mergeAllProp = function () {
