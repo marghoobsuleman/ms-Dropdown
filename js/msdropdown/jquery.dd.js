@@ -607,6 +607,20 @@ function dd(element, settings) {
 			e.stopPropagation();
 			_open(e);
 		});
+		$("#" + id).on("keydown", function (e) {			
+			var k = e.which;
+			if (!_isOpen && (k == ENTER || k == UP_ARROW || k == DOWN_ARROW ||
+				k == LEFT_ARROW || k == RIGHT_ARROW ||
+				(k >= ALPHABETS_START && !_isList))) {
+				_open(e);
+				if (k >= ALPHABETS_START) {
+					_showFilterBox();
+				} else {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+				};
+			};
+		});
 		_applyChildEvents();		
 		$("#" + id).on("dblclick", on_dblclick);
 		$("#" + id).on("mousemove", on_mousemove);
