@@ -253,7 +253,7 @@ function dd(element, settings) {
 		} else {
 			$("#"+hidid).css({height: 0,overflow: 'hidden',position: 'absolute'});
 		};
-		$("#"+_element).attr('tabIndex', -1);
+		getElement(_element).tabIndex = -1;
 	};
 	var _createWrapper = function () {
 		var obj = {
@@ -266,7 +266,7 @@ function dd(element, settings) {
 			obj.style = obj.style + "" + styles;
 		};
 		obj.id = _getPostID("postID");
-		obj.tabIndex = $("#"+_element).attr("tabIndex");
+		obj.tabIndex = getElement(_element).tabIndex;
 		var oDiv = _createElement("div", obj);
 		return oDiv;
 	};
@@ -1482,7 +1482,7 @@ function dd(element, settings) {
 		var hidid = _getPostID("postElementHolder");
 		var id = _getPostID("postID");
 		$("#" + id + ", #" + id + " *").off();
-		$("#" + _element).attr("tabIndex", $("#" + id).attr("tabIndex"));
+		getElement(_element).tabIndex = getElement(id).tabIndex;
 		$("#" + id).remove();
 		$("#" + _element).parent().replaceWith($("#" + _element));		
 		$("#" + _element).data("dd", null);
