@@ -596,6 +596,11 @@ function dd(element, settings) {
 		$("#" + childid + " li." + _styles.enabled).off("mousedown");
 		$("#" + childid + " li." + _styles.enabled).off("mouseup");
 	};
+	var _triggerBypassingHandler = function (id, evt_n, handler) {
+		$(getElement(id)).off(evt_n, handler);
+		$(getElement(id)).trigger(evt_n);
+		$(getElement(id)).on(evt_n, handler);
+	};
 	var _applyEvents = function () {
 		var id = _getPostID("postID");
 		var childid = _getPostID("postChildID");		
@@ -621,6 +626,12 @@ function dd(element, settings) {
 				};
 			};
 		});
+		$("#" + id).on("focus", _wrapperFocusHandler);
+		$("#" + id).on("blur", _wrapperBlurHandler);
+		$("#" + _getPostID("postTitleTextID")).on("blur", function (e) {
+			//return focus to the wrapper without triggering the handler
+			_triggerBypassingHandler(id, "focus", _wrapperFocusHandler);
+		});
 		_applyChildEvents();		
 		$("#" + id).on("dblclick", on_dblclick);
 		$("#" + id).on("mousemove", on_mousemove);
@@ -628,6 +639,12 @@ function dd(element, settings) {
 		$("#" + id).on("mouseleave", on_mouseout);
 		$("#" + id).on("mousedown", on_mousedown);
 		$("#" + id).on("mouseup", on_mouseup);
+	};
+	var _wrapperFocusHandler = function (e) {
+			fireEventIfExist("focus");
+	};
+	var _wrapperBlurHandler = function (e) {
+			fireEventIfExist("blur");
 	};
 	//after create
 	var _fixedForList = function () {
@@ -834,9 +851,12 @@ function dd(element, settings) {
 		};		
 	};
 	var _showFilterBox = function () {
+		var id = _getPostID("postID");
 		var tid = _getPostID("postTitleTextID");
 		if ($("#" + tid + ":hidden").length > 0 && _controlHolded == false) {
 			$("#" + tid + ":hidden").show().val("");
+			//blur the wrapper without triggering the handler
+			_triggerBypassingHandler(id, "blur", _wrapperBlurHandler);
 			getElement(tid).focus();
 		};
 	};
@@ -977,15 +997,14 @@ function dd(element, settings) {
 		if (has_handler(evt_n).hasEvent === true) {
 			if (has_handler(evt_n).byElement === true) {
 				getElement(_element)["on" + evt_n]();
-			};
-			if (has_handler(evt_n).byJQuery === true) {
+			} else if (has_handler(evt_n).byJQuery === true) {
 				switch (evt_n) {
 					case "keydown":
 					case "keyup":
 						//key down/up will check later
 						break;
 					default:
-						$("#" + _element).trigger(evt_n);
+						$("#" + _element).triggerHandler(evt_n);
 						break;
 				};
 			};
