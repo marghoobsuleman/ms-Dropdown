@@ -597,12 +597,13 @@ function dd(element, settings) {
 		$("#" + childid + " li." + _styles.enabled).off("mouseup");
 	};
 	var _triggerBypassingHandler = function (id, evt_n, handler) {
-		$(getElement(id)).off(evt_n, handler);
-		$(getElement(id)).trigger(evt_n);
-		$(getElement(id)).on(evt_n, handler);
+		$("#" + id).off(evt_n, handler);
+		$("#" + id).trigger(evt_n);
+		$("#" + id).on(evt_n, handler);
 	};
 	var _applyEvents = function () {
 		var id = _getPostID("postID");
+		var tid = _getPostID("postTitleTextID");
 		var childid = _getPostID("postChildID");		
 		$("#" + id).on(_settings.event, function (e) {			
 			if (_isDisabled === true) return false;
@@ -628,7 +629,7 @@ function dd(element, settings) {
 		});
 		$("#" + id).on("focus", _wrapperFocusHandler);
 		$("#" + id).on("blur", _wrapperBlurHandler);
-		$("#" + _getPostID("postTitleTextID")).on("blur", function (e) {
+		$("#" + tid).on("blur", function (e) {
 			//return focus to the wrapper without triggering the handler
 			_triggerBypassingHandler(id, "focus", _wrapperFocusHandler);
 		});
@@ -641,10 +642,10 @@ function dd(element, settings) {
 		$("#" + id).on("mouseup", on_mouseup);
 	};
 	var _wrapperFocusHandler = function (e) {
-			fireEventIfExist("focus");
+		fireEventIfExist("focus");
 	};
 	var _wrapperBlurHandler = function (e) {
-			fireEventIfExist("blur");
+		fireEventIfExist("blur");
 	};
 	//after create
 	var _fixedForList = function () {
@@ -842,11 +843,9 @@ function dd(element, settings) {
 			if ($("#" + childid + " li:visible").length <= _settings.visibleRows) {
 				_childHeight(-1); //set autoheight
 			};
-			if (items.length > 0) {
-				if (!_isList || !_isMultiple) {
-					$("#" + childid + " ." + _styles.selected).removeClass(_styles.selected);
-					$(items[0]).addClass(_styles.selected);
-				};
+			if (items.length > 0 && !_isList || !_isMultiple) {
+				$("#" + childid + " ." + _styles.selected).removeClass(_styles.selected);
+				$(items[0]).addClass(_styles.selected);
 			};
 		};		
 	};
