@@ -253,6 +253,7 @@ function dd(element, settings) {
 		} else {
 			$("#"+hidid).css({height: 0,overflow: 'hidden',position: 'absolute'});
 		};
+		getElement(_element).tabIndex = -1;
 	};
 	var _createWrapper = function () {
 		var obj = {
@@ -265,6 +266,7 @@ function dd(element, settings) {
 			obj.style = obj.style + "" + styles;
 		};
 		obj.id = _getPostID("postID");
+		obj.tabIndex = getElement(_element).tabIndex;
 		var oDiv = _createElement("div", obj);
 		return oDiv;
 	};
@@ -594,8 +596,14 @@ function dd(element, settings) {
 		$("#" + childid + " li." + _styles.enabled).off("mousedown");
 		$("#" + childid + " li." + _styles.enabled).off("mouseup");
 	};
+	var _triggerBypassingHandler = function (id, evt_n, handler) {
+		$("#" + id).off(evt_n, handler);
+		$("#" + id).trigger(evt_n);
+		$("#" + id).on(evt_n, handler);
+	};
 	var _applyEvents = function () {
 		var id = _getPostID("postID");
+		var tid = _getPostID("postTitleTextID");
 		var childid = _getPostID("postChildID");		
 		$("#" + id).on(_settings.event, function (e) {			
 			if (_isDisabled === true) return false;
@@ -605,6 +613,26 @@ function dd(element, settings) {
 			e.stopPropagation();
 			_open(e);
 		});
+		$("#" + id).on("keydown", function (e) {			
+			var k = e.which;
+			if (!_isOpen && (k == ENTER || k == UP_ARROW || k == DOWN_ARROW ||
+				k == LEFT_ARROW || k == RIGHT_ARROW ||
+				(k >= ALPHABETS_START && !_isList))) {
+				_open(e);
+				if (k >= ALPHABETS_START) {
+					_showFilterBox();
+				} else {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+				};
+			};
+		});
+		$("#" + id).on("focus", _wrapperFocusHandler);
+		$("#" + id).on("blur", _wrapperBlurHandler);
+		$("#" + tid).on("blur", function (e) {
+			//return focus to the wrapper without triggering the handler
+			_triggerBypassingHandler(id, "focus", _wrapperFocusHandler);
+		});
 		_applyChildEvents();		
 		$("#" + id).on("dblclick", on_dblclick);
 		$("#" + id).on("mousemove", on_mousemove);
@@ -612,6 +640,12 @@ function dd(element, settings) {
 		$("#" + id).on("mouseleave", on_mouseout);
 		$("#" + id).on("mousedown", on_mousedown);
 		$("#" + id).on("mouseup", on_mouseup);
+	};
+	var _wrapperFocusHandler = function (e) {
+		fireEventIfExist("focus");
+	};
+	var _wrapperBlurHandler = function (e) {
+		fireEventIfExist("blur");
 	};
 	//after create
 	var _fixedForList = function () {
@@ -805,16 +839,23 @@ function dd(element, settings) {
 			_childHeight(_childHeight());
 		} else {
 			$("#" + childid + " li").hide();
-			$("#" + childid + " li:Contains('" + sText + "')").show();	
+			var items = $("#" + childid + " li:Contains('" + sText + "')").show();
 			if ($("#" + childid + " li:visible").length <= _settings.visibleRows) {
 				_childHeight(-1); //set autoheight
+			};
+			if (items.length > 0 && !_isList || !_isMultiple) {
+				$("#" + childid + " ." + _styles.selected).removeClass(_styles.selected);
+				$(items[0]).addClass(_styles.selected);
 			};
 		};		
 	};
 	var _showFilterBox = function () {
+		var id = _getPostID("postID");
 		var tid = _getPostID("postTitleTextID");
 		if ($("#" + tid + ":hidden").length > 0 && _controlHolded == false) {
 			$("#" + tid + ":hidden").show().val("");
+			//blur the wrapper without triggering the handler
+			_triggerBypassingHandler(id, "blur", _wrapperBlurHandler);
 			getElement(tid).focus();
 		};
 	};
@@ -955,15 +996,14 @@ function dd(element, settings) {
 		if (has_handler(evt_n).hasEvent === true) {
 			if (has_handler(evt_n).byElement === true) {
 				getElement(_element)["on" + evt_n]();
-			};
-			if (has_handler(evt_n).byJQuery === true) {
+			} else if (has_handler(evt_n).byJQuery === true) {
 				switch (evt_n) {
 					case "keydown":
 					case "keyup":
 						//key down/up will check later
 						break;
 					default:
-						$("#" + _element).trigger(evt_n);
+						$("#" + _element).triggerHandler(evt_n);
 						break;
 				};
 			};
@@ -1138,7 +1178,9 @@ function dd(element, settings) {
 		//rest some old stuff
 		_hideFilterBox();
 		_childHeight(_childHeight()); //its needed after filter applied
-		$("#" + childid).css({zIndex:1})		
+		$("#" + childid).css({zIndex:1});
+		//update the title in case the user clicked outside
+		_updateTitleUI(getElement(_element).selectedIndex);
 	};
 	/*********************** </layout> *************************************/	
 	var _mergeAllProp = function () {
@@ -1458,6 +1500,7 @@ function dd(element, settings) {
 		var hidid = _getPostID("postElementHolder");
 		var id = _getPostID("postID");
 		$("#" + id + ", #" + id + " *").off();
+		getElement(_element).tabIndex = getElement(id).tabIndex;
 		$("#" + id).remove();
 		$("#" + _element).parent().replaceWith($("#" + _element));		
 		$("#" + _element).data("dd", null);
