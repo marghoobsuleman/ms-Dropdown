@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Javascript image dropdown - multiple skin</title>
 <link rel="stylesheet" href="css/sample.css" />
-<script src="../js/jquery/jquery-1.8.2.min.js"></script>
+<script src="../js/jquery/jquery-1.9.0.min.js"></script>
 
 <!-- <msdropdown> -->
 <link rel="stylesheet" type="text/css" href="../css/msdropdown/dd.css" />
@@ -64,7 +64,25 @@
   <option  name="two" value="PrototypeCombobox" title="../images/msdropdown/skin2/icon-ok.gif">Prototype Combobox</option>
   <option value="jQuery Tabs" title="../images/msdropdown/skin2/icon-ok.gif">jQuery Tabs</option>
   <option value="Common Accordion" title="../images/msdropdown/skin2/icon-ok.gif">Common Accordion</option>
-</select>
+</select>&nbsp;
+
+<div style="clear:both">
+<p>Flat corner - (No rounded corner)</p>
+<select style="width:200px" class="tech" name="flat" id="flat">
+      <option value="calendar" data-image="../images/msdropdown/icons/icon_calendar.gif">Calendar</option>
+      <option value="shopping_cart" data-image="../images/msdropdown/icons/icon_cart.gif">Shopping Cart</option>
+      <option value="cd" data-image="../images/msdropdown/icons/icon_cd.gif" name="cd">CD</option>
+      <option value="email"  data-image="../images/msdropdown/icons/icon_email.gif">Email</option>
+      <option value="faq" data-image="../images/msdropdown/icons/icon_faq.gif">FAQ</option>
+      <option value="games" data-image="../images/msdropdown/icons/icon_games.gif">Games</option>
+      <option value="music" data-image="../images/msdropdown/icons/icon_music.gif">Music</option>
+      <option value="phone" data-image="../images/msdropdown/icons/icon_phone.gif">Phone</option>
+      <option value="graph" data-image="../images/msdropdown/icons/icon_sales.gif">Graph</option>
+      <option value="secured" data-image="../images/msdropdown/icons/icon_secure.gif">Secured</option>
+      <option value="video" data-image="../images/msdropdown/icons/icon_video.gif">Video</option>
+      <option value="cd" data-image="../images/msdropdown/icons/icon_cd.gif" name="cd">CD</option>
+    </select>
+</div>    
     </td>
   </tr>
   <tr>
@@ -88,6 +106,7 @@
 $(document).ready(function(e) {
 	$("#tech").msDropdown();
 	$("#mycomp").msDropdown({mainCSS:'blue'}); //you dont have to pass here if you have in select element- data-maincss="blue"
+	$("#flat").msDropdown({roundedCorner:false}); //rounded corner is off now
 });
 &lt;/script>    
 </pre>
@@ -111,7 +130,7 @@ $(document).ready(function(e) {
 $(document).ready(function(e) {
 	$("#tech").msDropdown(); //no need to pass main css name - it will use default theme
 	$("#mycomp").msDropdown({mainCSS:'blue'}); //you dont have to pass here if you have in select element- data-maincss="blue"
-	
+	$("#flat").msDropdown({roundedCorner:false});
 //no use
 	try {
 		var pages = $("#pages").msDropdown({on:{change:function(data, ui) {

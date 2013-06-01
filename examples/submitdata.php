@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Samples</title>
 <link rel="stylesheet" href="css/sample.css" />
-<script src="../js/jquery/jquery-1.8.2.min.js"></script>
+<script src="../js/jquery/jquery-1.9.0.min.js"></script>
 <!-- <msdropdown> -->
 <link rel="stylesheet" type="text/css" href="../css/msdropdown/dd.css" />
 <script src="../js/msdropdown/jquery.dd.min.js"></script>

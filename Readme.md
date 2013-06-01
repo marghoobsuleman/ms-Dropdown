@@ -1,4 +1,15 @@
-<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.3" />
+<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.40" />
+
+### Can someone please create a help doc for this plugin? - Thanks in advance
+
+### v3.4 updates: 31 May, 2013
+- refresh method is back. you can refresh your dropdown to update the UI and value with the original dropdown or by the msdropdown object. 
+  i.e: $("#dropdownid").msDropdown().data("dd").refresh(); //or
+	document.getElementById("dropdownid").refresh();
+- removed underscore from the all the variables and methods name - for the sake of jslint
+- reverseMode - reverseMode settings param is true... When you update your original dropdown it will update the msdropdown UI and value. This is usefull when you use knockoutjs or other library
+- Now you can set open direction to always down by settings params in settings or data {openDirection:"alwaysdown"}
+
 ### v3.3 updates: 02 Feb, 2013
 - $.browser - jQuery 1.9 version fixed
 - Keyboard navigation issue has been fixed

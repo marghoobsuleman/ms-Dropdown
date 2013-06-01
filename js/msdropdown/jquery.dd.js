@@ -1,8 +1,8 @@
 // MSDropDown - jquery.dd.js
 // author: Marghoob Suleman - http://www.marghoobsuleman.com/
-// Date: 10 Nov, 2012
-// Version: 3.3
-// Revision: 22
+// Date: 10 Nov, 2012 
+// Version: 3.4
+// Revision: 23
 // web: www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -10,8 +10,8 @@
 */
 var msBeautify = msBeautify || {};
 (function ($) {
-msBeautify = {
-	version: {msDropdown:'3.3'},
+	msBeautify = {
+	version: {msDropdown:'3.4'},
 	author: "Marghoob Suleman",
 	counter: 20,
 	debug: function (v) {
@@ -35,8 +35,8 @@ msBeautify = {
 	}
 };
 
-$.msDropDown = {};
-$.msDropdown = {};
+$.msDropDown = {}; //Legacy
+$.msDropdown = {}; //camelCaps
 $.extend(true, $.msDropDown, msBeautify);
 $.extend(true, $.msDropdown, msBeautify);
 // make compatibiliy with old and new jquery
@@ -51,7 +51,7 @@ if (typeof $.expr.createPseudo === 'function') {
 }
 //dropdown class
 function dd(element, settings) {
-	var _settings = $.extend(true,{byJson: {data: null, selectedIndex: 0, name: null, size: 0, multiple: false, width: 250},
+	var settings = $.extend(true,{byJson: {data: null, selectedIndex: 0, name: null, size: 0, multiple: false, width: 250},
 		mainCSS: 'dd',
 		height: 120, //not using currently
 		visibleRows: 7,
@@ -61,7 +61,7 @@ function dd(element, settings) {
 		useSprite: false,
 		animStyle: 'slideDown',
 		event:'click',
-		openDirection: 'auto', //auto || alwaysUp
+		openDirection: 'auto', //auto || alwaysUp || alwaysDown
 		jsonTitle: true,
 		style: '',
 		disabledOpacity: 0.7,
@@ -71,71 +71,81 @@ function dd(element, settings) {
 		checkboxNameSuffix:'_mscheck',
 		append:'',
 		prepend:'',
+		reverseMode:true, //it will update the msdropdown UI/value if you update the original dropdown - will be usefull if are using knockout.js or playing with original dropdown
+		roundedCorner:true,
 		on: {create: null,open: null,close: null,add: null,remove: null,change: null,blur: null,click: null,dblclick: null,mousemove: null,mouseover: null,mouseout: null,focus: null,mousedown: null,mouseup: null}
 		}, settings);								  
-	var _this = this; //this class	 
-	var _holderId = {postElementHolder: '_msddHolder', postID: '_msdd', postTitleID: '_title',postTitleTextID: '_titleText', postChildID: '_child'};
-	var _styles = {dd:_settings.mainCSS, ddTitle: 'ddTitle', arrow: 'arrow arrowoff', ddChild: 'ddChild', ddTitleText: 'ddTitleText',disabled: 'disabled', enabled: 'enabled', ddOutOfVision: 'ddOutOfVision', borderTop: 'borderTop', noBorderTop: 'noBorderTop', selected: 'selected', divider: 'divider', optgroup: "optgroup", optgroupTitle: "optgroupTitle", description: "description", label: "ddlabel",hover: 'hover',disabledAll: 'disabledAll'};
-	var _styles_i = {li: '_msddli_',borderRadiusTp: 'borderRadiusTp',ddChildMore: 'border shadow',fnone: "fnone"};
-	var _isList = false, _isMultiple=false,_isDisabled=false, _cacheElement = {}, _element, _orginial = {}, _isOpen=false;
+	var $this = this; //this class	 
+	var holderId = {postElementHolder: '_msddHolder', postID: '_msdd', postTitleID: '_title',postTitleTextID: '_titleText', postChildID: '_child'};
+	var css = {dd:settings.mainCSS, ddTitle: 'ddTitle', arrow: 'arrow arrowoff', ddChild: 'ddChild', ddTitleText: 'ddTitleText',disabled: 'disabled', enabled: 'enabled', ddOutOfVision: 'ddOutOfVision', borderTop: 'borderTop', noBorderTop: 'noBorderTop', selected: 'selected', divider: 'divider', optgroup: "optgroup", optgroupTitle: "optgroupTitle", description: "description", label: "ddlabel",hover: 'hover',disabledAll: 'disabledAll'};
+	var css_i = {li: '_msddli_',borderRadiusTp: 'borderRadiusTp',ddChildMore: 'border shadow',fnone: "fnone"};
+	var isList = false, isMultiple=false,isDisabled=false, cacheElement = {}, element, orginial = {}, isOpen=false;
 	var DOWN_ARROW = 40, UP_ARROW = 38, LEFT_ARROW=37, RIGHT_ARROW=39, ESCAPE = 27, ENTER = 13, ALPHABETS_START = 47, SHIFT=16 , CONTROL = 17;
-	var _shiftHolded=false, _controlHolded=false,_lastTarget=null,_forcedTrigger=false, _oldSelected, _isCreated = false;
-	var _doc = document, _ua = window.navigator.userAgent, _isIE = _ua.match(/msie/i);
+	var shiftHolded=false, controlHolded=false,lastTarget=null,forcedTrigger=false, oldSelected, isCreated = false;
+	var doc = document, ua = window.navigator.userAgent, isIE = ua.match(/msie/i);
+	settings.reverseMode = settings.reverseMode.toString();
+	settings.roundedCorner = settings.roundedCorner.toString();
 	var msieversion = function()
    	{      
-      var msie = _ua.indexOf("MSIE");
+      var msie = ua.indexOf("MSIE");
       if ( msie > 0 ) {      // If Internet Explorer, return version number
-         return parseInt (_ua.substring (msie+5, _ua.indexOf (".", msie)));
+         return parseInt (ua.substring (msie+5, ua.indexOf (".", msie)));
 	  } else {                // If another browser, return 0
          return 0;
 	  };
    	};
-	var _checkDataSetting = function() {
-		_settings.mainCSS = $("#"+_element).data("maincss") || _settings.mainCSS;
-		_settings.visibleRows = $("#"+_element).data("visiblerows") || _settings.visibleRows;
-		if($("#"+_element).data("showicon")==false) {_settings.showIcon = $("#"+_element).data("showicon");};
-		_settings.useSprite = $("#"+_element).data("usesprite") || _settings.useSprite;
-		_settings.animStyle = $("#"+_element).data("animstyle") || _settings.animStyle;
-		_settings.event = $("#"+_element).data("event") || _settings.event;
-		_settings.openDirection = $("#"+_element).data("opendirection") || _settings.openDirection;
-		_settings.jsonTitle = $("#"+_element).data("jsontitle") || _settings.jsonTitle;
-		_settings.disabledOpacity = $("#"+_element).data("disabledopacity") || _settings.disabledOpacity;
-		_settings.childWidth = $("#"+_element).data("childwidth") || _settings.childWidth;
-		_settings.enableCheckbox = $("#"+_element).data("enablecheckbox") || _settings.enableCheckbox;
-		_settings.checkboxNameSuffix = $("#"+_element).data("checkboxnamesuffix") || _settings.checkboxNameSuffix;
-		_settings.append = $("#"+_element).data("append") || _settings.append;
-		_settings.prepend = $("#"+_element).data("prepend") || _settings.prepend;		
+	var checkDataSetting = function() {
+		settings.mainCSS = $("#"+element).data("maincss") || settings.mainCSS;
+		settings.visibleRows = $("#"+element).data("visiblerows") || settings.visibleRows;
+		if($("#"+element).data("showicon")==false) {settings.showIcon = $("#"+element).data("showicon");};
+		settings.useSprite = $("#"+element).data("usesprite") || settings.useSprite;
+		settings.animStyle = $("#"+element).data("animstyle") || settings.animStyle;
+		settings.event = $("#"+element).data("event") || settings.event;
+		settings.openDirection = $("#"+element).data("opendirection") || settings.openDirection;
+		settings.jsonTitle = $("#"+element).data("jsontitle") || settings.jsonTitle;
+		settings.disabledOpacity = $("#"+element).data("disabledopacity") || settings.disabledOpacity;
+		settings.childWidth = $("#"+element).data("childwidth") || settings.childWidth;
+		settings.enableCheckbox = $("#"+element).data("enablecheckbox") || settings.enableCheckbox;
+		settings.checkboxNameSuffix = $("#"+element).data("checkboxnamesuffix") || settings.checkboxNameSuffix;
+		settings.append = $("#"+element).data("append") || settings.append;
+		settings.prepend = $("#"+element).data("prepend") || settings.prepend;
+		settings.reverseMode = $("#"+element).data("reversemode") || settings.reverseMode;
+		settings.roundedCorner = $("#"+element).data("roundedcorner") || settings.roundedCorner;
+		
+		//make string
+		settings.reverseMode = settings.reverseMode.toString();
+		settings.roundedCorner = settings.roundedCorner.toString();
 	};	
 	var getElement = function(ele) {
-		if (_cacheElement[ele] === undefined) {
-			_cacheElement[ele] = _doc.getElementById(ele);
+		if (cacheElement[ele] === undefined) {
+			cacheElement[ele] = doc.getElementById(ele);
 		}
-		return _cacheElement[ele];
+		return cacheElement[ele];
 	}; 	
-	var _getIndex = function(opt) {
-		var childid = _getPostID("postChildID"); 
-		return $("#"+childid + " li."+_styles_i.li).index(opt);
+	var getIndex = function(opt) {
+		var childid = getPostID("postChildID"); 
+		return $("#"+childid + " li."+css_i.li).index(opt);
 	};
-	var _createByJson = function() {
-		if (_settings.byJson.data) {
+	var createByJson = function() {
+		if (settings.byJson.data) {
 				var validData = ["description","image",  "title"];
 				try {
 					if (!element.id) {
 						element.id = "dropdown"+msBeautify.counter;
 					};
-					_settings.byJson.data = eval(_settings.byJson.data);
+					settings.byJson.data = eval(settings.byJson.data);
 					//change element
 					var id = "msdropdown"+(msBeautify.counter++);
 					var obj = {};
 					obj.id = id;
-					obj.name = _settings.byJson.name || element.id; //its name
-					if (_settings.byJson.size>0) {
-						obj.size = _settings.byJson.size;
+					obj.name = settings.byJson.name || element.id; //its name
+					if (settings.byJson.size>0) {
+						obj.size = settings.byJson.size;
 					};
-					obj.multiple = _settings.byJson.multiple;
-					var oSelect = _createElement("select", obj);
-					for(var i=0;i<_settings.byJson.data.length;i++) {
-						var current = _settings.byJson.data[i];
+					obj.multiple = settings.byJson.multiple;
+					var oSelect = createElement("select", obj);
+					for(var i=0;i<settings.byJson.data.length;i++) {
+						var current = settings.byJson.data[i];
 						var opt = new Option(current.text, current.value);
 						for(var p in current) { 
 							if (p.toLowerCase() != 'text') { 
@@ -146,8 +156,8 @@ function dd(element, settings) {
 						oSelect.options[i] = opt;
 					};
 					getElement(element.id).appendChild(oSelect);
-					oSelect.selectedIndex = _settings.byJson.selectedIndex;
-					$(oSelect).css({width: _settings.byJson.width+'px'});
+					oSelect.selectedIndex = settings.byJson.selectedIndex;
+					$(oSelect).css({width: settings.byJson.width+'px'});
 					//now change element for access other things
 					element = oSelect;
 				} catch(e) {
@@ -155,43 +165,53 @@ function dd(element, settings) {
 				};
 		};			
 	};
-	var _construct = function() {		
+	var init = function() {		
 		 //set properties
-		 _createByJson();
+		 createByJson();
 		if (!element.id) {
 			element.id = "msdrpdd"+(msBeautify.counter++);
 		};						
-		_element = element.id;
-		_this._element = _element;
-		_checkDataSetting();		
-		_isDisabled = getElement(_element).disabled;
-		var useCheckbox = _settings.enableCheckbox;
-		if(Boolean(useCheckbox)===true) {
-			getElement(_element).multiple = true;
-			_settings.enableCheckbox = true;
+		element = element.id;
+		$this.element = element;
+		checkDataSetting();		
+		isDisabled = getElement(element).disabled;
+		var useCheckbox = settings.enableCheckbox;
+		if(useCheckbox.toString()==="true") {
+			getElement(element).multiple = true;
+			settings.enableCheckbox = true;
 		};
-		_isList = (getElement(_element).size>1 || getElement(_element).multiple==true) ? true : false;
-		//trace("_isList "+_isList);
-		if (_isList) {_isMultiple = getElement(_element).multiple;};			
-		_mergeAllProp();		
+		isList = (getElement(element).size>1 || getElement(element).multiple==true) ? true : false;
+		//trace("isList "+isList);
+		if (isList) {isMultiple = getElement(element).multiple;};			
+		mergeAllProp();		
 		//create layout
-		_createLayout();		
+		createLayout();		
 		//set ui prop
-		_updateProp("uiData", _getDataAndUI());
-		_updateProp("selectedOptions", $("#"+_element +" option:selected"));
-		var childid = _getPostID("postChildID");
-		_oldSelected = $("#" + childid + " li." + _styles.selected);
+		updateProp("uiData", getDataAndUI());
+		updateProp("selectedOptions", $("#"+element +" option:selected"));
+		var childid = getPostID("postChildID");
+		oldSelected = $("#" + childid + " li." + css.selected);
 		
+		if(settings.reverseMode==="true") {
+			$("#"+element).on("change", function() {
+				setValue(this.selectedIndex);
+			});
+		};
+		//add refresh method
+		getElement(element).refresh = function(e) {
+			 $("#"+element).msDropdown().data("dd").refresh();
+		};
+
 	 };	
 	 /********************************************************************************************/	
-	var _getPostID = function (id) {
-		return _element+_holderId[id];
+	var getPostID = function (id) {
+		return element+holderId[id];
 	};
-	var _getInternalStyle = function(ele) {		 
+	var getInternalStyle = function(ele) {		 
 		 var s = (ele.style === undefined) ? "" : ele.style.cssText;
 		 return s;
 	};
-	var _parseOption = function(opt) {
+	var parseOption = function(opt) {
 		var imagePath = '', title ='', description='', value=-1, text='', className='', imagecss = '';
 		if (opt !== undefined) {
 			var attrTitle = opt.title || "";
@@ -199,13 +219,13 @@ function dd(element, settings) {
 			if (attrTitle!="") {
 				var reg = /^\{.*\}$/;
 				var isJson = reg.test(attrTitle);
-				if (isJson && _settings.jsonTitle) {
+				if (isJson && settings.jsonTitle) {
 					var obj =  eval("["+attrTitle+"]");	
 				};				 
-				title = (isJson && _settings.jsonTitle) ? obj[0].title : title;
-				description = (isJson && _settings.jsonTitle) ? obj[0].description : description;
-				imagePath = (isJson && _settings.jsonTitle) ? obj[0].image : attrTitle;
-				imagecss = (isJson && _settings.jsonTitle) ? obj[0].imagecss : imagecss;
+				title = (isJson && settings.jsonTitle) ? obj[0].title : title;
+				description = (isJson && settings.jsonTitle) ? obj[0].description : description;
+				imagePath = (isJson && settings.jsonTitle) ? obj[0].image : attrTitle;
+				imagecss = (isJson && settings.jsonTitle) ? obj[0].imagecss : imagecss;
 			};
 
 			text = opt.text || '';
@@ -221,8 +241,8 @@ function dd(element, settings) {
 		var o = {image: imagePath, title: title, description: description, value: value, text: text, className: className, imagecss:imagecss};
 		return o;
 	};	 
-	var _createElement = function(nm, attr, html) {
-		var tag = _doc.createElement(nm);
+	var createElement = function(nm, attr, html) {
+		var tag = doc.createElement(nm);
 		if (attr) {
 		 for(var i in attr) {
 			 switch(i) {
@@ -242,67 +262,71 @@ function dd(element, settings) {
 	};
 	 /********************************************************************************************/
 	  /*********************** <layout> *************************************/
-	var _hideOriginal = function() {
-		var hidid = _getPostID("postElementHolder");
+	var hideOriginal = function() {
+		var hidid = getPostID("postElementHolder");
 		if ($("#"+hidid).length==0) {			 
-			var obj = {style: 'height: 0px;overflow: hidden;position: absolute;',className: _styles.ddOutOfVision};	
+			var obj = {style: 'height: 0px;overflow: hidden;position: absolute;',className: css.ddOutOfVision};	
 			obj.id = hidid;
-			var oDiv = _createElement("div", obj);	
-			$("#"+_element).after(oDiv);
-			$("#"+_element).appendTo($("#"+hidid));
+			var oDiv = createElement("div", obj);	
+			$("#"+element).after(oDiv);
+			$("#"+element).appendTo($("#"+hidid));
 		} else {
 			$("#"+hidid).css({height: 0,overflow: 'hidden',position: 'absolute'});
 		};
+		getElement(element).tabIndex = -1;
 	};
-	var _createWrapper = function () {
+	var createWrapper = function () {
+		var brdRds = (settings.roundedCorner == "true") ? " borderRadius" : "";
 		var obj = {
-			className: _styles.dd + " ddcommon borderRadius"
+			className: css.dd + " ddcommon"+brdRds
 		};
-		var styles = _getInternalStyle(getElement(_element));
-		var w = $("#" + _element).outerWidth();
+		var intcss = getInternalStyle(getElement(element));
+		var w = $("#" + element).outerWidth();
 		obj.style = "width: " + w + "px;";
-		if (styles.length > 0) {
-			obj.style = obj.style + "" + styles;
+		if (intcss.length > 0) {
+			obj.style = obj.style + "" + intcss;
 		};
-		obj.id = _getPostID("postID");
-		var oDiv = _createElement("div", obj);
+		obj.id = getPostID("postID");
+		obj.tabIndex = getElement(element).tabIndex;
+		var oDiv = createElement("div", obj);
 		return oDiv;
 	};
-	var _createTitle = function () {
+	var createTitle = function () {
 		var selectedOption;
-		if(getElement(_element).selectedIndex>=0) {
-			selectedOption = getElement(_element).options[getElement(_element).selectedIndex];
+		if(getElement(element).selectedIndex>=0) {
+			selectedOption = getElement(element).options[getElement(element).selectedIndex];
 		} else {
 			selectedOption = {value:'', text:''};
 		}
 		var spriteClass = "", selectedClass = "";
 		//check sprite
-		var useSprite = $("#"+_element).data("usesprite");
-		if(useSprite) { _settings.useSprite = useSprite; };
-		if (_settings.useSprite != false) {
-			spriteClass = " " + _settings.useSprite;
+		var useSprite = $("#"+element).data("usesprite");
+		if(useSprite) { settings.useSprite = useSprite; };
+		if (settings.useSprite != false) {
+			spriteClass = " " + settings.useSprite;
 			selectedClass = " " + selectedOption.className;
 		};
-		var oTitle = _createElement("div", {className: _styles.ddTitle + spriteClass + " " + _styles_i.borderRadiusTp});
+		var brdRdsTp = (settings.roundedCorner == "true") ? " "+css_i.borderRadiusTp : "" ;
+		var oTitle = createElement("div", {className: css.ddTitle + spriteClass + brdRdsTp});
 		//divider
-		var oDivider = _createElement("span", {className: _styles.divider});
+		var oDivider = createElement("span", {className: css.divider});
 		//arrow
-		var oArrow = _createElement("span", {className: _styles.arrow});
+		var oArrow = createElement("span", {className: css.arrow});
 		//title Text
-		var titleid = _getPostID("postTitleID");
-		var oTitleText = _createElement("span", {className: _styles.ddTitleText + selectedClass, id: titleid});
+		var titleid = getPostID("postTitleID");
+		var oTitleText = createElement("span", {className: css.ddTitleText + selectedClass, id: titleid});
 	
-		var parsed = _parseOption(selectedOption);
+		var parsed = parseOption(selectedOption);
 		var arrowPath = parsed.image;
 		var sText = parsed.text || "";		
-		if (arrowPath != "" && _settings.showIcon) {
-			var oIcon = _createElement("img");
+		if (arrowPath != "" && settings.showIcon) {
+			var oIcon = createElement("img");
 			oIcon.src = arrowPath;
 			if(parsed.imagecss!="") {
 				oIcon.className = parsed.imagecss+" ";
 			};
 		};
-		var oTitleText_in = _createElement("span", {className: _styles.label}, sText);
+		var oTitleText_in = createElement("span", {className: css.label}, sText);
 		oTitle.appendChild(oDivider);
 		oTitle.appendChild(oArrow);
 		if (oIcon) {
@@ -310,54 +334,55 @@ function dd(element, settings) {
 		};
 		oTitleText.appendChild(oTitleText_in);
 		oTitle.appendChild(oTitleText);
-		var oDescription = _createElement("span", {className: _styles.description}, parsed.description);
+		var oDescription = createElement("span", {className: css.description}, parsed.description);
 		oTitleText.appendChild(oDescription);
 		return oTitle;
 	};
-	var _createFilterBox = function () {
-		var tid = _getPostID("postTitleTextID");
-		var sText = _createElement("input", {id: tid, type: 'text', value: '', autocomplete: 'off', className: 'text shadow borderRadius', style: 'display: none'});
+	var createFilterBox = function () {
+		var tid = getPostID("postTitleTextID");
+		var brdRds = (settings.roundedCorner == "true") ? "borderRadius" : "";
+		var sText = createElement("input", {id: tid, type: 'text', value: '', autocomplete: 'off', className: 'text shadow '+brdRds, style: 'display: none'});
 		return sText;
 	};
-	var _createChild = function (opt) {
+	var createChild = function (opt) {
 		var obj = {};
-		var styles = _getInternalStyle(opt);
-		if (styles.length > 0) {obj.style = styles; };
-		var css = (opt.disabled) ? _styles.disabled : _styles.enabled;
-		css = (opt.selected) ? (css + " " + _styles.selected) : css;
-		css = css + " " + _styles_i.li;
-		obj.className = css;
-		if (_settings.useSprite != false) {
-			obj.className = css + " " + opt.className;
+		var intcss = getInternalStyle(opt);
+		if (intcss.length > 0) {obj.style = intcss; };
+		var css2 = (opt.disabled) ? css.disabled : css.enabled;
+		css2 = (opt.selected) ? (css2 + " " + css.selected) : css2;
+		css2 = css2 + " " + css_i.li;
+		obj.className = css2;
+		if (settings.useSprite != false) {
+			obj.className = css2 + " " + opt.className;
 		};
-		var li = _createElement("li", obj);
-		var parsed = _parseOption(opt);
+		var li = createElement("li", obj);
+		var parsed = parseOption(opt);
 		if (parsed.title != "") {
 			li.title = parsed.title;
 		};
 		var arrowPath = parsed.image;
-		if (arrowPath != "" && _settings.showIcon) {
-			var oIcon = _createElement("img");
+		if (arrowPath != "" && settings.showIcon) {
+			var oIcon = createElement("img");
 			oIcon.src = arrowPath;
 			if(parsed.imagecss!="") {
 				oIcon.className = parsed.imagecss+" ";
 			};
 		};
 		if (parsed.description != "") {
-			var oDescription = _createElement("span", {
-				className: _styles.description
+			var oDescription = createElement("span", {
+				className: css.description
 			}, parsed.description);
 		};
 		var sText = opt.text || "";
-		var oTitleText = _createElement("span", {
-			className: _styles.label
+		var oTitleText = createElement("span", {
+			className: css.label
 		}, sText);
 		//checkbox
-		if(_settings.enableCheckbox===true) {
-			var chkbox = _createElement("input", {
-			type: 'checkbox', name:_element+_settings.checkboxNameSuffix+'[]', value:opt.value||""}); //this can be used for future
+		if(settings.enableCheckbox===true) {
+			var chkbox = createElement("input", {
+			type: 'checkbox', name:element+settings.checkboxNameSuffix+'[]', value:opt.value||""}); //this can be used for future
 			li.appendChild(chkbox);
-			if(_settings.enableCheckbox===true) {
+			if(settings.enableCheckbox===true) {
 				chkbox.checked = (opt.selected) ? true : false;
 			};
 		};
@@ -369,56 +394,56 @@ function dd(element, settings) {
 			li.appendChild(oDescription);
 		} else {
 			if (oIcon) {
-				oIcon.className = oIcon.className+_styles_i.fnone;
+				oIcon.className = oIcon.className+css_i.fnone;
 			};
 		};
-		var oClear = _createElement("div", {className: 'clear'});
+		var oClear = createElement("div", {className: 'clear'});
 		li.appendChild(oClear);
 		return li;
 	};
-	var _createChildren = function () {
-		var childid = _getPostID("postChildID");
-		var obj = {className: _styles.ddChild + " ddchild_ " + _styles_i.ddChildMore, id: childid};
-		if (_isList == false) {
-			obj.style = "z-index: " + _settings.zIndex;
+	var createChildren = function () {
+		var childid = getPostID("postChildID");
+		var obj = {className: css.ddChild + " ddchild_ " + css_i.ddChildMore, id: childid};
+		if (isList == false) {
+			obj.style = "z-index: " + settings.zIndex;
 		} else {
 			obj.style = "z-index:1";
 		};
-		var childWidth = $("#"+_element).data("childwidth") || _settings.childWidth;
+		var childWidth = $("#"+element).data("childwidth") || settings.childWidth;
 		if(childWidth) {
 			obj.style =  (obj.style || "") + ";width:"+childWidth;
 		};		
-		var oDiv = _createElement("div", obj);
-		var ul = _createElement("ul");
-		if (_settings.useSprite != false) {
-			ul.className = _settings.useSprite;
+		var oDiv = createElement("div", obj);
+		var ul = createElement("ul");
+		if (settings.useSprite != false) {
+			ul.className = settings.useSprite;
 		};
-		var allOptions = getElement(_element).children;
+		var allOptions = getElement(element).children;
 		for (var i = 0; i < allOptions.length; i++) {
 			var current = allOptions[i];
 			var li;
 			if (current.nodeName.toLowerCase() == "optgroup") {
 				//create ul
-				li = _createElement("li", {className: _styles.optgroup});
-				var span = _createElement("span", {className: _styles.optgroupTitle}, current.label);
+				li = createElement("li", {className: css.optgroup});
+				var span = createElement("span", {className: css.optgroupTitle}, current.label);
 				li.appendChild(span);
 				var optChildren = current.children;
-				var optul = _createElement("ul");
+				var optul = createElement("ul");
 				for (var j = 0; j < optChildren.length; j++) {
-					var opt_li = _createChild(optChildren[j]);
+					var opt_li = createChild(optChildren[j]);
 					optul.appendChild(opt_li);
 				};
 				li.appendChild(optul);
 			} else {
-				li = _createChild(current);
+				li = createChild(current);
 			};
 			ul.appendChild(li);
 		};
 		oDiv.appendChild(ul);		
 		return oDiv;
 	};
-	var _childHeight = function (val) {
-		var childid = _getPostID("postChildID");
+	var childHeight = function (val) {
+		var childid = getPostID("postChildID");
 		if (val) {
 			if (val == -1) { //auto
 				$("#"+childid).css({height: "auto", overflow: "auto"});
@@ -429,183 +454,209 @@ function dd(element, settings) {
 		};
 		//else return height
 		var iHeight;
-		if (getElement(_element).options.length > _settings.visibleRows) {
+		if (getElement(element).options.length > settings.visibleRows) {
 			var margin = parseInt($("#" + childid + " li:first").css("padding-bottom")) + parseInt($("#" + childid + " li:first").css("padding-top"));
-			if(_settings.rowHeight===0) {
+			if(settings.rowHeight===0) {
 				$("#" + childid).css({visibility:'hidden',display:'block'}); //hack for first child
-				_settings.rowHeight = Math.round($("#" + childid + " li:first").height());
+				settings.rowHeight = Math.round($("#" + childid + " li:first").height());
 				$("#" + childid).css({visibility:'visible'});
-				if(!_isList || _settings.enableCheckbox===true) {
+				if(!isList || settings.enableCheckbox===true) {
 					$("#" + childid).css({display:'none'});
 				};
 			};
-			iHeight = ((_settings.rowHeight + margin) * _settings.visibleRows);
-		} else if (_isList) {
-			iHeight = $("#" + _element).height(); //get height from original element
+			iHeight = ((settings.rowHeight + margin) * settings.visibleRows);
+		} else if (isList) {
+			iHeight = $("#" + element).height(); //get height from original element
 		};		
 		return iHeight;
 	};
-	var _applyChildEvents = function () {
-		var childid = _getPostID("postChildID");
+	var applyChildEvents = function () {
+		var childid = getPostID("postChildID");
 		$("#" + childid).on("click", function (e) {
-			if (_isDisabled === true) return false;
+			if (isDisabled === true) return false;
 			//prevent body click
 			e.preventDefault();
 			e.stopPropagation();
-			if (_isList) {
-				_bind_on_events();
+			if (isList) {
+				bind_on_events();
 			};
 		});
-		$("#" + childid + " li." + _styles.enabled).on("click", function (e) {
+		$("#" + childid + " li." + css.enabled).on("click", function (e) {
 			if(e.target.nodeName.toLowerCase() !== "input") {
-				_close(this);
+				close(this);
 			};
 		});
-		$("#" + childid + " li." + _styles.enabled).on("mousedown", function (e) {
-			if (_isDisabled === true) return false;
-			_oldSelected = $("#" + childid + " li." + _styles.selected);
-			_lastTarget = this;
+		$("#" + childid + " li." + css.enabled).on("mousedown", function (e) {
+			if (isDisabled === true) return false;
+			oldSelected = $("#" + childid + " li." + css.selected);
+			lastTarget = this;
 			e.preventDefault();
 			e.stopPropagation();
 			//select current input
-			if(_settings.enableCheckbox===true) {
+			if(settings.enableCheckbox===true) {
 				if(e.target.nodeName.toLowerCase() === "input") {
-					_controlHolded = true;
+					controlHolded = true;
 				};	
 			};
-			if (_isList === true) {
-				if (_isMultiple) {					
-					if (_shiftHolded === true) {
-						$(this).addClass(_styles.selected);
-						var selected = $("#" + childid + " li." + _styles.selected);
-						var lastIndex = _getIndex(this);
+			if (isList === true) {
+				if (isMultiple) {					
+					if (shiftHolded === true) {
+						$(this).addClass(css.selected);
+						var selected = $("#" + childid + " li." + css.selected);
+						var lastIndex = getIndex(this);
 						if (selected.length > 1) {
-							var items = $("#" + childid + " li." + _styles_i.li);
-							var ind1 = _getIndex(selected[0]);
-							var ind2 = _getIndex(selected[1]);
+							var items = $("#" + childid + " li." + css_i.li);
+							var ind1 = getIndex(selected[0]);
+							var ind2 = getIndex(selected[1]);
 							if (lastIndex > ind2) {
 								ind1 = (lastIndex);
 								ind2 = ind2 + 1;
 							};
 							for (var i = Math.min(ind1, ind2); i <= Math.max(ind1, ind2); i++) {
 								var current = items[i];
-								if ($(current).hasClass(_styles.enabled)) {
-									$(current).addClass(_styles.selected);
+								if ($(current).hasClass(css.enabled)) {
+									$(current).addClass(css.selected);
 								};
 							};
 						};
-					} else if (_controlHolded === true) {
-						$(this).toggleClass(_styles.selected); //toggle
-						if(_settings.enableCheckbox===true) {
+					} else if (controlHolded === true) {
+						$(this).toggleClass(css.selected); //toggle
+						if(settings.enableCheckbox===true) {
 							var checkbox = this.childNodes[0];
 							checkbox.checked = !checkbox.checked; //toggle
 						};
 					} else {
-						$("#" + childid + " li." + _styles.selected).removeClass(_styles.selected);
+						$("#" + childid + " li." + css.selected).removeClass(css.selected);
 						$("#" + childid + " input:checkbox").prop("checked", false);
-						$(this).addClass(_styles.selected);
-						if(_settings.enableCheckbox===true) {
+						$(this).addClass(css.selected);
+						if(settings.enableCheckbox===true) {
 							this.childNodes[0].checked = true;
 						};
 					};					
 				} else {
-					$("#" + childid + " li." + _styles.selected).removeClass(_styles.selected);
-					$(this).addClass(_styles.selected);
+					$("#" + childid + " li." + css.selected).removeClass(css.selected);
+					$(this).addClass(css.selected);
 				};
 				//fire event on mouseup
 			} else {
-				$("#" + childid + " li." + _styles.selected).removeClass(_styles.selected);
-				$(this).addClass(_styles.selected);
+				$("#" + childid + " li." + css.selected).removeClass(css.selected);
+				$(this).addClass(css.selected);
 			};		
 		});
-		$("#" + childid + " li." + _styles.enabled).on("mouseenter", function (e) {
-			if (_isDisabled === true) return false;
+		$("#" + childid + " li." + css.enabled).on("mouseenter", function (e) {
+			if (isDisabled === true) return false;
 			e.preventDefault();
 			e.stopPropagation();
-			if (_lastTarget != null) {
-				if (_isMultiple) {
-					$(this).addClass(_styles.selected);
-					if(_settings.enableCheckbox===true) {
+			if (lastTarget != null) {
+				if (isMultiple) {
+					$(this).addClass(css.selected);
+					if(settings.enableCheckbox===true) {
 						this.childNodes[0].checked = true;
 					};
 				};
 			};
 		});
 	
-		$("#" + childid + " li." + _styles.enabled).on("mouseover", function (e) {
-			if (_isDisabled === true) return false;
-			$(this).addClass(_styles.hover);
+		$("#" + childid + " li." + css.enabled).on("mouseover", function (e) {
+			if (isDisabled === true) return false;
+			$(this).addClass(css.hover);
 		});
-		$("#" + childid + " li." + _styles.enabled).on("mouseout", function (e) {
-			if (_isDisabled === true) return false;
-			$("#" + childid + " li." + _styles.hover).removeClass(_styles.hover);
+		$("#" + childid + " li." + css.enabled).on("mouseout", function (e) {
+			if (isDisabled === true) return false;
+			$("#" + childid + " li." + css.hover).removeClass(css.hover);
 		});
 	
-		$("#" + childid + " li." + _styles.enabled).on("mouseup", function (e) {
-			if (_isDisabled === true) return false;
+		$("#" + childid + " li." + css.enabled).on("mouseup", function (e) {
+			if (isDisabled === true) return false;
 			e.preventDefault();
 			e.stopPropagation();
-			if(_settings.enableCheckbox===true) {
-				_controlHolded = false;
+			if(settings.enableCheckbox===true) {
+				controlHolded = false;
 			};
-			var selected = $("#" + childid + " li." + _styles.selected).length;			
-			_forcedTrigger = (_oldSelected.length != selected || selected == 0) ? true : false;	
-			_fireAfterItemClicked();
-			_unbind_on_events(); //remove old one
-			_bind_on_events();
-			_lastTarget = null;
+			var selected = $("#" + childid + " li." + css.selected).length;			
+			forcedTrigger = (oldSelected.length != selected || selected == 0) ? true : false;	
+			fireAfterItemClicked();
+			unbind_on_events(); //remove old one
+			bind_on_events();
+			lastTarget = null;
 		});
 	
 		/* options events */
-		if (_settings.disabledOptionEvents == false) {
-			$("#" + childid + " li." + _styles_i.li).on("click", function (e) {
-				if (_isDisabled === true) return false;
+		if (settings.disabledOptionEvents == false) {
+			$("#" + childid + " li." + css_i.li).on("click", function (e) {
+				if (isDisabled === true) return false;
 				fireOptionEventIfExist(this, "click");
 			});
-			$("#" + childid + " li." + _styles_i.li).on("mouseenter", function (e) {
-				if (_isDisabled === true) return false;
+			$("#" + childid + " li." + css_i.li).on("mouseenter", function (e) {
+				if (isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mouseenter");
 			});
-			$("#" + childid + " li." + _styles_i.li).on("mouseover", function (e) {
-				if (_isDisabled === true) return false;
+			$("#" + childid + " li." + css_i.li).on("mouseover", function (e) {
+				if (isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mouseover");
 			});
-			$("#" + childid + " li." + _styles_i.li).on("mouseout", function (e) {
-				if (_isDisabled === true) return false;
+			$("#" + childid + " li." + css_i.li).on("mouseout", function (e) {
+				if (isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mouseout");
 			});
-			$("#" + childid + " li." + _styles_i.li).on("mousedown", function (e) {
-				if (_isDisabled === true) return false;
+			$("#" + childid + " li." + css_i.li).on("mousedown", function (e) {
+				if (isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mousedown");
 			});
-			$("#" + childid + " li." + _styles_i.li).on("mouseup", function (e) {
-				if (_isDisabled === true) return false;
+			$("#" + childid + " li." + css_i.li).on("mouseup", function (e) {
+				if (isDisabled === true) return false;
 				fireOptionEventIfExist(this, "mouseup");
 			});
 		};
 	};
-	var _removeChildEvents = function () {
-		var childid = _getPostID("postChildID");
+	var removeChildEvents = function () {
+		var childid = getPostID("postChildID");
 		$("#" + childid).off("click");
-		$("#" + childid + " li." + _styles.enabled).off("mouseenter");
-		$("#" + childid + " li." + _styles.enabled).off("click");
-		$("#" + childid + " li." + _styles.enabled).off("mouseover");
-		$("#" + childid + " li." + _styles.enabled).off("mouseout");
-		$("#" + childid + " li." + _styles.enabled).off("mousedown");
-		$("#" + childid + " li." + _styles.enabled).off("mouseup");
+		$("#" + childid + " li." + css.enabled).off("mouseenter");
+		$("#" + childid + " li." + css.enabled).off("click");
+		$("#" + childid + " li." + css.enabled).off("mouseover");
+		$("#" + childid + " li." + css.enabled).off("mouseout");
+		$("#" + childid + " li." + css.enabled).off("mousedown");
+		$("#" + childid + " li." + css.enabled).off("mouseup");
 	};
-	var _applyEvents = function () {
-		var id = _getPostID("postID");
-		var childid = _getPostID("postChildID");		
-		$("#" + id).on(_settings.event, function (e) {			
-			if (_isDisabled === true) return false;
+	var triggerBypassingHandler = function (id, evt_n, handler) {
+		$("#" + id).off(evt_n, handler);
+		$("#" + id).trigger(evt_n);
+		$("#" + id).on(evt_n, handler);
+	};
+	var applyEvents = function () {
+		var id = getPostID("postID");
+		var tid = getPostID("postTitleTextID");
+		var childid = getPostID("postChildID");		
+		$("#" + id).on(settings.event, function (e) {			
+			if (isDisabled === true) return false;
 			fireEventIfExist("click");
 			//prevent body click
 			e.preventDefault();
 			e.stopPropagation();
-			_open(e);
+			open(e);
 		});
-		_applyChildEvents();		
+		$("#" + id).on("keydown", function (e) {			
+			var k = e.which;
+			if (!isOpen && (k == ENTER || k == UP_ARROW || k == DOWN_ARROW ||
+				k == LEFT_ARROW || k == RIGHT_ARROW ||
+				(k >= ALPHABETS_START && !isList))) {
+				open(e);
+				if (k >= ALPHABETS_START) {
+					showFilterBox();
+				} else {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+				};
+			};
+		});
+		$("#" + id).on("focus", wrapperFocusHandler);
+		$("#" + id).on("blur", wrapperBlurHandler);
+		$("#" + tid).on("blur", function (e) {
+			//return focus to the wrapper without triggering the handler
+			triggerBypassingHandler(id, "focus", wrapperFocusHandler);
+		});
+		applyChildEvents();		
 		$("#" + id).on("dblclick", on_dblclick);
 		$("#" + id).on("mousemove", on_mousemove);
 		$("#" + id).on("mouseenter", on_mouseover);
@@ -613,152 +664,158 @@ function dd(element, settings) {
 		$("#" + id).on("mousedown", on_mousedown);
 		$("#" + id).on("mouseup", on_mouseup);
 	};
+	var wrapperFocusHandler = function (e) {
+		fireEventIfExist("focus");
+	};
+	var wrapperBlurHandler = function (e) {
+		fireEventIfExist("blur");
+	};
 	//after create
-	var _fixedForList = function () {
-		var id = _getPostID("postID");
-		var childid = _getPostID("postChildID");		
-		if (_isList === true && _settings.enableCheckbox===false) {
-			$("#" + id + " ." + _styles.ddTitle).hide();
+	var fixedForList = function () {
+		var id = getPostID("postID");
+		var childid = getPostID("postChildID");		
+		if (isList === true && settings.enableCheckbox===false) {
+			$("#" + id + " ." + css.ddTitle).hide();
 			$("#" + childid).css({display: 'block', position: 'relative'});	
-			//_open();
+			//open();
 		} else {
-			if(_settings.enableCheckbox===false) {
-				_isMultiple = false; //set multiple off if this is not a list
+			if(settings.enableCheckbox===false) {
+				isMultiple = false; //set multiple off if this is not a list
 			};
-			$("#" + id + " ." + _styles.ddTitle).show();
+			$("#" + id + " ." + css.ddTitle).show();
 			$("#" + childid).css({display: 'none', position: 'absolute'});
 			//set value
-			var first = $("#" + childid + " li." + _styles.selected)[0];
-			$("#" + childid + " li." + _styles.selected).removeClass(_styles.selected);
-			var index = _getIndex($(first).addClass(_styles.selected));
-			_setValue(index);
+			var first = $("#" + childid + " li." + css.selected)[0];
+			$("#" + childid + " li." + css.selected).removeClass(css.selected);
+			var index = getIndex($(first).addClass(css.selected));
+			setValue(index);
 		};
-		_childHeight(_childHeight()); //get and set height 
+		childHeight(childHeight()); //get and set height 
 	};
-	var _fixedForDisabled = function () {
-		var id = _getPostID("postID");
-		var opc = (_isDisabled == true) ? _settings.disabledOpacity : 1;
-		if (_isDisabled === true) {
-			$("#" + id).addClass(_styles.disabledAll);
+	var fixedForDisabled = function () {
+		var id = getPostID("postID");
+		var opc = (isDisabled == true) ? settings.disabledOpacity : 1;
+		if (isDisabled === true) {
+			$("#" + id).addClass(css.disabledAll);
 		} else {
-			$("#" + id).removeClass(_styles.disabledAll);
+			$("#" + id).removeClass(css.disabledAll);
 		};
 	};
-	var _fixedSomeUI = function () {
+	var fixedSomeUI = function () {
 		//auto filter
-		var tid = _getPostID("postTitleTextID");
-		$("#" + tid).on("keyup", _applyFilters);
+		var tid = getPostID("postTitleTextID");
+		$("#" + tid).on("keyup", applyFilters);
 		//if is list
-		_fixedForList();
-		_fixedForDisabled();
+		fixedForList();
+		fixedForDisabled();
 	};
-	var _createLayout = function () {		
-		var oDiv = _createWrapper();
-		var oTitle = _createTitle();
+	var createLayout = function () {		
+		var oDiv = createWrapper();
+		var oTitle = createTitle();
 		oDiv.appendChild(oTitle);
 		//auto filter box
-		var oFilterBox = _createFilterBox();
+		var oFilterBox = createFilterBox();
 		oDiv.appendChild(oFilterBox);
 	
-		var oChildren = _createChildren();
+		var oChildren = createChildren();
 		oDiv.appendChild(oChildren);
-		$("#" + _element).after(oDiv);
-		_hideOriginal(); //hideOriginal
-		_fixedSomeUI();
-		_applyEvents();
+		$("#" + element).after(oDiv);
+		hideOriginal(); //hideOriginal
+		fixedSomeUI();
+		applyEvents();
 		
-		var childid = _getPostID("postChildID");
+		var childid = getPostID("postChildID");
 		//append
-		if(_settings.append!='') {
-			$("#" + childid).append(_settings.append);
+		if(settings.append!='') {
+			$("#" + childid).append(settings.append);
 		};
 		//prepend
-		if(_settings.prepend!='') {
-			$("#" + childid).prepend(_settings.prepend);
+		if(settings.prepend!='') {
+			$("#" + childid).prepend(settings.prepend);
 		};		
-		if (typeof _settings.on.create == "function") {
-			_settings.on.create.apply(_this, arguments);
+		if (typeof settings.on.create == "function") {
+			settings.on.create.apply($this, arguments);
 		};
 	};
-	var _selectMutipleOptions = function (bySelected) {
-		var childid = _getPostID("postChildID");
-		var selected = bySelected || $("#" + childid + " li." + _styles.selected); //bySelected or by argument
+	var selectMutipleOptions = function (bySelected) {
+		var childid = getPostID("postChildID");
+		var selected = bySelected || $("#" + childid + " li." + css.selected); //bySelected or by argument
 		for (var i = 0; i < selected.length; i++) {
-			var ind = _getIndex(selected[i]);
-			getElement(_element).options[ind].selected = "selected";
+			var ind = getIndex(selected[i]);
+			getElement(element).options[ind].selected = "selected";
 		};
-		_setValue(selected);
+		setValue(selected);
 	};
-	var _fireAfterItemClicked = function () {
-		//console.log("_fireAfterItemClicked")
-		var childid = _getPostID("postChildID");
-		var selected = $("#" + childid + " li." + _styles.selected);		
-		if (_isMultiple && (_shiftHolded || _controlHolded) || _forcedTrigger) {
-			getElement(_element).selectedIndex = -1; //reset old
+	var fireAfterItemClicked = function () {
+		//console.log("fireAfterItemClicked")
+		var childid = getPostID("postChildID");
+		var selected = $("#" + childid + " li." + css.selected);		
+		if (isMultiple && (shiftHolded || controlHolded) || forcedTrigger) {
+			getElement(element).selectedIndex = -1; //reset old
 		};
 		var index;
 		if (selected.length == 0) {
 			index = -1;
 		} else if (selected.length > 1) {
 			//selected multiple
-			_selectMutipleOptions(selected);
-			//index = $("#" + childid + " li." + _styles.selected);
+			selectMutipleOptions(selected);
+			//index = $("#" + childid + " li." + css.selected);
 			
 		} else {
 			//if one selected
-			index = _getIndex($("#" + childid + " li." + _styles.selected));
+			index = getIndex($("#" + childid + " li." + css.selected));
 		};		
-		if ((getElement(_element).selectedIndex != index || _forcedTrigger) && selected.length<=1) {			
-			_forcedTrigger = false;			
+		if ((getElement(element).selectedIndex != index || forcedTrigger) && selected.length<=1) {			
+			forcedTrigger = false;			
 			var evt = has_handler("change");
-			getElement(_element).selectedIndex = index;	
-			_setValue(index);
+			getElement(element).selectedIndex = index;	
+			setValue(index);
 			//local
-			if (typeof _settings.on.change == "function") {
-				var d = _getDataAndUI();
-				_settings.on.change(d.data, d.ui);
+			if (typeof settings.on.change == "function") {
+				var d = getDataAndUI();
+				settings.on.change(d.data, d.ui);
 			};			
-			$("#" + _element).trigger("change");			
+			$("#" + element).trigger("change");			
 		};
 	};
-	var _setValue = function (index, byvalue) {
+	var setValue = function (index, byvalue) {
 		if (index !== undefined) {
 			var selectedIndex, value, selectedText;
 			if (index == -1) {
 				selectedIndex = -1;
 				value = "";
 				selectedText = "";
-				_updateTitleUI(-1);
+				updateTitleUI(-1);
 			} else {
 				//by index or byvalue
 				if (typeof index != "object") {
-					var opt = getElement(_element).options[index];
-					getElement(_element).selectedIndex = index;
+					var opt = getElement(element).options[index];
+					getElement(element).selectedIndex = index;
 					selectedIndex = index;
-					value = _parseOption(opt);
-					selectedText = (index >= 0) ? getElement(_element).options[index].text : "";
-					_updateTitleUI(undefined, value);
+					value = parseOption(opt);
+					selectedText = (index >= 0) ? getElement(element).options[index].text : "";
+					updateTitleUI(undefined, value);
 					value = value.value; //for bottom
 				} else {
-					//this is multiple or by option					
-					selectedIndex = (byvalue && byvalue.index) || getElement(_element).selectedIndex;
-					value = (byvalue && byvalue.value) || getElement(_element).value;
-					selectedText = (byvalue && byvalue.text) || getElement(_element).options[getElement(_element).selectedIndex].text || "";
-					_updateTitleUI(selectedIndex);
+					//this is multiple or by option
+					selectedIndex = (byvalue && byvalue.index) || getElement(element).selectedIndex;
+					value = (byvalue && byvalue.value) || getElement(element).value;
+					selectedText = (byvalue && byvalue.text) || getElement(element).options[getElement(element).selectedIndex].text || "";
+					updateTitleUI(selectedIndex);
 				};
 			};
-			_updateProp("selectedIndex", selectedIndex);
-			_updateProp("value", value);
-			_updateProp("selectedText", selectedText);
-			_updateProp("children", getElement(_element).children);
-			_updateProp("uiData", _getDataAndUI());
-			_updateProp("selectedOptions", $("#" + _element + " option:selected"));
+			updateProp("selectedIndex", selectedIndex);
+			updateProp("value", value);
+			updateProp("selectedText", selectedText);
+			updateProp("children", getElement(element).children);
+			updateProp("uiData", getDataAndUI());
+			updateProp("selectedOptions", $("#" + element + " option:selected"));
 		};
 	};
 	var has_handler = function (name) {
 		//True if a handler has been added in the html.
 		var evt = {byElement: false, byJQuery: false, hasEvent: false};
-		var obj = $("#" + _element);
+		var obj = $("#" + element);
 		//console.log(name)
 		try {
 			//console.log(obj.prop("on" + name) + " "+name);
@@ -782,130 +839,137 @@ function dd(element, settings) {
 		};
 		return evt;
 	};
-	var _bind_on_events = function () {
-		_unbind_on_events();
-		$("body").on("click", _close);
+	var bind_on_events = function () {
+		unbind_on_events();
+		$("body").on("click", close);
 		//bind more events		 
 		$(document).on("keydown", on_keydown);
 		$(document).on("keyup", on_keyup);
 		//focus will work on this	 		 
 	};
-	var _unbind_on_events = function () {
-		$("body").off("click", _close);
+	var unbind_on_events = function () {
+		$("body").off("click", close);
 		//bind more events
 		$(document).off("keydown", on_keydown);
 		$(document).off("keyup", on_keyup);
 	};
-	var _applyFilters = function () {
-		var childid = _getPostID("postChildID");
-		var tid = _getPostID("postTitleTextID");
+	var applyFilters = function () {
+		var childid = getPostID("postChildID");
+		var tid = getPostID("postTitleTextID");
 		var sText = getElement(tid).value;
 		if (sText.length == 0) {
 			$("#" + childid + " li:hidden").show(); //show if hidden
-			_childHeight(_childHeight());
+			childHeight(childHeight());
 		} else {
 			$("#" + childid + " li").hide();
-			$("#" + childid + " li:Contains('" + sText + "')").show();	
-			if ($("#" + childid + " li:visible").length <= _settings.visibleRows) {
-				_childHeight(-1); //set autoheight
+			var items = $("#" + childid + " li:Contains('" + sText + "')").show();
+			if ($("#" + childid + " li:visible").length <= settings.visibleRows) {
+				childHeight(-1); //set autoheight
+			};
+			if (items.length > 0 && !isList || !isMultiple) {
+				$("#" + childid + " ." + css.selected).removeClass(css.selected);
+				$(items[0]).addClass(css.selected);
 			};
 		};		
 	};
-	var _showFilterBox = function () {
-		var tid = _getPostID("postTitleTextID");
-		if ($("#" + tid + ":hidden").length > 0 && _controlHolded == false) {
+	var showFilterBox = function () {
+		var id = getPostID("postID");
+		var tid = getPostID("postTitleTextID");
+		if ($("#" + tid + ":hidden").length > 0 && controlHolded == false) {
 			$("#" + tid + ":hidden").show().val("");
+			//blur the wrapper without triggering the handler
+			triggerBypassingHandler(id, "blur", wrapperBlurHandler);
 			getElement(tid).focus();
 		};
 	};
-	var _hideFilterBox = function () {
-		var tid = _getPostID("postTitleTextID");
+	var hideFilterBox = function () {
+		var tid = getPostID("postTitleTextID");
 		if ($("#" + tid + ":visible").length > 0) {
 			$("#" + tid + ":visible").hide();
 			getElement(tid).blur();
 		};
 	};
 	var on_keydown = function (evt) {
-		var tid = _getPostID("postTitleTextID");
-		var childid = _getPostID("postChildID");
+		var tid = getPostID("postTitleTextID");
+		var childid = getPostID("postChildID");
 		switch (evt.keyCode) {
 			case DOWN_ARROW:
 			case RIGHT_ARROW:
 				evt.preventDefault();
 				evt.stopPropagation();
-				//_hideFilterBox();
-				_next();				
+				//hideFilterBox();
+				next();				
 				break;
 			case UP_ARROW:
 			case LEFT_ARROW:
 				evt.preventDefault();
 				evt.stopPropagation();
-				//_hideFilterBox();
-				_previous();
+				//hideFilterBox();
+				previous();
 				break;
 			case ESCAPE:
 			case ENTER:
 				evt.preventDefault();
 				evt.stopPropagation();
-				_close();
-				var selected = $("#" + childid + " li." + _styles.selected).length;	
-				_forcedTrigger = (_oldSelected.length != selected || selected == 0) ? true : false;				
-				_fireAfterItemClicked();
-				_unbind_on_events(); //remove old one				
-				_lastTarget = null;			
+				close();
+				var selected = $("#" + childid + " li." + css.selected).length;	
+				forcedTrigger = (oldSelected.length != selected || selected == 0) ? true : false;				
+				fireAfterItemClicked();
+				unbind_on_events(); //remove old one				
+				lastTarget = null;			
 				break;
 			case SHIFT:
-				_shiftHolded = true;
+				shiftHolded = true;
 				break;
 			case CONTROL:
-				_controlHolded = true;
+				controlHolded = true;
 				break;
 			default:
-				if (evt.keyCode >= ALPHABETS_START && _isList === false) {
-					_showFilterBox();
+				if (evt.keyCode >= ALPHABETS_START && isList === false) {
+					showFilterBox();
 				};
 				break;
 		};
-		if (_isDisabled === true) return false;
+		if (isDisabled === true) return false;
 		fireEventIfExist("keydown");
 	};
 	var on_keyup = function (evt) {
 		switch (evt.keyCode) {
 			case SHIFT:
-				_shiftHolded = false;
+				shiftHolded = false;
 				break;
 			case CONTROL:
-				_controlHolded = false;
+				controlHolded = false;
 				break;
 		};
-		if (_isDisabled === true) return false;
+		if (isDisabled === true) return false;
 		fireEventIfExist("keyup");
 	};
 	var on_dblclick = function (evt) {
-		if (_isDisabled === true) return false;
+		if (isDisabled === true) return false;
 		fireEventIfExist("dblclick");
 	};
 	var on_mousemove = function (evt) {
-		if (_isDisabled === true) return false;
+		if (isDisabled === true) return false;
 		fireEventIfExist("mousemove");
 	};
 	
 	var on_mouseover = function (evt) {
-		if (_isDisabled === true) return false;
+		if (isDisabled === true) return false;
 		evt.preventDefault();
 		fireEventIfExist("mouseover");
 	};
 	var on_mouseout = function (evt) {
-		if (_isDisabled === true) return false;
+		if (isDisabled === true) return false;
 		evt.preventDefault();
 		fireEventIfExist("mouseout");
 	};
 	var on_mousedown = function (evt) {
-		if (_isDisabled === true) return false;
+		if (isDisabled === true) return false;
 		fireEventIfExist("mousedown");
 	};
 	var on_mouseup = function (evt) {
-		if (_isDisabled === true) return false;
+		if (isDisabled === true) return false;
 		fireEventIfExist("mouseup");
 	};
 	var option_has_handler = function (opt, name) {
@@ -924,8 +988,8 @@ function dd(element, settings) {
 		return evt;
 	};
 	var fireOptionEventIfExist = function (li, evt_n) {
-		if (_settings.disabledOptionEvents == false) {
-			var opt = getElement(_element).options[_getIndex(li)];
+		if (settings.disabledOptionEvents == false) {
+			var opt = getElement(element).options[getIndex(li)];
 			//check if original has some
 			if (option_has_handler(opt, evt_n).hasEvent === true) {
 				if (option_has_handler(opt, evt_n).byElement === true) {
@@ -948,22 +1012,21 @@ function dd(element, settings) {
 	};
 	var fireEventIfExist = function (evt_n) {
 		//local
-		if (typeof _settings.on[evt_n] == "function") {
-			_settings.on[evt_n].apply(this, arguments);
+		if (typeof settings.on[evt_n] == "function") {
+			settings.on[evt_n].apply(this, arguments);
 		};
 		//check if original has some
 		if (has_handler(evt_n).hasEvent === true) {
 			if (has_handler(evt_n).byElement === true) {
-				getElement(_element)["on" + evt_n]();
-			};
-			if (has_handler(evt_n).byJQuery === true) {
+				getElement(element)["on" + evt_n]();
+			} else if (has_handler(evt_n).byJQuery === true) {
 				switch (evt_n) {
 					case "keydown":
 					case "keyup":
 						//key down/up will check later
 						break;
 					default:
-						$("#" + _element).trigger(evt_n);
+						$("#" + element).triggerHandler(evt_n);
 						break;
 				};
 			};
@@ -971,10 +1034,10 @@ function dd(element, settings) {
 		};
 	};
 	/******************************* navigation **********************************************/
-	var _scrollToIfNeeded = function (opt) {
-		var childid = _getPostID("postChildID");
+	var scrollToIfNeeded = function (opt) {
+		var childid = getPostID("postChildID");
 		//if scroll is needed
-		opt = (opt !== undefined) ? opt : $("#" + childid + " li." + _styles.selected);
+		opt = (opt !== undefined) ? opt : $("#" + childid + " li." + css.selected);
 		if (opt.length > 0) {
 			var pos = parseInt(($(opt).position().top));
 			var ch = parseInt($("#" + childid).height());
@@ -984,27 +1047,27 @@ function dd(element, settings) {
 			};
 		};
 	};
-	var _next = function () {
-		var childid = _getPostID("postChildID");
-		var items = $("#" + childid + " li:visible." + _styles_i.li);
-		var selected = $("#" + childid + " li:visible." + _styles.selected);
+	var next = function () {
+		var childid = getPostID("postChildID");
+		var items = $("#" + childid + " li:visible." + css_i.li);
+		var selected = $("#" + childid + " li:visible." + css.selected);
 		selected = (selected.length==0) ? items[0] : selected;
-		var index = $("#" + childid + " li:visible." + _styles_i.li).index(selected);
+		var index = $("#" + childid + " li:visible." + css_i.li).index(selected);
 		if ((index < items.length - 1)) {
 			index = getNext(index);
 			if (index < items.length) { //check again - hack for last disabled 
-				if (!_shiftHolded || !_isList || !_isMultiple) {
-					$("#" + childid + " ." + _styles.selected).removeClass(_styles.selected);
+				if (!shiftHolded || !isList || !isMultiple) {
+					$("#" + childid + " ." + css.selected).removeClass(css.selected);
 				};
-				$(items[index]).addClass(_styles.selected);
-				_updateTitleUI(index);
-				if (_isList == true) {
-					_fireAfterItemClicked();
+				$(items[index]).addClass(css.selected);
+				updateTitleUI(index);
+				if (isList == true) {
+					fireAfterItemClicked();
 				};
-				_scrollToIfNeeded($(items[index]));
+				scrollToIfNeeded($(items[index]));
 			};
-			if (!_isList) {
-				_adjustOpen();
+			if (!isList) {
+				adjustOpen();
 			};
 		};	
 		function getNext(ind) {
@@ -1012,35 +1075,35 @@ function dd(element, settings) {
 			if (ind > items.length) {
 				return ind;
 			};
-			if ($(items[ind]).hasClass(_styles.enabled) === true) {
+			if ($(items[ind]).hasClass(css.enabled) === true) {
 				return ind;
 			};
 			return ind = getNext(ind);
 		};
 	};
-	var _previous = function () {
-		var childid = _getPostID("postChildID");
-		var selected = $("#" + childid + " li:visible." + _styles.selected);
-		var items = $("#" + childid + " li:visible." + _styles_i.li);
-		var index = $("#" + childid + " li:visible." + _styles_i.li).index(selected[0]);
+	var previous = function () {
+		var childid = getPostID("postChildID");
+		var selected = $("#" + childid + " li:visible." + css.selected);
+		var items = $("#" + childid + " li:visible." + css_i.li);
+		var index = $("#" + childid + " li:visible." + css_i.li).index(selected[0]);
 		if (index >= 0) {
 			index = getPrev(index);
 			if (index >= 0) { //check again - hack for disabled 
-				if (!_shiftHolded || !_isList || !_isMultiple) {
-					$("#" + childid + " ." + _styles.selected).removeClass(_styles.selected);
+				if (!shiftHolded || !isList || !isMultiple) {
+					$("#" + childid + " ." + css.selected).removeClass(css.selected);
 				};
-				$(items[index]).addClass(_styles.selected);
-				_updateTitleUI(index);
-				if (_isList == true) {
-					_fireAfterItemClicked();
+				$(items[index]).addClass(css.selected);
+				updateTitleUI(index);
+				if (isList == true) {
+					fireAfterItemClicked();
 				};
 				if (parseInt(($(items[index]).position().top + $(items[index]).height())) <= 0) {
 					var top = ($("#" + childid).scrollTop() - $("#" + childid).height()) - $(items[index]).height();
 					$("#" + childid).animate({scrollTop: top}, 500);
 				};
 			};
-			if (!_isList) {
-				_adjustOpen();
+			if (!isList) {
+				adjustOpen();
 			};
 		};
 	
@@ -1049,125 +1112,136 @@ function dd(element, settings) {
 			if (ind < 0) {
 				return ind;
 			};
-			if ($(items[ind]).hasClass(_styles.enabled) === true) {
+			if ($(items[ind]).hasClass(css.enabled) === true) {
 				return ind;
 			};
 			return ind = getPrev(ind);
 		};
 	};
-	var _adjustOpen = function () {
-		var id = _getPostID("postID");
-		var childid = _getPostID("postChildID");
+	var adjustOpen = function () {
+		var id = getPostID("postID");
+		var childid = getPostID("postChildID");
 		var pos = $("#" + id).offset();
 		var mH = $("#" + id).height();
 		var wH = $(window).height();
 		var st = $(window).scrollTop();
 		var cH = $("#" + childid).height();
 		var top = $("#" + id).height(); //this close so its title height
-		if ((wH + st) < Math.floor(cH + mH + pos.top) || _settings.openDirection.toLowerCase() == 'alwaysup') {
+		var direction = settings.openDirection.toLowerCase();
+		if (((wH + st) < Math.floor(cH + mH + pos.top) || direction == 'alwaysup') && direction != 'alwaysdown') {
 			top = cH;
-			$("#" + childid).css({top: "-" + top + "px", display: 'block', zIndex: _settings.zIndex});
-			$("#" + id).removeClass("borderRadius borderRadiusTp").addClass("borderRadiusBtm");
+			$("#" + childid).css({top: "-" + top + "px", display: 'block', zIndex: settings.zIndex});			
+			if(settings.roundedCorner == "true") {
+				$("#" + id).removeClass("borderRadius borderRadiusTp").addClass("borderRadiusBtm");
+			};
 			var top = $("#" + childid).offset().top;
 			if (top < -10) {
-				$("#" + childid).css({top: (parseInt($("#" + childid).css("top")) - top + 20 + st) + "px", zIndex: _settings.zIndex});
-				$("#" + id).removeClass("borderRadiusBtm borderRadiusTp").addClass("borderRadius");
+				$("#" + childid).css({top: (parseInt($("#" + childid).css("top")) - top + 20 + st) + "px", zIndex: settings.zIndex});
+				if(settings.roundedCorner == "true") {
+					$("#" + id).removeClass("borderRadiusBtm borderRadiusTp").addClass("borderRadius");
+				};
 			};
 		} else {
-			$("#" + childid).css({top: top + "px", zIndex: _settings.zIndex});
-			$("#" + id).removeClass("borderRadius borderRadiusBtm").addClass("borderRadiusTp");
+			$("#" + childid).css({top: top + "px", zIndex: settings.zIndex});			
+			if(settings.roundedCorner == "true") {
+				$("#" + id).removeClass("borderRadius borderRadiusBtm").addClass("borderRadiusTp");
+			};
 		};
 		//hack for ie zindex
 		//i hate ie :D
-		if(_isIE) {
+		if(isIE) {
 			if(msieversion()<=7) {
-				$('div.ddcommon').css("zIndex", _settings.zIndex-10);
-				$("#" + id).css("zIndex", _settings.zIndex+5);
+				$('div.ddcommon').css("zIndex", settings.zIndex-10);
+				$("#" + id).css("zIndex", settings.zIndex+5);
 			};
 		};		
 	};
-	var _open = function (e) {
-		if (_isDisabled === true) return false;
-		var id = _getPostID("postID");
-		var childid = _getPostID("postChildID");
-		if (!_isOpen) {
-			_isOpen = true;
+	var open = function (e) {
+		if (isDisabled === true) return false;
+		var id = getPostID("postID");
+		var childid = getPostID("postChildID");
+		if (!isOpen) {
+			isOpen = true;
 			if (msBeautify.oldDiv != '') {
 				$("#" + msBeautify.oldDiv).css({display: "none"}); //hide all 
 			};
 			msBeautify.oldDiv = childid;
 			$("#" + childid + " li:hidden").show(); //show if hidden
-			_adjustOpen();
-			var animStyle = _settings.animStyle;
+			adjustOpen();
+			var animStyle = settings.animStyle;
 			if(animStyle=="" || animStyle=="none") {
 				$("#" + childid).css({display:"block"});
-				_scrollToIfNeeded();
-				if (typeof _settings.on.open == "function") {
-					var d = _getDataAndUI();
-					_settings.on.open(d.data, d.ui);
+				scrollToIfNeeded();
+				if (typeof settings.on.open == "function") {
+					var d = getDataAndUI();
+					settings.on.open(d.data, d.ui);
 				};
 			} else {				
 				$("#" + childid)[animStyle]("fast", function () {
-					_scrollToIfNeeded();
-					if (typeof _settings.on.open == "function") {
-						var d = _getDataAndUI();
-						_settings.on.open(d.data, d.ui);
+					scrollToIfNeeded();
+					if (typeof settings.on.open == "function") {
+						var d = getDataAndUI();
+						settings.on.open(d.data, d.ui);
 					};
 				});
 			};
-			_bind_on_events();
+			bind_on_events();
 		} else {
-			if(_settings.event!=='mouseover') {
-				_close();
+			if(settings.event!=='mouseover') {
+				close();
 			};
 		};
 	};
-	var _close = function (e) {
-		_isOpen = false;
-		var id = _getPostID("postID");
-		var childid = _getPostID("postChildID");
-		if (_isList === false || _settings.enableCheckbox===true) {
-			$("#" + childid).css({display: "none"});
-			$("#" + id).removeClass("borderRadiusTp borderRadiusBtm").addClass("borderRadius");			
+	var close = function (e) {
+		isOpen = false;
+		var id = getPostID("postID");
+		var childid = getPostID("postChildID");
+		if (isList === false || settings.enableCheckbox===true) {
+			$("#" + childid).css({display: "none"});			
+			if(settings.roundedCorner == "true") {
+				$("#" + id).removeClass("borderRadiusTp borderRadiusBtm").addClass("borderRadius");
+			};
 		};
-		_unbind_on_events();
-		if (typeof _settings.on.close == "function") {
-			var d = _getDataAndUI();
-			_settings.on.close(d.data, d.ui);
+		unbind_on_events();
+		if (typeof settings.on.close == "function") {
+			var d = getDataAndUI();
+			settings.on.close(d.data, d.ui);
 		};
 		//rest some old stuff
-		_hideFilterBox();
-		_childHeight(_childHeight()); //its needed after filter applied
-		$("#" + childid).css({zIndex:1})		
+		hideFilterBox();
+		childHeight(childHeight()); //its needed after filter applied
+		$("#" + childid).css({zIndex:1});
+		//update the title in case the user clicked outside
+		updateTitleUI(getElement(element).selectedIndex);
 	};
 	/*********************** </layout> *************************************/	
-	var _mergeAllProp = function () {
+	var mergeAllProp = function () {
 		try {
-			_orginial = $.extend(true, {}, getElement(_element));
-			for (var i in _orginial) {
-				if (typeof _orginial[i] != "function") {				
-					_this[i] = _orginial[i]; //properties
+			orginial = $.extend(true, {}, getElement(element));
+			for (var i in orginial) {
+				if (typeof orginial[i] != "function") {				
+					$this[i] = orginial[i]; //properties
 				};
 			};
 		} catch(e) {
 			//silent
 		};
-		_this.selectedText = (getElement(_element).selectedIndex >= 0) ? getElement(_element).options[getElement(_element).selectedIndex].text : "";		
-		_this.version = msBeautify.version.msDropdown;
-		_this.author = msBeautify.author;
+		$this.selectedText = (getElement(element).selectedIndex >= 0) ? getElement(element).options[getElement(element).selectedIndex].text : "";		
+		$this.version = msBeautify.version.msDropdown;
+		$this.author = msBeautify.author;
 	};
-	var _getDataAndUIByOption = function (opt) {
+	var getDataAndUIByOption = function (opt) {
 		if (opt != null && typeof opt != "undefined") {
-			var childid = _getPostID("postChildID");
-			var data = _parseOption(opt);
-			var ui = $("#" + childid + " li." + _styles_i.li + ":eq(" + (opt.index) + ")");
+			var childid = getPostID("postChildID");
+			var data = parseOption(opt);
+			var ui = $("#" + childid + " li." + css_i.li + ":eq(" + (opt.index) + ")");
 			return {data: data, ui: ui, option: opt, index: opt.index};
 		};
 		return null;
 	};
-	var _getDataAndUI = function () {
-		var childid = _getPostID("postChildID");
-		var ele = getElement(_element);
+	var getDataAndUI = function () {
+		var childid = getPostID("postChildID");
+		var ele = getElement(element);
 		var data, ui, option, index;
 		if (ele.selectedIndex == -1) {
 			data = null;
@@ -1175,11 +1249,11 @@ function dd(element, settings) {
 			option = null;
 			index = -1;
 		} else {
-			ui = $("#" + childid + " li." + _styles.selected);
+			ui = $("#" + childid + " li." + css.selected);
 			if (ui.length > 1) {
 				var d = [], op = [], ind = [];
 				for (var i = 0; i < ui.length; i++) {
-					var pd = _getIndex(ui[i]);
+					var pd = getIndex(ui[i]);
 					d.push(pd);
 					op.push(ele.options[pd]);
 				};
@@ -1188,14 +1262,14 @@ function dd(element, settings) {
 				index = d;
 			} else {
 				option = ele.options[ele.selectedIndex];
-				data = _parseOption(option);
+				data = parseOption(option);
 				index = ele.selectedIndex;
 			};
 		};
 		return {data: data, ui: ui, index: index, option: option};
 	};
-	var _updateTitleUI = function (index, byvalue) {
-		var titleid = _getPostID("postTitleID");
+	var updateTitleUI = function (index, byvalue) {
+		var titleid = getPostID("postTitleID");
 		var value = {};
 		if (index == -1) {
 			value.text = "&nbsp;";
@@ -1203,82 +1277,82 @@ function dd(element, settings) {
 			value.description = "";
 			value.image = "";
 		} else if (typeof index != "undefined") {
-			var opt = getElement(_element).options[index];
-			value = _parseOption(opt);
+			var opt = getElement(element).options[index];
+			value = parseOption(opt);
 		} else {
 			value = byvalue;
 		};
 		//update title and current
-		$("#" + titleid).find("." + _styles.label).html(value.text);
-		getElement(titleid).className = _styles.ddTitleText + " " + value.className;
+		$("#" + titleid).find("." + css.label).html(value.text);
+		getElement(titleid).className = css.ddTitleText + " " + value.className;
 		//update desction		 
 		if (value.description != "") {
-			$("#" + titleid).find("." + _styles.description).html(value.description).show();
+			$("#" + titleid).find("." + css.description).html(value.description).show();
 		} else {
-			$("#" + titleid).find("." + _styles.description).html("").hide();
+			$("#" + titleid).find("." + css.description).html("").hide();
 		};
 		//update icon
 		var img = $("#" + titleid).find("img");
 		if (img.length > 0) {
 			$(img).remove();
 		};
-		if (value.image != "" && _settings.showIcon) {
-			img = _createElement("img", {src: value.image});
+		if (value.image != "" && settings.showIcon) {
+			img = createElement("img", {src: value.image});
 			$("#" + titleid).prepend(img);
 			if(value.imagecss!="") {
 				img.className = value.imagecss+" ";
 			};
 			if (value.description == "") {
-				img.className = img.className+_styles_i.fnone;
+				img.className = img.className+css_i.fnone;
 			};
 		};
 	};
-	var _updateProp = function (p, v) {
-		_this[p] = v;
+	var updateProp = function (p, v) {
+		$this[p] = v;
 	};
-	var _updateUI = function (a, opt, i) { //action, index, opt
-		var childid = _getPostID("postChildID");
+	var updateUI = function (a, opt, i) { //action, index, opt
+		var childid = getPostID("postChildID");
 		var wasSelected = false;
 		switch (a) {
 			case "add":
-				var li = _createChild(opt || getElement(_element).options[i]);				
+				var li = createChild(opt || getElement(element).options[i]);				
 				var index;
 				if (arguments.length == 3) {
 					index = i;
 				} else {
-					index = $("#" + childid + " li." + _styles_i.li).length - 1;
+					index = $("#" + childid + " li." + css_i.li).length - 1;
 				};				
 				if (index < 0 || !index) {
 					$("#" + childid + " ul").append(li);
 				} else {
-					var at = $("#" + childid + " li." + _styles_i.li)[index];
+					var at = $("#" + childid + " li." + css_i.li)[index];
 					$(at).before(li);
 				};
-				_removeChildEvents();
-				_applyChildEvents();
-				if (_settings.on.add != null) {
-					_settings.on.add.apply(this, arguments);
+				removeChildEvents();
+				applyChildEvents();
+				if (settings.on.add != null) {
+					settings.on.add.apply(this, arguments);
 				};
 				break;
 			case "remove":
-				wasSelected = $($("#" + childid + " li." + _styles_i.li)[i]).hasClass(_styles.selected);
-				$("#" + childid + " li." + _styles_i.li + ":eq(" + i + ")").remove();
-				var items = $("#" + childid + " li." + _styles.enabled);
+				wasSelected = $($("#" + childid + " li." + css_i.li)[i]).hasClass(css.selected);
+				$("#" + childid + " li." + css_i.li + ":eq(" + i + ")").remove();
+				var items = $("#" + childid + " li." + css.enabled);
 				if (wasSelected == true) {
 					if (items.length > 0) {
-						$(items[0]).addClass(_styles.selected);
-						var ind = $("#" + childid + " li." + _styles_i.li).index(items[0]);
-						_setValue(ind);
+						$(items[0]).addClass(css.selected);
+						var ind = $("#" + childid + " li." + css_i.li).index(items[0]);
+						setValue(ind);
 					};
 				};
 				if (items.length == 0) {
-					_setValue(-1);
+					setValue(-1);
 				};
-				if ($("#" + childid + " li." + _styles_i.li).length < _settings.visibleRows && !_isList) {
-					_childHeight(-1); //set autoheight
+				if ($("#" + childid + " li." + css_i.li).length < settings.visibleRows && !isList) {
+					childHeight(-1); //set autoheight
 				};
-				if (_settings.on.remove != null) {
-					_settings.on.remove.apply(this, arguments);
+				if (settings.on.remove != null) {
+					settings.on.remove.apply(this, arguments);
 				};
 				break;
 		};	
@@ -1289,14 +1363,14 @@ function dd(element, settings) {
 		Array.prototype.shift.call(arguments);
 		switch (action) {
 			case "add":
-				_this.add.apply(this, arguments);
+				$this.add.apply(this, arguments);
 				break;
 			case "remove":
-				_this.remove.apply(this, arguments);
+				$this.remove.apply(this, arguments);
 				break;
 			default:
 				try {
-					getElement(_element)[action].apply(getElement(_element), arguments);
+					getElement(element)[action].apply(getElement(element), arguments);
 				} catch (e) {
 					//there is some error.
 				};
@@ -1324,68 +1398,68 @@ function dd(element, settings) {
 			$(opt).data("title", title);
 		};
 		arguments[0] = opt; //this option
-		getElement(_element).add.apply(getElement(_element), arguments);
-		_updateProp("children", getElement(_element)["children"]);
-		_updateProp("length", getElement(_element).length);
-		_updateUI("add", opt, arguments[1]);
+		getElement(element).add.apply(getElement(element), arguments);
+		updateProp("children", getElement(element)["children"]);
+		updateProp("length", getElement(element).length);
+		updateUI("add", opt, arguments[1]);
 	};
 	this.remove = function (i) {
-		getElement(_element).remove(i);
-		_updateProp("children", getElement(_element)["children"]);
-		_updateProp("length", getElement(_element).length);
-		_updateUI("remove", undefined, i);
+		getElement(element).remove(i);
+		updateProp("children", getElement(element)["children"]);
+		updateProp("length", getElement(element).length);
+		updateUI("remove", undefined, i);
 	};
 	this.set = function (prop, val) {
 		if (typeof prop == "undefined" || typeof val == "undefined") return false;
 		prop = prop.toString();
 		try {
-			_updateProp(prop, val);
+			updateProp(prop, val);
 		} catch (e) {/*this is ready only */};
 		
 		switch (prop) {
 			case "size":
-				getElement(_element)[prop] = val;
+				getElement(element)[prop] = val;
 				if (val == 0) {
-					getElement(_element).multiple = false; //if size is zero multiple should be false
+					getElement(element).multiple = false; //if size is zero multiple should be false
 				};
-				_isList = (getElement(_element).size > 1 || getElement(_element).multiple == true) ? true : false;
-				_fixedForList();
+				isList = (getElement(element).size > 1 || getElement(element).multiple == true) ? true : false;
+				fixedForList();
 				break;
 			case "multiple":
-				getElement(_element)[prop] = val;
-				_isList = (getElement(_element).size > 1 || getElement(_element).multiple == true) ? true : false;
-				_isMultiple = getElement(_element).multiple;
-				_fixedForList();
-				_updateProp(prop, val);
+				getElement(element)[prop] = val;
+				isList = (getElement(element).size > 1 || getElement(element).multiple == true) ? true : false;
+				isMultiple = getElement(element).multiple;
+				fixedForList();
+				updateProp(prop, val);
 				break;
 			case "disabled":
-				getElement(_element)[prop] = val;
-				_isDisabled = val;
-				_fixedForDisabled();
+				getElement(element)[prop] = val;
+				isDisabled = val;
+				fixedForDisabled();
 				break;
 			case "selectedIndex":
 			case "value":
-				getElement(_element)[prop] = val;
-				var childid = _getPostID("postChildID");
-				$("#" + childid + " li." + _styles_i.li).removeClass(_styles.selected);
-				$($("#" + childid + " li." + _styles_i.li)[getElement(_element).selectedIndex]).addClass(_styles.selected);
-				_setValue(getElement(_element).selectedIndex);
+				getElement(element)[prop] = val;
+				var childid = getPostID("postChildID");
+				$("#" + childid + " li." + css_i.li).removeClass(css.selected);
+				$($("#" + childid + " li." + css_i.li)[getElement(element).selectedIndex]).addClass(css.selected);
+				setValue(getElement(element).selectedIndex);
 				break;
 			case "length":
-				var childid = _getPostID("postChildID");
-				if (val < getElement(_element).length) {
-					getElement(_element)[prop] = val;
+				var childid = getPostID("postChildID");
+				if (val < getElement(element).length) {
+					getElement(element)[prop] = val;
 					if (val == 0) {
-						$("#" + childid + " li." + _styles_i.li).remove();
-						_setValue(-1);
+						$("#" + childid + " li." + css_i.li).remove();
+						setValue(-1);
 					} else {
-						$("#" + childid + " li." + _styles_i.li + ":gt(" + (val - 1) + ")").remove();
-						if ($("#" + childid + " li." + _styles.selected).length == 0) {
-							$("#" + childid + " li." + _styles.enabled + ":eq(0)").addClass(_styles.selected);
+						$("#" + childid + " li." + css_i.li + ":gt(" + (val - 1) + ")").remove();
+						if ($("#" + childid + " li." + css.selected).length == 0) {
+							$("#" + childid + " li." + css.enabled + ":eq(0)").addClass(css.selected);
 						};
 					};
-					_updateProp(prop, val);
-					_updateProp("children", getElement(_element)["children"]);
+					updateProp(prop, val);
+					updateProp("children", getElement(element)["children"]);
 				};
 				break;
 			case "id":
@@ -1394,8 +1468,8 @@ function dd(element, settings) {
 			default:
 				//check if this is not a readonly properties
 				try {
-					getElement(_element)[prop] = val;
-					_updateProp(prop, val);
+					getElement(element)[prop] = val;
+					updateProp(prop, val);
 				} catch (e) {
 					//silent
 				};
@@ -1403,10 +1477,10 @@ function dd(element, settings) {
 		}
 	};
 	this.get = function (prop) {
-		return _this[prop] || getElement(_element)[prop]; //return if local else from original
+		return $this[prop] || getElement(element)[prop]; //return if local else from original
 	};
 	this.visible = function (val) {
-		var id = _getPostID("postID");		
+		var id = getPostID("postID");		
 		if (val === true) {
 			$("#" + id).show();
 		} else if (val === false) {
@@ -1419,51 +1493,55 @@ function dd(element, settings) {
 		msBeautify.debug(v);
 	};
 	this.close = function () {
-		_close();
+		close();
 	};
 	this.open = function () {		
-		_open();
+		open();
 	};
 	this.showRows = function (r) {
 		if (typeof r == "undefined" || r == 0) {
 			return false;
 		};
-		_settings.visibleRows = r;
-		_childHeight(_childHeight());
+		settings.visibleRows = r;
+		childHeight(childHeight());
 	};
 	this.visibleRows = this.showRows;
 	this.on = function (type, fn) {
-		$("#" + _element).on(type, fn);
+		$("#" + element).on(type, fn);
 	};
 	this.off = function (type, fn) {
-		$("#" + _element).off(type, fn);
+		$("#" + element).off(type, fn);
 	};
 	this.addMyEvent = this.on;
 	this.getData = function () {
-		return _getDataAndUI()
+		return getDataAndUI()
 	};
 	this.namedItem = function () {
-		var opt = getElement(_element).namedItem.apply(getElement(_element), arguments);
-		return _getDataAndUIByOption(opt);
+		var opt = getElement(element).namedItem.apply(getElement(element), arguments);
+		return getDataAndUIByOption(opt);
 	};
 	this.item = function () {
-		var opt = getElement(_element).item.apply(getElement(_element), arguments);
-		return _getDataAndUIByOption(opt);
+		var opt = getElement(element).item.apply(getElement(element), arguments);
+		return getDataAndUIByOption(opt);
 	};	
 	//v 3.2
 	this.setIndexByValue = function(val) {
 		this.set("value", val);
 	};
 	this.destroy = function () {
-		var hidid = _getPostID("postElementHolder");
-		var id = _getPostID("postID");
+		var hidid = getPostID("postElementHolder");
+		var id = getPostID("postID");
 		$("#" + id + ", #" + id + " *").off();
+		getElement(element).tabIndex = getElement(id).tabIndex;
 		$("#" + id).remove();
-		$("#" + _element).parent().replaceWith($("#" + _element));		
-		$("#" + _element).data("dd", null);
+		$("#" + element).parent().replaceWith($("#" + element));		
+		$("#" + element).data("dd", null);
+	};
+	this.refresh = function() {
+		setValue(getElement(element).selectedIndex);
 	};
 	//Create msDropDown	
-	_construct();
+	init();
 };
 //bind in jquery
 $.fn.extend({

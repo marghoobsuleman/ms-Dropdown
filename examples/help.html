@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Javascript image dropdown - Documentation</title>
 <link rel="stylesheet" href="css/sample.css" />
-<script src="../js/jquery/jquery-1.8.2.min.js"></script>
+<script src="../js/jquery/jquery-1.9.0.min.js"></script>
 <!-- <msdropdown> -->
 <link rel="stylesheet" type="text/css" href="../css/msdropdown/dd.css" />
 <script src="../js/msdropdown/jquery.dd.min.js"></script>
@@ -159,7 +159,7 @@ code.blue{color:#3300FF}
 //Some usefull parameters can be passed while creating msDropdown. 
 //These are default values.
 {
-    {byJson: {data: null, selectedIndex: 0, name: null, size: 0, multiple: false, width: 250}, //if you want to created by json data
+    {byJson: {data: null, selectedIndex: 0, name: null, size: 0, multiple: false, width: 250}, //if you want to create by json data
     mainCSS: 'dd',
     visibleRows: 7,
     rowHeight: 0,
@@ -168,11 +168,13 @@ code.blue{color:#3300FF}
     useSprite: false,
     animStyle: 'slideDown',
     event:'click', //it can be mouseover 
-    openDirection: 'auto', //auto || alwaysUp
+    openDirection: 'auto', //auto || alwaysUp || alwaysDown
     enableCheckbox:false, //this needs to multiple or it will set element to multiple
     checkboxNameSuffix:'_mscheck',
     append:'',
     prepend:'',
+    reverseMode:true, //it will update the msdropdown UI/value if you update the original dropdown - will be usefull if are using knockout.js or playing with original dropdown
+    roundedCorner:true, //to have rounded corner
     on: {create: null,open: null,close: null,add: null,remove: null,change: null,blur: null,click: null,
     	dblclick: null,mousemove: null,mouseover: null,mouseout: null,focus: null,mousedown: null,mouseup: null} //event cant be added from here too
 }
@@ -185,7 +187,8 @@ code.blue{color:#3300FF}
     </tr>
     <tr>
       <td colspan="3">
-      <pre style='color:#000000;background:#ffffff;'><span style='color:#696969; '>//by traditional option tag</span>
+      <pre style='color:#000000;background:#ffffff;'><span style='color:#696969; '><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+//by traditional option tag</span>
 oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>(</span><span style='color:#800000; font-weight:bold; '>new</span> Option<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
 <span style='color:#696969; '>//or by string</span>
 oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
@@ -193,7 +196,7 @@ oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>
 oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>(</span><span style='color:#800080; '>{</span>text<span style='color:#800080; '>:</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> value<span style='color:#800080; '>:</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#800080; '>}</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
 <span style='color:#696969; '>//or by json with all properties</span>
 oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>(</span><span style='color:#800080; '>{</span>text<span style='color:#800080; '>:</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> value<span style='color:#800080; '>:</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> description<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'Set my calendar'</span><span style='color:#808030; '>,</span> image<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'/images/calendar.gif'</span><span style='color:#808030; '>,</span> className<span style='color:#800080; '>:</span><span style='color:#0000e6; '>''</span> title<span style='color:#800080; '>:</span><span style='color:#0000e6; '>'Calendar'</span><span style='color:#800080; '>}</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
-  </pre>
+  	</pre>
   </td>
     </tr>
     <tr>
@@ -202,8 +205,10 @@ oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>
       <td><p>Removes the option element at the specified index from the select element.</p></td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>remove<span style='color:#808030; '>(</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
-  </pre></td>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>
+<span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>remove<span style='color:#808030; '>(</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+</pre></td>
     </tr>
     <tr>
       <td>namedItem</td>
@@ -211,8 +216,9 @@ oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>
       <td>Get the option element if there is name defined. </td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> data <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>namedItem<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>shopping</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
-  </pre></td>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+<span style='color:#800000; font-weight:bold; '>var</span> data <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>namedItem<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>shopping</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+</pre></td>
     </tr>
     <tr>
       <td>item</td>
@@ -220,8 +226,9 @@ oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>
       <td>Get the item specified by an index. Please refer above for uiData.</td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> data <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>namedItem<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>shopping</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
-  </pre></td>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+<span style='color:#800000; font-weight:bold; '>var</span> data <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>namedItem<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>shopping</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+</pre></td>
     </tr>
     <tr>
       <td>set</td>
@@ -229,8 +236,9 @@ oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>
       <td>Set the element property.</td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>set<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>selectedIndex</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
-  </pre></td>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>set<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>selectedIndex</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+</pre></td>
     </tr>
     <tr>
       <td>get</td>
@@ -238,7 +246,8 @@ oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>
       <td>Get the element property.</td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> <span style='color:#797997; '>index</span> <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>get<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>selectedIndex</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+<span style='color:#800000; font-weight:bold; '>var</span> <span style='color:#797997; '>index</span> <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>get<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>selectedIndex</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
 <span style='color:#696969; '>//You can get the property without using get method</span>
 <span style='color:#800000; font-weight:bold; '>var</span> <span style='color:#797997; '>index</span> <span style='color:#808030; '>=</span> oDropwdown<span style='color:#808030; '>.</span>selectedIndex<span style='color:#800080; '>;</span>
   </pre></td>
@@ -249,7 +258,8 @@ oDropdown<span style='color:#808030; '>.</span>add<span style='color:#808030; '>
       <td>Set and get the visible states.</td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030; '>(</span><span style='color:#0f4d75; '>true</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span> <span style='color:#696969; '>//shows if hidden</span>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030; '>(</span><span style='color:#0f4d75; '>true</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span> <span style='color:#696969; '>//shows if hidden</span>
 oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030; '>(</span><span style='color:#0f4d75; '>false</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span> <span style='color:#696969; '>//hide</span>
 <span style='color:#800000; font-weight:bold; '>var</span> isVisible <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span> <span style='color:#696969; '>//returns current states</span>
   </pre></td>
@@ -260,7 +270,8 @@ oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030
       <td>Closes the  msDropdown.</td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>close<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span></pre></td>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>close<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span></pre></td>
     </tr>
     <tr>
       <td>open</td>
@@ -268,7 +279,8 @@ oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030
       <td>Opens the msDropdown. </td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>open<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span> </pre></td>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>open<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span> </pre></td>
     </tr>
     <tr>
       <td>showRows</td>
@@ -279,7 +291,8 @@ oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030
       <td>visibleRows</td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>visibleRows<span style='color:#808030; '>(</span><span style='color:#008c00; '>10</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>visibleRows<span style='color:#808030; '>(</span><span style='color:#008c00; '>10</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
   </pre></td>
     </tr>
     <tr>
@@ -288,7 +301,8 @@ oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030
       <td>Add an events on element. </td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>on<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>change</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#800000; font-weight:bold; '>function</span><span style='color:#808030; '>(</span>res<span style='color:#808030; '>)</span> <span style='color:#800080; '>{</span>console<span style='color:#808030; '>.</span><span style='color:#800000; font-weight:bold; '>log</span><span style='color:#808030; '>(</span>res<span style='color:#808030; '>)</span><span style='color:#800080; '>}</span><span style='color:#808030; '>);</span></pre></td>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>on<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>change</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#800000; font-weight:bold; '>function</span><span style='color:#808030; '>(</span>res<span style='color:#808030; '>)</span> <span style='color:#800080; '>{</span>console<span style='color:#808030; '>.</span><span style='color:#800000; font-weight:bold; '>log</span><span style='color:#808030; '>(</span>res<span style='color:#808030; '>)</span><span style='color:#800080; '>}</span><span style='color:#808030; '>);</span></pre></td>
     </tr>
     <tr>
       <td>off</td>
@@ -297,7 +311,8 @@ oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030
     </tr>
     <tr>
       <td colspan="3"><span style="color:#000000;background:#ffffff;">
-        <pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>off<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>change</span><span style='color:#800000; '>&quot;</span><span style='color:#800080; '></span><span style='color:#808030; '>)</span>;</pre></td>
+        <pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>off<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>change</span><span style='color:#800000; '>&quot;</span><span style='color:#800080; '></span><span style='color:#808030; '>)</span>;</pre></td>
     </tr>
     <tr>
       <td>getData</td>
@@ -313,7 +328,8 @@ oDropdown<span style='color:#808030; '>.</span>visible<span style='color:#808030
       <td>For everything else. You can call any exisitng method via this single method.</td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>act<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>add</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#800000; font-weight:bold; '>new</span> Option<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Lucky</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>act<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>add</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#800000; font-weight:bold; '>new</span> Option<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>Lucky</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
 oDropdown<span style='color:#808030; '>.</span>act<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>remove</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
 <span style='color:#800000; font-weight:bold; '>var</span> opt <span style='color:#808030; '>=</span> oDropdown<span style='color:#808030; '>.</span>act<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>namedItem</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>,</span> <span style='color:#800000; '>&quot;</span><span style='color:#0000e6; '>calendar</span><span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span></pre></td>
     </tr>
@@ -323,7 +339,8 @@ oDropdown<span style='color:#808030; '>.</span>act<span style='color:#808030; '>
       <td>Set index by value. (v 3.2)</td>
     </tr>
     <tr>
-      <td colspan="3"><pre style='color:#000000;background:#ffffff;'>oDropdown.setIndexByValue(<span style='color:#008c00; '>"calendar"</span><span style='color:#808030; '>);</pre></td>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown.setIndexByValue(<span style='color:#008c00; '>"calendar"</span><span style='color:#808030; '>);</pre></td>
     </tr>
     <tr>
       <td>destroy</td>
@@ -332,7 +349,24 @@ oDropdown<span style='color:#808030; '>.</span>act<span style='color:#808030; '>
     </tr>
     <tr>
       <td colspan="3"><span style="color:#000000;background:#ffffff;">
-        <pre style='color:#000000;background:#ffffff;'>oDropdown<span style='color:#808030; '>.</span>destroy<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span></pre></td>
+        <pre style='color:#000000;background:#ffffff;'>
+<span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>destroy<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span></pre></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>refresh</td>
+      <td>&nbsp;</td>
+      <td>Refresh the msdropdown UI and value based on original dropdown.</td>
+    </tr>
+    <tr>
+      <td colspan="3"><pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>var</span> oDropdown <span style='color:#808030; '>=</span> $<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>#element<span style='color:#800000; '>&quot;</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>msDropdown<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>data<span style='color:#808030; '>(</span><span style='color:#800000; '>&quot;</span>dd<span style='color:#808030; '><span style='color:#800000; '>&quot;</span>)</span><span style='color:#800080; '>;</span>
+oDropdown<span style='color:#808030; '>.</span>refresh<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span>; //or
+document.getElmentById(&quot;element&quot;).refresh();</pre></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
