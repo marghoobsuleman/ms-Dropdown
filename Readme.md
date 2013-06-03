@@ -1,6 +1,13 @@
-<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.40" />
+<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.50" />
 
 ### Can someone please create a help doc for this plugin? - Thanks in advance
+
+### v3.5 updates: 3 June, 2013
+- conflict edit in source js file fixed
+- autofilter is now configurable - it can be enable/disable by setting params or data-enableautofilter="true" attribute.
+- next/previous bug fixed when autofilter is on.
+- Bug fixed when item opens upward after autofilter.
+
 
 ### v3.4 updates: 31 May, 2013
 - refresh method is back. you can refresh your dropdown to update the UI and value with the original dropdown or by the msdropdown object. 

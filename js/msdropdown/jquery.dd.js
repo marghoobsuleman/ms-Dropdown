@@ -1,8 +1,8 @@
 // MSDropDown - jquery.dd.js
 // author: Marghoob Suleman - http://www.marghoobsuleman.com/
 // Date: 10 Nov, 2012 
-// Version: 3.4
-// Revision: 23
+// Version: 3.5
+// Revision: 25
 // web: www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
 var msBeautify = msBeautify || {};
 (function ($) {
 	msBeautify = {
-	version: {msDropdown:'3.4'},
+	version: {msDropdown:'3.5'},
 	author: "Marghoob Suleman",
 	counter: 20,
 	debug: function (v) {
@@ -51,7 +51,8 @@ if (typeof $.expr.createPseudo === 'function') {
 }
 //dropdown class
 function dd(element, settings) {
-	var settings = $.extend(true,{byJson: {data: null, selectedIndex: 0, name: null, size: 0, multiple: false, width: 250},
+	var settings = $.extend(true,
+		{byJson: {data: null, selectedIndex: 0, name: null, size: 0, multiple: false, width: 250},
 		mainCSS: 'dd',
 		height: 120, //not using currently
 		visibleRows: 7,
@@ -73,6 +74,7 @@ function dd(element, settings) {
 		prepend:'',
 		reverseMode:true, //it will update the msdropdown UI/value if you update the original dropdown - will be usefull if are using knockout.js or playing with original dropdown
 		roundedCorner:true,
+		enableAutoFilter:true,
 		on: {create: null,open: null,close: null,add: null,remove: null,change: null,blur: null,click: null,dblclick: null,mousemove: null,mouseover: null,mouseout: null,focus: null,mousedown: null,mouseup: null}
 		}, settings);								  
 	var $this = this; //this class	 
@@ -80,7 +82,7 @@ function dd(element, settings) {
 	var css = {dd:settings.mainCSS, ddTitle: 'ddTitle', arrow: 'arrow arrowoff', ddChild: 'ddChild', ddTitleText: 'ddTitleText',disabled: 'disabled', enabled: 'enabled', ddOutOfVision: 'ddOutOfVision', borderTop: 'borderTop', noBorderTop: 'noBorderTop', selected: 'selected', divider: 'divider', optgroup: "optgroup", optgroupTitle: "optgroupTitle", description: "description", label: "ddlabel",hover: 'hover',disabledAll: 'disabledAll'};
 	var css_i = {li: '_msddli_',borderRadiusTp: 'borderRadiusTp',ddChildMore: 'border shadow',fnone: "fnone"};
 	var isList = false, isMultiple=false,isDisabled=false, cacheElement = {}, element, orginial = {}, isOpen=false;
-	var DOWN_ARROW = 40, UP_ARROW = 38, LEFT_ARROW=37, RIGHT_ARROW=39, ESCAPE = 27, ENTER = 13, ALPHABETS_START = 47, SHIFT=16 , CONTROL = 17;
+	var DOWN_ARROW = 40, UP_ARROW = 38, LEFT_ARROW=37, RIGHT_ARROW=39, ESCAPE = 27, ENTER = 13, ALPHABETS_START = 47, SHIFT=16, CONTROL = 17, BACKSPACE=8, DELETE=46;
 	var shiftHolded=false, controlHolded=false,lastTarget=null,forcedTrigger=false, oldSelected, isCreated = false;
 	var doc = document, ua = window.navigator.userAgent, isIE = ua.match(/msie/i);
 	settings.reverseMode = settings.reverseMode.toString();
@@ -111,10 +113,12 @@ function dd(element, settings) {
 		settings.prepend = $("#"+element).data("prepend") || settings.prepend;
 		settings.reverseMode = $("#"+element).data("reversemode") || settings.reverseMode;
 		settings.roundedCorner = $("#"+element).data("roundedcorner") || settings.roundedCorner;
+		settings.enableAutoFilter = $("#"+element).data("enableautofilter") || settings.enableAutoFilter;
 		
 		//make string
 		settings.reverseMode = settings.reverseMode.toString();
 		settings.roundedCorner = settings.roundedCorner.toString();
+		settings.enableAutoFilter = settings.enableAutoFilter.toString();
 	};	
 	var getElement = function(ele) {
 		if (cacheElement[ele] === undefined) {
@@ -128,7 +132,7 @@ function dd(element, settings) {
 	};
 	var createByJson = function() {
 		if (settings.byJson.data) {
-				var validData = ["description","image",  "title"];
+				var validData = ["description","image","title"];
 				try {
 					if (!element.id) {
 						element.id = "dropdown"+msBeautify.counter;
@@ -273,11 +277,7 @@ function dd(element, settings) {
 		} else {
 			$("#"+hidid).css({height: 0,overflow: 'hidden',position: 'absolute'});
 		};
-<<<<<<< HEAD
 		getElement(element).tabIndex = -1;
-=======
-		getElement(_element).tabIndex = -1;
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
 	};
 	var createWrapper = function () {
 		var brdRds = (settings.roundedCorner == "true") ? " borderRadius" : "";
@@ -290,15 +290,9 @@ function dd(element, settings) {
 		if (intcss.length > 0) {
 			obj.style = obj.style + "" + intcss;
 		};
-<<<<<<< HEAD
 		obj.id = getPostID("postID");
 		obj.tabIndex = getElement(element).tabIndex;
 		var oDiv = createElement("div", obj);
-=======
-		obj.id = _getPostID("postID");
-		obj.tabIndex = getElement(_element).tabIndex;
-		var oDiv = _createElement("div", obj);
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
 		return oDiv;
 	};
 	var createTitle = function () {
@@ -622,7 +616,6 @@ function dd(element, settings) {
 	var removeChildEvents = function () {
 		var childid = getPostID("postChildID");
 		$("#" + childid).off("click");
-<<<<<<< HEAD
 		$("#" + childid + " li." + css.enabled).off("mouseenter");
 		$("#" + childid + " li." + css.enabled).off("click");
 		$("#" + childid + " li." + css.enabled).off("mouseover");
@@ -631,42 +624,23 @@ function dd(element, settings) {
 		$("#" + childid + " li." + css.enabled).off("mouseup");
 	};
 	var triggerBypassingHandler = function (id, evt_n, handler) {
-=======
-		$("#" + childid + " li." + _styles.enabled).off("mouseenter");
-		$("#" + childid + " li." + _styles.enabled).off("click");
-		$("#" + childid + " li." + _styles.enabled).off("mouseover");
-		$("#" + childid + " li." + _styles.enabled).off("mouseout");
-		$("#" + childid + " li." + _styles.enabled).off("mousedown");
-		$("#" + childid + " li." + _styles.enabled).off("mouseup");
-	};
-	var _triggerBypassingHandler = function (id, evt_n, handler) {
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
 		$("#" + id).off(evt_n, handler);
 		$("#" + id).trigger(evt_n);
 		$("#" + id).on(evt_n, handler);
 	};
-<<<<<<< HEAD
 	var applyEvents = function () {
 		var id = getPostID("postID");
 		var tid = getPostID("postTitleTextID");
 		var childid = getPostID("postChildID");		
 		$("#" + id).on(settings.event, function (e) {			
 			if (isDisabled === true) return false;
-=======
-	var _applyEvents = function () {
-		var id = _getPostID("postID");
-		var tid = _getPostID("postTitleTextID");
-		var childid = _getPostID("postChildID");		
-		$("#" + id).on(_settings.event, function (e) {			
-			if (_isDisabled === true) return false;
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
-			fireEventIfExist("click");
+			fireEventIfExist(settings.event);
 			//prevent body click
 			e.preventDefault();
 			e.stopPropagation();
 			open(e);
 		});
-		$("#" + id).on("keydown", function (e) {			
+		$("#" + id).on("keydown", function (e) {
 			var k = e.which;
 			if (!isOpen && (k == ENTER || k == UP_ARROW || k == DOWN_ARROW ||
 				k == LEFT_ARROW || k == RIGHT_ARROW ||
@@ -686,31 +660,7 @@ function dd(element, settings) {
 			//return focus to the wrapper without triggering the handler
 			triggerBypassingHandler(id, "focus", wrapperFocusHandler);
 		});
-<<<<<<< HEAD
 		applyChildEvents();		
-=======
-		$("#" + id).on("keydown", function (e) {			
-			var k = e.which;
-			if (!_isOpen && (k == ENTER || k == UP_ARROW || k == DOWN_ARROW ||
-				k == LEFT_ARROW || k == RIGHT_ARROW ||
-				(k >= ALPHABETS_START && !_isList))) {
-				_open(e);
-				if (k >= ALPHABETS_START) {
-					_showFilterBox();
-				} else {
-					e.preventDefault();
-					e.stopImmediatePropagation();
-				};
-			};
-		});
-		$("#" + id).on("focus", _wrapperFocusHandler);
-		$("#" + id).on("blur", _wrapperBlurHandler);
-		$("#" + tid).on("blur", function (e) {
-			//return focus to the wrapper without triggering the handler
-			_triggerBypassingHandler(id, "focus", _wrapperFocusHandler);
-		});
-		_applyChildEvents();		
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
 		$("#" + id).on("dblclick", on_dblclick);
 		$("#" + id).on("mousemove", on_mousemove);
 		$("#" + id).on("mouseenter", on_mouseover);
@@ -718,17 +668,10 @@ function dd(element, settings) {
 		$("#" + id).on("mousedown", on_mousedown);
 		$("#" + id).on("mouseup", on_mouseup);
 	};
-<<<<<<< HEAD
 	var wrapperFocusHandler = function (e) {
 		fireEventIfExist("focus");
 	};
 	var wrapperBlurHandler = function (e) {
-=======
-	var _wrapperFocusHandler = function (e) {
-		fireEventIfExist("focus");
-	};
-	var _wrapperBlurHandler = function (e) {
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
 		fireEventIfExist("blur");
 	};
 	//after create
@@ -765,7 +708,9 @@ function dd(element, settings) {
 	var fixedSomeUI = function () {
 		//auto filter
 		var tid = getPostID("postTitleTextID");
-		$("#" + tid).on("keyup", applyFilters);
+		if(settings.enableAutoFilter=="true") {
+			$("#" + tid).on("keyup", applyFilters);
+		};
 		//if is list
 		fixedForList();
 		fixedForDisabled();
@@ -914,7 +859,10 @@ function dd(element, settings) {
 		$(document).off("keydown", on_keydown);
 		$(document).off("keyup", on_keyup);
 	};
-	var applyFilters = function () {
+	var applyFilters = function (e) {
+		if(e.keyCode < ALPHABETS_START && e.keyCode!=BACKSPACE && e.keyCode!=DELETE) {
+			return false;
+		};
 		var childid = getPostID("postChildID");
 		var tid = getPostID("postTitleTextID");
 		var sText = getElement(tid).value;
@@ -924,42 +872,28 @@ function dd(element, settings) {
 		} else {
 			$("#" + childid + " li").hide();
 			var items = $("#" + childid + " li:Contains('" + sText + "')").show();
-<<<<<<< HEAD
 			if ($("#" + childid + " li:visible").length <= settings.visibleRows) {
 				childHeight(-1); //set autoheight
 			};
 			if (items.length > 0 && !isList || !isMultiple) {
 				$("#" + childid + " ." + css.selected).removeClass(css.selected);
 				$(items[0]).addClass(css.selected);
-=======
-			if ($("#" + childid + " li:visible").length <= _settings.visibleRows) {
-				_childHeight(-1); //set autoheight
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
-			};
-			if (items.length > 0 && !_isList || !_isMultiple) {
-				$("#" + childid + " ." + _styles.selected).removeClass(_styles.selected);
-				$(items[0]).addClass(_styles.selected);
-			};
+			};	
 		};		
+		if (!isList) {
+			adjustOpen();
+		};
 	};
-<<<<<<< HEAD
 	var showFilterBox = function () {
-		var id = getPostID("postID");
-		var tid = getPostID("postTitleTextID");
-		if ($("#" + tid + ":hidden").length > 0 && controlHolded == false) {
-			$("#" + tid + ":hidden").show().val("");
-			//blur the wrapper without triggering the handler
-			triggerBypassingHandler(id, "blur", wrapperBlurHandler);
-=======
-	var _showFilterBox = function () {
-		var id = _getPostID("postID");
-		var tid = _getPostID("postTitleTextID");
-		if ($("#" + tid + ":hidden").length > 0 && _controlHolded == false) {
-			$("#" + tid + ":hidden").show().val("");
-			//blur the wrapper without triggering the handler
-			_triggerBypassingHandler(id, "blur", _wrapperBlurHandler);
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
-			getElement(tid).focus();
+		if(settings.enableAutoFilter=="true") {
+			var id = getPostID("postID");
+			var tid = getPostID("postTitleTextID");
+			if ($("#" + tid + ":hidden").length > 0 && controlHolded == false) {
+				$("#" + tid + ":hidden").show().val("");
+				//blur the wrapper without triggering the handler
+				triggerBypassingHandler(id, "blur", wrapperBlurHandler);
+				getElement(tid).focus();
+			};
 		};
 	};
 	var hideFilterBox = function () {
@@ -978,7 +912,7 @@ function dd(element, settings) {
 				evt.preventDefault();
 				evt.stopPropagation();
 				//hideFilterBox();
-				next();				
+				next();
 				break;
 			case UP_ARROW:
 			case LEFT_ARROW:
@@ -1098,11 +1032,7 @@ function dd(element, settings) {
 		//check if original has some
 		if (has_handler(evt_n).hasEvent === true) {
 			if (has_handler(evt_n).byElement === true) {
-<<<<<<< HEAD
 				getElement(element)["on" + evt_n]();
-=======
-				getElement(_element)["on" + evt_n]();
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
 			} else if (has_handler(evt_n).byJQuery === true) {
 				switch (evt_n) {
 					case "keydown":
@@ -1110,11 +1040,7 @@ function dd(element, settings) {
 						//key down/up will check later
 						break;
 					default:
-<<<<<<< HEAD
 						$("#" + element).triggerHandler(evt_n);
-=======
-						$("#" + _element).triggerHandler(evt_n);
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
 						break;
 				};
 			};
@@ -1296,19 +1222,11 @@ function dd(element, settings) {
 			settings.on.close(d.data, d.ui);
 		};
 		//rest some old stuff
-<<<<<<< HEAD
 		hideFilterBox();
 		childHeight(childHeight()); //its needed after filter applied
 		$("#" + childid).css({zIndex:1});
 		//update the title in case the user clicked outside
 		updateTitleUI(getElement(element).selectedIndex);
-=======
-		_hideFilterBox();
-		_childHeight(_childHeight()); //its needed after filter applied
-		$("#" + childid).css({zIndex:1});
-		//update the title in case the user clicked outside
-		_updateTitleUI(getElement(_element).selectedIndex);
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
 	};
 	/*********************** </layout> *************************************/	
 	var mergeAllProp = function () {
@@ -1628,11 +1546,7 @@ function dd(element, settings) {
 		var hidid = getPostID("postElementHolder");
 		var id = getPostID("postID");
 		$("#" + id + ", #" + id + " *").off();
-<<<<<<< HEAD
 		getElement(element).tabIndex = getElement(id).tabIndex;
-=======
-		getElement(_element).tabIndex = getElement(id).tabIndex;
->>>>>>> 567372dc42c2d0994662341e0370fcf342eb4e7d
 		$("#" + id).remove();
 		$("#" + element).parent().replaceWith($("#" + element));		
 		$("#" + element).data("dd", null);
