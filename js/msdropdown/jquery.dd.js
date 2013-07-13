@@ -1,17 +1,17 @@
 // MSDropDown - jquery.dd.js
 // author: Marghoob Suleman - http://www.marghoobsuleman.com/
 // Date: 10 Nov, 2012 
-// Version: 3.5
-// Revision: 25
+// Version: 3.5.2
+// Revision: 27
 // web: www.marghoobsuleman.com
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
 // it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
-*/
+*/ 
 var msBeautify = msBeautify || {};
 (function ($) {
 	msBeautify = {
-	version: {msDropdown:'3.5'},
+	version: {msDropdown:'3.5.2'},
 	author: "Marghoob Suleman",
 	counter: 20,
 	debug: function (v) {
@@ -79,7 +79,7 @@ function dd(element, settings) {
 		}, settings);								  
 	var $this = this; //this class	 
 	var holderId = {postElementHolder: '_msddHolder', postID: '_msdd', postTitleID: '_title',postTitleTextID: '_titleText', postChildID: '_child'};
-	var css = {dd:settings.mainCSS, ddTitle: 'ddTitle', arrow: 'arrow arrowoff', ddChild: 'ddChild', ddTitleText: 'ddTitleText',disabled: 'disabled', enabled: 'enabled', ddOutOfVision: 'ddOutOfVision', borderTop: 'borderTop', noBorderTop: 'noBorderTop', selected: 'selected', divider: 'divider', optgroup: "optgroup", optgroupTitle: "optgroupTitle", description: "description", label: "ddlabel",hover: 'hover',disabledAll: 'disabledAll'};
+	var css = {dd:settings.mainCSS, ddTitle: 'ddTitle', arrow: 'ddArrow arrowoff', ddChild: 'ddChild', ddTitleText: 'ddTitleText',disabled: 'disabled', enabled: 'enabled', ddOutOfVision: 'ddOutOfVision', borderTop: 'borderTop', noBorderTop: 'noBorderTop', selected: 'selected', divider: 'divider', optgroup: "optgroup", optgroupTitle: "optgroupTitle", description: "description", label: "ddlabel",hover: 'hover',disabledAll: 'disabledAll'};
 	var css_i = {li: '_msddli_',borderRadiusTp: 'borderRadiusTp',ddChildMore: 'border shadow',fnone: "fnone"};
 	var isList = false, isMultiple=false,isDisabled=false, cacheElement = {}, element, orginial = {}, isOpen=false;
 	var DOWN_ARROW = 40, UP_ARROW = 38, LEFT_ARROW=37, RIGHT_ARROW=39, ESCAPE = 27, ENTER = 13, ALPHABETS_START = 47, SHIFT=16, CONTROL = 17, BACKSPACE=8, DELETE=46;
@@ -87,6 +87,9 @@ function dd(element, settings) {
 	var doc = document, ua = window.navigator.userAgent, isIE = ua.match(/msie/i);
 	settings.reverseMode = settings.reverseMode.toString();
 	settings.roundedCorner = settings.roundedCorner.toString();
+	var isArray = function(obj) {
+		return (Object.prototype.toString.call(obj)=="[object Array]") ? true : false;
+	};
 	var msieversion = function()
    	{      
       var msie = ua.indexOf("MSIE");
@@ -216,7 +219,7 @@ function dd(element, settings) {
 		 return s;
 	};
 	var parseOption = function(opt) {
-		var imagePath = '', title ='', description='', value=-1, text='', className='', imagecss = '';
+		var imagePath = '', title ='', description='', value=-1, text='', className='', imagecss = '', index;
 		if (opt !== undefined) {
 			var attrTitle = opt.title || "";
 			//data-title
@@ -230,19 +233,20 @@ function dd(element, settings) {
 				description = (isJson && settings.jsonTitle) ? obj[0].description : description;
 				imagePath = (isJson && settings.jsonTitle) ? obj[0].image : attrTitle;
 				imagecss = (isJson && settings.jsonTitle) ? obj[0].imagecss : imagecss;
+				index = opt.index;
 			};
 
 			text = opt.text || '';
 			value = opt.value || '';
 			className = opt.className || "";
-			//ignore title attribute if playing with data tags			
+			//ignore title attribute if playing with data tags
 			title = $(opt).prop("data-title") || $(opt).data("title") || (title || "");
 			description = $(opt).prop("data-description") || $(opt).data("description") || (description || "");
 			imagePath = $(opt).prop("data-image") || $(opt).data("image") || (imagePath || "");
 			imagecss = $(opt).prop("data-imagecss") || $(opt).data("imagecss") || (imagecss || "");
-			
+			index = $(opt).index();
 		};
-		var o = {image: imagePath, title: title, description: description, value: value, text: text, className: className, imagecss:imagecss};
+		var o = {image: imagePath, title: title, description: description, value: value, text: text, className: className, imagecss:imagecss, index:index};
 		return o;
 	};	 
 	var createElement = function(nm, attr, html) {
@@ -251,7 +255,7 @@ function dd(element, settings) {
 		 for(var i in attr) {
 			 switch(i) {
 				 case "style":
-					tag.style.cssText  = attr[i];
+					tag.style.cssText = attr[i];
 				 break;
 				 default:
 					tag[i]  = attr[i];
@@ -384,7 +388,7 @@ function dd(element, settings) {
 		//checkbox
 		if(settings.enableCheckbox===true) {
 			var chkbox = createElement("input", {
-			type: 'checkbox', name:element+settings.checkboxNameSuffix+'[]', value:opt.value||""}); //this can be used for future
+			type: 'checkbox', name:element+settings.checkboxNameSuffix+'[]', value:opt.value||"", className:"checkbox"}); //this can be used for future
 			li.appendChild(chkbox);
 			if(settings.enableCheckbox===true) {
 				chkbox.checked = (opt.selected) ? true : false;
@@ -458,17 +462,19 @@ function dd(element, settings) {
 		};
 		//else return height
 		var iHeight;
-		if (getElement(element).options.length > settings.visibleRows) {
-			var margin = parseInt($("#" + childid + " li:first").css("padding-bottom")) + parseInt($("#" + childid + " li:first").css("padding-top"));
+		var totalOptions = getElement(element).options.length;
+		if (totalOptions > settings.visibleRows || settings.visibleRows) {
+			var firstLI = $("#" + childid + " li:first");
+			var margin = parseInt(firstLI.css("padding-bottom")) + parseInt(firstLI.css("padding-top"));
 			if(settings.rowHeight===0) {
 				$("#" + childid).css({visibility:'hidden',display:'block'}); //hack for first child
-				settings.rowHeight = Math.round($("#" + childid + " li:first").height());
+				settings.rowHeight = Math.ceil(firstLI.height());
 				$("#" + childid).css({visibility:'visible'});
 				if(!isList || settings.enableCheckbox===true) {
 					$("#" + childid).css({display:'none'});
 				};
 			};
-			iHeight = ((settings.rowHeight + margin) * settings.visibleRows);
+			iHeight = ((settings.rowHeight + margin) * Math.min(settings.visibleRows,totalOptions)) + 3;
 		} else if (isList) {
 			iHeight = $("#" + element).height(); //get height from original element
 		};		
@@ -743,11 +749,32 @@ function dd(element, settings) {
 			settings.on.create.apply($this, arguments);
 		};
 	};
-	var selectMutipleOptions = function (bySelected) {
+	var selectUI_LI = function(indexes) {
+		var childid = getPostID("postChildID");
+		$("#" + childid + " li." + css_i.li).removeClass(css.selected);
+		if(settings.enableCheckbox===true) {
+			$("#" + childid + " li." + css_i.li + " input.checkbox").prop("checked", false);
+		};
+		if(isArray(indexes)===true) {
+			for(var i=0;i<indexes.length;i++) {
+				updateNow(indexes[i]);
+			};
+		} else {
+			updateNow(indexes);
+		};
+		function updateNow(index) {
+			$($("#" + childid + " li." + css_i.li)[index]).addClass(css.selected);
+			if(settings.enableCheckbox===true) {
+				$($("#" + childid + " li." + css_i.li)[index]).find("input.checkbox").prop("checked", "checked");
+			};
+			
+		};
+	};
+	var selectMutipleOptions = function (bySelected, useIndexes) {
 		var childid = getPostID("postChildID");
 		var selected = bySelected || $("#" + childid + " li." + css.selected); //bySelected or by argument
 		for (var i = 0; i < selected.length; i++) {
-			var ind = getIndex(selected[i]);
+			var ind = (useIndexes===true) ? selected[i]  : getIndex(selected[i]);
 			getElement(element).options[ind].selected = "selected";
 		};
 		setValue(selected);
@@ -765,8 +792,6 @@ function dd(element, settings) {
 		} else if (selected.length > 1) {
 			//selected multiple
 			selectMutipleOptions(selected);
-			//index = $("#" + childid + " li." + css.selected);
-			
 		} else {
 			//if one selected
 			index = getIndex($("#" + childid + " li." + css.selected));
@@ -808,8 +833,9 @@ function dd(element, settings) {
 					value = (byvalue && byvalue.value) || getElement(element).value;
 					selectedText = (byvalue && byvalue.text) || getElement(element).options[getElement(element).selectedIndex].text || "";
 					updateTitleUI(selectedIndex);
+					//check if this is multiple checkbox					
 				};
-			};
+			};			
 			updateProp("selectedIndex", selectedIndex);
 			updateProp("value", value);
 			updateProp("selectedText", selectedText);
@@ -1299,7 +1325,7 @@ function dd(element, settings) {
 		//update title and current
 		$("#" + titleid).find("." + css.label).html(value.text);
 		getElement(titleid).className = css.ddTitleText + " " + value.className;
-		//update desction		 
+		//update desction
 		if (value.description != "") {
 			$("#" + titleid).find("." + css.description).html(value.description).show();
 		} else {
@@ -1429,7 +1455,6 @@ function dd(element, settings) {
 		try {
 			updateProp(prop, val);
 		} catch (e) {/*this is ready only */};
-		
 		switch (prop) {
 			case "size":
 				getElement(element)[prop] = val;
@@ -1452,12 +1477,16 @@ function dd(element, settings) {
 				fixedForDisabled();
 				break;
 			case "selectedIndex":
-			case "value":
-				getElement(element)[prop] = val;
-				var childid = getPostID("postChildID");
-				$("#" + childid + " li." + css_i.li).removeClass(css.selected);
-				$($("#" + childid + " li." + css_i.li)[getElement(element).selectedIndex]).addClass(css.selected);
-				setValue(getElement(element).selectedIndex);
+			case "value":				
+				if(prop=="selectedIndex" && isArray(val)===true) {
+					$("#"+element +" option").prop("selected", false);
+					selectMutipleOptions(val, true);
+					selectUI_LI(val); //setValue is being called from selectMutipleOptions
+				} else {
+					getElement(element)[prop] = val;					
+					selectUI_LI(getElement(element).selectedIndex);
+					setValue(getElement(element).selectedIndex);
+				};
 				break;
 			case "length":
 				var childid = getPostID("postChildID");
@@ -1488,7 +1517,7 @@ function dd(element, settings) {
 					//silent
 				};
 				break;
-		}
+		};
 	};
 	this.get = function (prop) {
 		return $this[prop] || getElement(element)[prop]; //return if local else from original

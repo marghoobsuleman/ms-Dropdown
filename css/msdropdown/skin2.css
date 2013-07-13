@@ -1,7 +1,7 @@
 .blue{border:1px solid #ddd;}
 .blue .divider{display:none}
-.blue .arrow{width:27px;height:27px; margin-top:-14px; background:url(../../images/msdropdown/skin2/dd_arrow.gif) no-repeat;}
-.blue .arrow:hover{background-position:0 100%;}
+.blue .ddArrow{width:27px;height:27px; margin-top:-14px; background:url(../../images/msdropdown/skin2/dd_arrow.gif) no-repeat;}
+.blue .ddArrow:hover{background-position:0 100%;}
 .blue .ddTitle{color:#fff;background:#10bbe6 url(../../images/msdropdown/skin2/title-bg.gif) repeat-x left top;}
 .blue .ddTitle .ddTitleText{padding:10px 20px 10px 5px; font-weight:bold; font-size:16px;}
 .blue .ddTitle .ddTitleText .ddTitleText{padding:0;}

@@ -1,6 +1,17 @@
-<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.50" />
+<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.5.2" />
 
 ### Can someone please create a help doc for this plugin? - Thanks in advance
+
+### v3.5.2 updates: 13 July, 2013
+- height bug fixed.
+- multiple indexes can be set via object. 
+ie.  var oDropdown = $("#element").msDropdown().data("dd");
+oDropdown.set("selectedIndex", [1,4]);
+- checkbox selection is fixed when setting index via object.
+- css .arrow class is changed to .ddArrow (it was too common)
+
+### v3.5.1 updates: 
+- (used for my personal project - did not get the chance to update - Sorry!)
 
 ### v3.5 updates: 3 June, 2013
 - conflict edit in source js file fixed
