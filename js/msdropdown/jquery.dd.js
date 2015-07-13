@@ -7,6 +7,11 @@
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
 // it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
+
+//	CUSTOM VERSION --
+	 * allowed to pass width along other parameters
+	 * escaped special charactes with jquery .text()
+	 * new methods: hideOption; showOption; disableOption; enableOption
 */ 
 var msBeautify = msBeautify || {};
 (function ($) {
@@ -52,9 +57,10 @@ if (typeof $.expr.createPseudo === 'function') {
 //dropdown class
 function dd(element, settings) {
 	var settings = $.extend(true,
-		{byJson: {data: null, selectedIndex: 0, name: null, size: 0, multiple: false, width: 250},
+		{byJson: {data: null, selectedIndex: 0, name: null, size: 0, multiple: false},
 		mainCSS: 'dd',
 		height: 120, //not using currently
+		width: "250px",
 		visibleRows: 7,
 		rowHeight: 0,
 		showIcon: true,
@@ -164,7 +170,7 @@ function dd(element, settings) {
 					};
 					getElement(element.id).appendChild(oSelect);
 					oSelect.selectedIndex = settings.byJson.selectedIndex;
-					$(oSelect).css({width: settings.byJson.width+'px'});
+					$(oSelect).css({width: settings.width});
 					//now change element for access other things
 					element = oSelect;
 				} catch(e) {
@@ -289,8 +295,8 @@ function dd(element, settings) {
 			className: css.dd + " ddcommon"+brdRds
 		};
 		var intcss = getInternalStyle(getElement(element));
-		var w = $("#" + element).outerWidth();
-		obj.style = "width: " + w + "px;";
+		var w = (settings.width==0) ? $("#" + element).outerWidth()+"px": settings.width;
+		obj.style = "width: " + w + ";";
 		if (intcss.length > 0) {
 			obj.style = obj.style + "" + intcss;
 		};
@@ -359,12 +365,15 @@ function dd(element, settings) {
 		var css2 = (opt.disabled) ? css.disabled : css.enabled;
 		css2 = (opt.selected) ? (css2 + " " + css.selected) : css2;
 		css2 = css2 + " " + css_i.li;
+		var hidden = (opt.hidden) ? " hidden" : "";
+		css2 = css2 + hidden;
 		obj.className = css2;
 		if (settings.useSprite != false) {
 			obj.className = css2 + " " + opt.className;
 		};
 		var li = createElement("li", obj);
 		var parsed = parseOption(opt);
+		
 		if (parsed.title != "") {
 			li.title = parsed.title;
 		};
@@ -384,7 +393,8 @@ function dd(element, settings) {
 		var sText = opt.text || "";
 		var oTitleText = createElement("span", {
 			className: css.label
-		}, sText);
+		});
+		$(oTitleText).text(sText);
 		//checkbox
 		if(settings.enableCheckbox===true) {
 			var chkbox = createElement("input", {
@@ -824,14 +834,14 @@ function dd(element, settings) {
 					getElement(element).selectedIndex = index;
 					selectedIndex = index;
 					value = parseOption(opt);
-					selectedText = (index >= 0) ? getElement(element).options[index].text : "";
+					selectedText = (index >= 0) ? $(getElement(element).options[index]).text() : "";
 					updateTitleUI(undefined, value);
 					value = value.value; //for bottom
 				} else {
 					//this is multiple or by option
 					selectedIndex = (byvalue && byvalue.index) || getElement(element).selectedIndex;
 					value = (byvalue && byvalue.value) || getElement(element).value;
-					selectedText = (byvalue && byvalue.text) || getElement(element).options[getElement(element).selectedIndex].text || "";
+					selectedText = (byvalue && byvalue.text) || $(getElement(element).options[getElement(element).selectedIndex]).text() || "";
 					updateTitleUI(selectedIndex);
 					//check if this is multiple checkbox					
 				};
@@ -1020,7 +1030,7 @@ function dd(element, settings) {
 			evt.byElement = true;
 		};
 		// True if a handler has been added using jQuery.
-		var evs = $(opt).data("events");
+		var evs = $._data($(opt).get(0), "events");     //jQuery 1.8+
 		if (evs && evs[name]) {
 			evt.hasEvent = true;
 			evt.byJQuery = true;
@@ -1267,7 +1277,7 @@ function dd(element, settings) {
 			//silent
 		};
 		$this.selectedText = (getElement(element).selectedIndex >= 0) ? getElement(element).options[getElement(element).selectedIndex].text : "";		
-		$this.version = msBeautify.version.msDropdown;
+		$this.version = msBeautify.version.msDropDown;
 		$this.author = msBeautify.author;
 	};
 	var getDataAndUIByOption = function (opt) {
@@ -1323,7 +1333,7 @@ function dd(element, settings) {
 			value = byvalue;
 		};
 		//update title and current
-		$("#" + titleid).find("." + css.label).html(value.text);
+		$("#" + titleid).find("." + css.label).text(value.text);
 		getElement(titleid).className = css.ddTitleText + " " + value.className;
 		//update desction
 		if (value.description != "") {
@@ -1443,6 +1453,36 @@ function dd(element, settings) {
 		updateProp("length", getElement(element).length);
 		updateUI("add", opt, arguments[1]);
 	};
+	this.disableOption = function () {
+		var opt_index 	= arguments[0];
+		var childid 	= getPostID("postChildID");
+		var option_li 	= $("#" + childid + " li").eq(opt_index);
+		removeChildEvents();
+		option_li.removeClass("enabled");
+		option_li.addClass("disabled");
+		applyChildEvents();
+	};
+	this.enableOption = function () {
+		var opt_index 	= arguments[0];
+		var childid 	= getPostID("postChildID");
+		var option_li 	= $("#" + childid + " li").eq(opt_index);
+		removeChildEvents();
+		option_li.removeClass("disabled");
+		option_li.addClass("enabled");
+		applyChildEvents();
+	};
+	this.hideOption = function () {
+		var opt_index 	= arguments[0];
+		var childid 	= getPostID("postChildID");
+		var option_li 	= $("#" + childid + " li").eq(opt_index);
+		option_li.addClass("hidden");
+	};
+	this.showOption = function () {
+		var opt_index 	= arguments[0];
+		var childid 	= getPostID("postChildID");
+		var option_li 	= $("#" + childid + " li").eq(opt_index);
+		option_li.removeClass("hidden");
+	};	
 	this.remove = function (i) {
 		getElement(element).remove(i);
 		updateProp("children", getElement(element)["children"]);

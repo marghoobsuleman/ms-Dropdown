@@ -40,6 +40,7 @@ img.fnone{float:none !important}
 .ddcommon .ddChild li.optgroup{padding:0;}
 .ddcommon .ddChild li.optgroup .optgroupTitle{padding:0 5px; font-weight:bold; font-style:italic}
 .ddcommon .ddChild li.optgroup ul li{padding:5px 5px 5px 15px}
+.ddcommon .ddChild li.hidden{display:none;}
 .ddcommon .noBorderTop{border-top:none 0  !important; padding:0; margin:0;}
 
 /*************** default theme **********************/
