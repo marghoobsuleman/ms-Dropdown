@@ -7,12 +7,7 @@
 /*
 // msDropDown is free jQuery Plugin: you can redistribute it and/or modify
 // it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
-
-//	CUSTOM VERSION --
-	 * allowed to pass width along other parameters
-	 * escaped special charactes with jquery .text()
-	 * new methods: hideOption; showOption; disableOption; enableOption
-*/ 
+*/
 var msBeautify = msBeautify || {};
 (function ($) {
 	msBeautify = {
