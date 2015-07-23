@@ -460,17 +460,35 @@ function dd(element, settings) {
 		if (val) {
 			if (val == -1) { //auto
 				$("#"+childid).css({height: "auto", overflow: "auto"});
-			} else {				
+			} else {
 				$("#"+childid).css("height", val+"px");
 			};
 			return false;
 		};
 		//else return height
 		var iHeight;
-		var totalOptions = getElement(element).options.length;
+		var totalOptions 	= $("#" + childid + " li:not(.hidden)").length;
 		if (totalOptions > settings.visibleRows || settings.visibleRows) {
 			var firstLI = $("#" + childid + " li:first");
-			var margin = parseInt(firstLI.css("padding-bottom")) + parseInt(firstLI.css("padding-top"));
+			var image = $("#"+childid+" img:first");
+			
+			//fix for chrome: it loads images after msdd inits
+			if (image.length)
+			{
+				if (!image[0].complete)
+				{
+					image.load(function(){
+						var height_m 	= firstLI.outerHeight(true);
+						var img_height  = $(this)[0].height;
+						iHeight = ((height_m+img_height) * Math.min(settings.visibleRows,totalOptions));
+						settings.rowHeight = img_height;
+						$("#"+childid).css("height", iHeight+"px");
+					});
+					//stop execution right here, since further execution would be flawed.
+					return -1;
+				}
+			}
+			
 			if(settings.rowHeight===0) {
 				$("#" + childid).css({visibility:'hidden',display:'block'}); //hack for first child
 				settings.rowHeight = Math.ceil(firstLI.height());
@@ -479,10 +497,11 @@ function dd(element, settings) {
 					$("#" + childid).css({display:'none'});
 				};
 			};
-			iHeight = ((settings.rowHeight + margin) * Math.min(settings.visibleRows,totalOptions)) + 3;
+			var height_m = firstLI.outerHeight(true);
+			iHeight = ((height_m+settings.rowHeight) * Math.min(settings.visibleRows,totalOptions));
 		} else if (isList) {
 			iHeight = $("#" + element).height(); //get height from original element
-		};		
+		};
 		return iHeight;
 	};
 	var applyChildEvents = function () {
@@ -1471,12 +1490,14 @@ function dd(element, settings) {
 		var childid 	= getPostID("postChildID");
 		var option_li 	= $("#" + childid + " li").eq(opt_index);
 		option_li.addClass("hidden");
+		childHeight(childHeight());
 	};
 	this.showOption = function () {
 		var opt_index 	= arguments[0];
 		var childid 	= getPostID("postChildID");
 		var option_li 	= $("#" + childid + " li").eq(opt_index);
 		option_li.removeClass("hidden");
+		childHeight(childHeight());
 	};	
 	this.remove = function (i) {
 		getElement(element).remove(i);
