@@ -43,6 +43,7 @@ img.fnone{float:none !important}
 .ddcommon .noBorderTop{border-top:none 0  !important; padding:0; margin:0;}
 
 /*************** default theme **********************/
+.dd:hover{cursor: pointer;}
 .dd{border:1px solid #c3c3c3;}
 .dd .divider{border-left:1px solid #c3c3c3; border-right:1px solid #fff;; right:24px;}
 .dd .ddArrow{width:16px;height:16px; margin-top:-8px; background:url(../../images/msdropdown/skin1/dd_arrow.gif) no-repeat;}
