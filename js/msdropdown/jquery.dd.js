@@ -10,6 +10,13 @@
 */ 
 var msBeautify = msBeautify || {};
 (function ($) {
+	// Better filter selector.
+    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+        return function( elem ) {
+            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
+
 	msBeautify = {
 	version: {msDropdown:'3.5.2'},
 	author: "Marghoob Suleman",
@@ -888,27 +895,35 @@ function dd(element, settings) {
 	var applyFilters = function (e) {
 		if(e.keyCode < ALPHABETS_START && e.keyCode!=BACKSPACE && e.keyCode!=DELETE) {
 			return false;
-		};
+		}
 		var childid = getPostID("postChildID");
 		var tid = getPostID("postTitleTextID");
 		var sText = getElement(tid).value;
-		if (sText.length == 0) {
+		if (sText.length === 0) {
 			$("#" + childid + " li:hidden").show(); //show if hidden
 			childHeight(childHeight());
 		} else {
-			$("#" + childid + " li").hide();
-			var items = $("#" + childid + " li:Contains('" + sText + "')").show();
-			if ($("#" + childid + " li:visible").length <= settings.visibleRows) {
-				childHeight(-1); //set autoheight
-			};
-			if (items.length > 0 && !isList || !isMultiple) {
-				$("#" + childid + " ." + css.selected).removeClass(css.selected);
-				$(items[0]).addClass(css.selected);
-			};	
-		};		
+            $("#" + childid + " li").hide();
+            var items = $("#" + childid + " li:contains('" + sText + "')").show();
+            if ($("#" + childid + " li:visible").length <= settings.visibleRows) {
+                childHeight(-1); //set autoheight
+            }
+            if( items.length > 0 ) {
+                if ( !isList || !isMultiple ) {
+                    $("#" + childid + " ." + css.selected).removeClass(css.selected);
+                    $(items[0]).addClass(css.selected);
+                }
+                items.length <= settings.visibleRows ? childHeight(-1) : childHeight(childHeight());
+            } else {
+            	// If no results, show all again.
+                $("#" + childid + " li:hidden").show(); //show if hidden
+                childHeight(childHeight());
+                return false;
+            }
+		}
 		if (!isList) {
 			adjustOpen();
-		};
+		}
 	};
 	var showFilterBox = function () {
 		if(settings.enableAutoFilter=="true") {
