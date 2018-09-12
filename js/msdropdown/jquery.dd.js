@@ -9,7 +9,15 @@
 // it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
 */ 
 var msBeautify = msBeautify || {};
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['jquery'], function ($) {
+            factory($);
+        });
+    } else {
+        factory(jQuery);
+    }
+} (function ($) {
 	msBeautify = {
 	version: {msDropdown:'3.5.2'},
 	author: "Marghoob Suleman",
@@ -1600,4 +1608,4 @@ $.fn.extend({
 			}
 });
 $.fn.msDropdown = $.fn.msDropDown; //make a copy
-})(jQuery);
+}));
