@@ -1,0 +1,122 @@
+$color-white: #fff;
+$color-black: #000;
+$color-eee: #eee;
+$color-light-grey: #ccc;
+$theme-a-text-color: #000;
+$dropdownWidth: 260px;
+// common classes
+.pr {
+  position: relative;
+}
+
+// dropdown specific css
+.ms-dd {
+  width: $dropdownWidth;
+  font-family: Sans-Serif;
+  background: $color-eee;
+  .ms-dd-header {
+    width: 100%;
+    border-radius: 2px;
+    border: solid 1px $color-light-grey;
+    border-bottom: none;
+    position: relative;
+    cursor: pointer;
+    .option-selected {
+      overflow: hidden;
+      padding: 10px 20px 10px 10px;
+      font-weight: 600;
+      color: $theme-a-text-color;
+    }
+  }
+
+  .ms-dd-option-image,
+  .ms-dd-selected-img {
+    vertical-align: middle;
+    margin-right: 5px;
+    max-width: 64px;
+  }
+
+  .ms-dd-arrow {
+    width: 0;
+    height: 0;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    margin-top: -3px;
+    &.ms-dd-pointer-down {
+      border: solid 5px transparent;
+      border-top: solid 5px $color-black;
+    }
+    &.ms-dd-pointer-up {
+      border: solid 5px transparent;
+      border-bottom: solid 5px $color-black;
+      margin-top: -8px;
+    }
+  }
+  .ms-options {
+    border: solid 1px #ccc;
+    border-top: none;
+    list-style: none;
+    box-shadow: 0px 1px 5px #ddd;
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    margin: 0;
+    padding: 0;
+    background: $color-white;
+    overflow: auto;
+    width: 100%;
+  }
+  .ms-list-option {
+    padding: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-bottom: solid 1px #ddd;
+    overflow: hidden;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+    -webkit-transition: all 0.25s ease-in-out;
+    -moz-transition: all 0.25s ease-in-out;
+    -o-transition: all 0.25s ease-in-out;
+    -ms-transition: all 0.25s ease-in-out;
+    &:last-child {
+      border-bottom: none;
+    }
+    &:hover {
+      background: #f3f3f3;
+      color: $color-black;
+    }
+    &.option-selected {
+      background: #f6f6f6;
+    }
+    &.ico-align-right {
+      justify-content: space-between;
+      .ms-dd-option-image,
+      .ms-dd-selected-img {
+        order: 2;
+      }
+    }
+    &:disabled,
+    &.disabled {
+      opacity: 0.4;
+      cursor: default;
+      pointer-events: none;
+    }
+    .ms-dd-desc {
+      color: #aaa;
+      display: block;
+      overflow: hidden;
+      font-weight: normal;
+      line-height: 1.5em;
+      text-shadow: 0px 1px 0.5px $color-white;
+    }
+  }
+  .ib-middle {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .ms-dd-label {
+  }
+}
