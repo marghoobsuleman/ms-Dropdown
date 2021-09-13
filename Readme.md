@@ -1,5 +1,10 @@
 <img src="./dist/images/ms-dropdown.jpg?v=4.0" />
 
+### Help
+- [Marghoob Suleman's Website](https://www.marghoobsuleman.com/)
+- [Image Dropdown Home](https://www.marghoobsuleman.com/image-dropdown)
+- [Image Dropdown Help Document](https://www.marghoobsuleman.com/image-dropdown/help)
+
 ### v4.0 update: 09 Sep, 2021
 - Written in ES6 (class) Style 
 - Remove jQuery dependency
