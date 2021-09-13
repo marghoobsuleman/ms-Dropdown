@@ -1,6 +1,13 @@
-<img src="http://www.marghoobsuleman.com/mywork/jcomponents/image-dropdown/samples/images/msdropdown/icons/preview.gif?v3.5.2" />
+<img src="./dist/images/ms-dropdown.jpg?v=4.0" />
 
-### Can someone please create a help doc for this plugin? - Thanks in advance
+### v4.0 update: 09 Sep, 2021
+- Written in ES6 (class) Style 
+- Remove jQuery dependency
+- Performance improvement
+- Reactive properties
+- 'required' attributes works too
+- 'required' message can be customized. Default is 'Please select an item from this list'
+- Works better than original dropdown, i guess :) 
 
 ### v3.5.2 updates: 13 July, 2013
 - height bug fixed.

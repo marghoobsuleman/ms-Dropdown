@@ -4,19 +4,20 @@ class dd extends HTMLSelectElement {
 
     constructor(element, settings) {
         super();
-        this.msDropdown = new MsDropdown(this);
+        if(!this.msDropdown) {
+            this.msDropdown = new MsDropdown(this);
+        }
     }
 
 
     connectedCallback() {
+
         try {
-            this.addEventListener("change", (evt)=> {
-                if(!this.multiple) {
-                    this.msDropdown.selectedIndex = this.selectedIndex;
-                } else {
-                    this.msDropdown.refresh();
-                }
-              //
+            this.addEventListener("change", (evt)=> {if(!this.multiple) {
+                this.msDropdown.selectedIndex = this.selectedIndex;
+            } else {
+                this.msDropdown.refresh();
+            }
             });
 
         } catch (e) {
@@ -31,27 +32,38 @@ class dd extends HTMLSelectElement {
     }
 
     adoptedCallback() {
-        //console.log('adoptedCallback');
+        //console.log('adoptedCallback', this);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        //console.log('attributes changed.' , name, oldValue, newValue);
+        if(this.msDropdown) {
+            if(name.indexOf("data-") !== -1) {
+                name = name.replace("data-", "");
+                let nameStr = name.toLowerCase().split('-');
+                for (let i = 1; i < nameStr.length; i++) {
+                    nameStr[i] = nameStr[i].charAt(0).toUpperCase() + nameStr[i].substring(1);
+                }
+                this.msDropdown.setSettingAttribute(nameStr.join(""), newValue, true);
+            } else {
+                //this.msDropdown[name] = newValue;
+            }
+
+        }
+
     }
 
     static get observedAttributes() { return [
-        'data-maincss',
-        'data-showicon',
-        'data-usesprite',
+        'data-main-css',
+        'data-show-icon',
         'data-event',
-        'data-jsontitle',
-        'data-childwidth',
-        'data-childheight',
-        'data-enablecheckbox',
-        'data-checkboxnamesuffix',
-        'data-append',
-        'data-prepend',
-        'data-enableautofilter',
-        'data-visiblerows'
+        'data-child-width',
+        'data-child-height',
+        'data-enable-checkbox',
+        'data-checkbox-name-suffix',
+        'data-enable-auto-filter',
+        'data-visible-rows',
+        'data-show-plus-item-counter',
+        'data-error-message'
     ];
     }
 

@@ -1,5 +1,9 @@
 const path = require('path');
 
+const webpack = require('webpack');
+
+const CopyPlugin = require("copy-webpack-plugin");
+
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -8,14 +12,20 @@ const cssnano = require('cssnano');
 
 const fs = require('fs');
 
+const version = "4.0";
 
 const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 
 
 let entries = {
     '/js/dd.min.js': './src/js/index.js',
-    '/css/style': './src/scss/style.scss'
+    '/css/dd': './src/scss/style.scss'
 };
+
+let copyFolders = [
+    { from: "./src/images", to: "./images" },
+    { from: "./src/css/flags.css", to: "./css/flags.css" }
+];
 
 module.exports = {
     entry: entries,
@@ -27,6 +37,10 @@ module.exports = {
 
     module: {
         rules: [
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
             {
                 test: /\.s[ac]ss$/i,
                 use: [
@@ -49,23 +63,31 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new FixStyleOnlyEntriesPlugin(),
+
+        new CopyPlugin({
+            patterns: copyFolders,
+            options: {
+                concurrency: 100,
+            },
+        }),
+
+        new webpack.BannerPlugin({
+            banner: `/**
+ * MSDropdown - dd.js
+ * @author: Marghoob Suleman
+ * @website: https://www.marghoobsuleman.com/
+ * @version: ${version} 
+ * @date: ${new Date()}
+ * msDropdown is free web component: you can redistribute it and/or modify
+ * it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
+ */`
+        }),
         new MiniCssExtractPlugin({
             filename: '[name].css',
             chunkFilename: '[id].css'
         }, function () {
-            console.log("========= call back =======")
-        }),
-        ()=>{
-            //Delete unwanted files
-            /*for(let i in entries) {
-                let hasExnt = i.indexOf(".") > 0;
-                if(!hasExnt) {
-                    fs.unlink(path.resolve(__dirname, './dist')+i, function () {
 
-                    });
-                }
-            }*/
-        },
+        }),
         {
             apply: (compiler) => {
                 compiler.hooks.done.tap('everythingIsDone', (compilation) => {

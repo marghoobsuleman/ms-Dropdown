@@ -5,12 +5,12 @@ $color-light-grey: #ccc;
 $theme-a-text-color: #000;
 $dropdownWidth: 260px;
 // common classes
-.pr {
+.ms-pr {
   position: relative;
 }
 .ms-dd:focus-visible {
   outline: none;
-  box-shadow: 0px 1px 5px #ddd;
+  box-shadow: 0 1px 5px #ddd;
   outline-width: 0;
 }
 // dropdown specific css
@@ -23,6 +23,13 @@ $dropdownWidth: 260px;
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE10+/Edge */
   user-select: none; /* Standard */
+  .ms-value-input {
+    width:50%;
+    top:10px;
+    left:20px;
+    border:0;
+    position:absolute;
+  }
   .ms-dd-header {
     min-height: 35px;
     width: 100%;
@@ -36,7 +43,10 @@ $dropdownWidth: 260px;
       padding: 10px 20px 10px 10px;
       font-weight: 600;
       color: $theme-a-text-color;
+      pointer-events: none;
+      display: block;
     }
+    a {display: block !important;}
     .ms-list-counter, input[type='checkbox'] {
       display: none;
     }
@@ -82,7 +92,7 @@ $dropdownWidth: 260px;
     border: solid 1px #ccc;
     border-top: none;
     list-style: none;
-    box-shadow: 0px 1px 5px #ddd;
+    box-shadow: 0 1px 5px #ddd;
     display: none;
     position: absolute;
     z-index: 9999;
@@ -103,6 +113,11 @@ $dropdownWidth: 260px;
     text-decoration: none;
     color: #333;
     cursor: pointer;
+
+    input[type='checkbox'] {
+      margin-right: 5px;
+    }
+
     &:last-child {
       border-bottom: none;
     }

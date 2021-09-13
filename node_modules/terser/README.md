@@ -530,6 +530,11 @@ try {
 - `ecma` (default `undefined`) - pass `5`, `2015`, `2016`, etc to override
   `compress` and `format`'s `ecma` options.
 
+- `enclose` (default `false`) - pass `true`, or a string in the format
+  of `"args[:values]"`, where `args` and `values` are comma-separated
+  argument names and values, respectively, to embed the output in a big
+  function with the configurable arguments and values.
+
 - `parse` (default `{}`) — pass an object if you wish to specify some
   additional [parse options](#parse-options).
 
@@ -569,7 +574,7 @@ try {
   of class names. Pass a regular expression to only keep class names matching that regex.
 
 - `keep_fnames` (default: `false`) - pass `true` to prevent discarding or mangling
-  of function names. Pass a regular expression to only keep class names matching that regex.
+  of function names. Pass a regular expression to only keep function names matching that regex.
   Useful for code relying on `Function.prototype.name`. If the top level minify option
   `keep_classnames` is `undefined` it will be overridden with the value of the top level
   minify option `keep_fnames`.
@@ -602,6 +607,7 @@ try {
         // source map options
     },
     ecma: 5, // specify one of: 5, 2015, 2016, etc.
+    enclose: false, // or specify true, or "args:values"
     keep_classnames: false,
     keep_fnames: false,
     ie8: false,
@@ -885,7 +891,7 @@ If you happen to need the source map as a raw object, set `sourceMap.asObject` t
   See also: the `keep_classnames` [compress option](#compress-options).
 
 - `keep_fnames` (default `false`) -- Pass `true` to not mangle function names.
-  Pass a regular expression to only keep class names matching that regex.
+  Pass a regular expression to only keep function names matching that regex.
   Useful for code relying on `Function.prototype.name`. See also: the `keep_fnames`
   [compress option](#compress-options).
 

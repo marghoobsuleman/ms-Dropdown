@@ -7,4 +7,6 @@
 /**/.DS_Store
 dump.rdb
 composer.lock
+./docs
+/docs
 

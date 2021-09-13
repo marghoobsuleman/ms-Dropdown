@@ -1,28 +1,24 @@
-// MSDropdown - dd.js
-// author: Marghoob Suleman - https://www.marghoobsuleman.com/
-// Updated: 17 Aug, 2021
-// Version: 4.0
-// Revision: 1
-// web: www.marghoobsuleman.com
-/*
-// msDropdown is free web component: you can redistribute it and/or modify
-// it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
-*/
-
-/***
- * Let define some private vars
+/**
+ * MSDropdown - ddmaker.js
+ * @author: Marghoob Suleman
+ * @website: https://www.marghoobsuleman.com/
+ * @version: 4.0
+ * @revision: 1
+ * @date: 5th Sep 2021
+ * msDropdown is free web component: you can redistribute it and/or modify
+ * it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
  */
-let tabIndex = -1;
+
+let _oldC = null;
 export default class ddMaker {
 
     constructor(ele, settings) {
-
         let defaultSettings = {
             byJson: {
                 data: null, selectedIndex: 0, name: null,
                 size: 0, multiple: false, width: 250
                 },
-            mainCSS: 'ms-dd pr',
+            mainCss: 'ms-dd',
             rowHeight: null,
             visibleRows: null,
             showIcon: true,
@@ -31,16 +27,14 @@ export default class ddMaker {
             style: '',
             childWidth:null,
             childHeight:null,
-            enableCheckbox:false, //this needs to multiple or it will set element to multiple
+            enableCheckbox:false, //this needs to be multiple or it will set the element to multiple
             checkboxNameSuffix:'_mscheck',
-            append:null,
-            prepend:null,
             showPlusItemCounter:true,
             enableAutoFilter:true,
             showListCounter:false,
+            errorMessage:'Please select an item from this list',
             on: {create: null,open: null,close: null,add: null,remove: null,change: null,blur: null,click: null,dblclick: null,mousemove: null,mouseover: null,mouseout: null,focus: null,mousedown: null,mouseup: null}
         };
-
         this.ele = ele;
         //merge with data settings
         this._settings = {...defaultSettings, ...settings};
@@ -49,12 +43,12 @@ export default class ddMaker {
         this._isOpen = false;
         this._DOWN_ARROW = 40; this._UP_ARROW = 38; this._LEFT_ARROW=37; this._RIGHT_ARROW=39;
         this._ESCAPE = 27; this._ENTER = 13; this._ALPHABETS_START = 47; this._SHIFT=16;
-        this._CONTROL = 17; this._MAC_CONTROL = 91; this._BACKSPACE=8; this._DELETE=46;
+        this._CONTROL = 17; this._MAC_CONTROL = 91; this._BACKSPACE=8; this._DELETE=46; this._SPACE=32;
         this._shiftHolded = false; this._controlHolded = false;
         this._isFirstTime = true; this._cacheEle = {};
         this._isMouseDown = false; this._itemsArr = [];
-
-        this._css = {dd:this._settings.mainCSS,
+        
+        this._css = {dd:this._settings.mainCss+ " ms-pr",
             wrapperDisabled:'disabled',
             headerA:"ms-list-option option-selected",
             header: 'ms-dd-header',
@@ -73,17 +67,31 @@ export default class ddMaker {
             itemSelected: 'option-selected',
             itemDisabled:'disabled',
             itemEnabled:'enabled',
-            optgroup: "ms-optgroup"
+            optgroup: "ms-optgroup",
+            listCounter:'ms-list-counter',
+            valueInput:'ms-value-input',
+            checkbox:'ms-checkbox'
         };
+
         //init
         this._wrapper = {};
         this._createByJson();
         this._checkDataSettings();
-        this._isList = (this.ele.size>1 || this.ele.multiple==true) ? true : false;
-        if (this._isList || this._settings.enableCheckbox === true) {
+        this._isList = (this.ele.size>1);
+        this._isMultiple =  this.ele.multiple;
+
+        this._enableCheckbox = this._settings.enableCheckbox;
+
+        if (this._isList || this._enableCheckbox.toString() === "true") {
             this._isMultiple = this.ele.multiple = true;
         }
         this._init();
+
+        this._isFilterApplied = false;
+
+        this._nexPrevCounter = 0;
+
+        this._fireEventIfExist("onCreate");
 
     }
 
@@ -92,9 +100,10 @@ export default class ddMaker {
      * @private
      */
     _init() {
-
+        //console.log(this.name, this.selectedIndex)
         this._makeLayout();
 
+        //console.log(this.name, this.selectedIndex)
         this._updateUiAndValueByIndex(this.selectedIndex);
 
         if(this.ele.size > 1) {
@@ -108,6 +117,11 @@ export default class ddMaker {
         }
         //hide original
         this._showHideOriginal(false);
+        this._fireLocalEventIfExist("create");
+
+        if(this.ele.autofocus) {
+            this._wrapper.holder.focus();
+        }
     }
 
     /**
@@ -132,30 +146,33 @@ export default class ddMaker {
     _checkDataSettings() {
         let dataSet = this._getDataSet(this.ele);
         let settings = this._settings;
-        settings.mainCSS = dataSet.maincss || settings.mainCSS;
-        settings.showIcon = dataSet.showicon || settings.showIcon;
-        settings.event = dataSet.event || settings.event;
-        settings.jsonTitle = dataSet.jsontitle || settings.jsonTitle;
-        settings.childWidth = dataSet.childwidth || settings.childWidth;
-        settings.childHeight = dataSet.childheight || settings.childHeight;
-        settings.enableCheckbox = dataSet.enablecheckbox || settings.enableCheckbox;
-        settings.checkboxNameSuffix = dataSet.checkboxnamesuffix || settings.checkboxNameSuffix;
-        settings.append = dataSet.append || settings.append;
-        settings.prepend = dataSet.prepend || settings.prepend;
-        settings.enableAutoFilter = dataSet.enableautofilter || settings.enableAutoFilter;
-        settings.visibleRows = dataSet.visiblerows || settings.visibleRows;
-        settings.showPlusItemCounter = dataSet.showplusitemcounter || settings.showPlusItemCounter;
-
-        //make it boolean
-        settings.enableAutoFilter = (settings.enableAutoFilter.toString() === "true");
-        settings.showPlusItemCounter = (settings.showPlusItemCounter.toString() === "true");
-        settings.enableCheckbox = (settings.enableCheckbox.toString() === "true");
-        settings.showIcon = (settings.showIcon.toString() === "true");
-
+        settings.mainCss = dataSet?.mainCss || settings.mainCss;
+        settings.showIcon = dataSet?.showIcon || settings.showIcon;
+        settings.event = dataSet?.event || settings.event;
+        settings.childWidth = dataSet?.childWidth || settings.childWidth;
+        settings.childHeight = dataSet?.childHeight || settings.childHeight;
+        settings.enableCheckbox = dataSet?.enableCheckbox || settings.enableCheckbox;
+        settings.checkboxNameSuffix = dataSet?.checkboxNameSuffix || settings.checkboxNameSuffix;
+        /*settings.append = dataSet.append || settings.append;
+        settings.prepend = dataSet.prepend || settings.prepend;*/
+        settings.enableAutoFilter = dataSet?.enableAutoFilter || settings.enableAutoFilter;
+        settings.visibleRows = dataSet?.visibleRows || settings.visibleRows;
+        settings.showPlusItemCounter = dataSet?.showPlusItemCounter || settings.showPlusItemCounter;
+        settings.errorMessage = dataSet?.errorMessage || settings.errorMessage;
 
         this._settings = {...this._settings, ...settings};
 
     }
+
+    /**
+     * Set setting attribute
+     * @param key
+     * @param value
+     */
+    setSettingAttribute(key, value) {
+        this._settings[key] = value;
+    }
+
 
     /**
      * Create by json
@@ -181,9 +198,13 @@ export default class ddMaker {
                 for(let i=0;i<total;i++) {
                     let current = json.data[i];
                     let opt = new Option(current.text, current.value);
+                    if(current.disabled) {
+                        opt.disabled = true;
+                    }
                     for(let p in current) {
                         if (current.hasOwnProperty(p) && p.toLowerCase() !== 'text') {
                             let key = `data-${p}`;
+                            key = key.replace(/([A-Z])/g, "-$1").toLowerCase(); //replace caps letter with -letter
                             opt.setAttribute(key, current[p]);
                         }
                     }
@@ -205,6 +226,7 @@ export default class ddMaker {
             }
         }
     }
+
     /**
      * Scroll to item
      * @param item
@@ -246,14 +268,18 @@ export default class ddMaker {
         if (sText.length === 0) {
             this._show(this._wrapper.headerA);
             this._makeChildren();
+            this._isFilterApplied = false;
         } else {
             this._hide(this._wrapper.headerA);
             //hide all
             let options = [...this.options];
             let filterOptions = options.filter(function(item) {
-                return item.disabled === false && item.text.toLowerCase().indexOf(sText.toLowerCase()) >= 0;
+                return item.nodeName !== "OPTGROUP" && item.disabled === false && item.text.toLowerCase().indexOf(sText.toLowerCase()) >= 0;
             });
             this._makeChildren(filterOptions);
+            this._isFilterApplied = true;
+            this._nexPrevCounter = -1;
+            this._scrollToIfNeeded(null, 0);
         }
 
     }
@@ -265,7 +291,7 @@ export default class ddMaker {
      */
     _makeFilterBox() {
         let div = this._createEle("div", {className:'ms-filter-box'})
-        let input = this._createEle("input",   {name:'_text_filter'});
+        let input = this._createEle("input");
         div.appendChild(input);
         this._wrapper.filterInput = input;
         this._wrapper.filterHolder = div;
@@ -291,7 +317,6 @@ export default class ddMaker {
         let css = this._css;
         let divHeader = this._createEle("div", {className:css.header});
         let headerA = this._createEle("a", {className:css.headerA});
-        //headerA.innerHTML = ``;
         let arrow = this._createEle("span", {className:css.arrow + ' '+css.arrowDown});
         divHeader.appendChild(headerA);
         divHeader.appendChild(arrow);
@@ -309,7 +334,7 @@ export default class ddMaker {
      */
     _makeChildren(byOption=null) {
         let css = this._css;
-        let isCheckbox = (this._settings.enableCheckbox.toString() === "true");
+        let isCheckbox = (this._enableCheckbox.toString() === "true");
         let ul, $this=this;
 
         /**
@@ -322,7 +347,7 @@ export default class ddMaker {
         let _makeObject = function (opts, counter) {
             let opt = {};
             opt = $this._parseOption(opts);
-            //{image, title, description, value, text, className, imagecss, index, selected, disabled}
+            //{image, title, description, value, text, className, imageCss, index, selected, disabled}
             let itemObj = {
                 label: {
                     text:opt.text,
@@ -341,7 +366,7 @@ export default class ddMaker {
                 isCheckbox:isCheckbox,
                 value:opt.value,
                 title:opt.title,
-                imageCss:`${opt.imagecss} ${opt.className}`,
+                imageCss:`${opt.imageCss} ${opt.className}`,
                 counter:counter+1,
                 isOptGroup: (opts.nodeName === "OPTGROUP")
             };
@@ -392,7 +417,6 @@ export default class ddMaker {
                     }
 
                 });
-
             }
         };
 
@@ -422,6 +446,7 @@ export default class ddMaker {
             }
 
             li.index = opt.index;
+            li.setAttribute("data-ms-index", opt.index);
 
             if(itemObj.isOptGroup) {
                 //let make children of optgroup
@@ -443,6 +468,10 @@ export default class ddMaker {
                     }
 
                     c_li.index = c_opt.index;
+                    c_li.setAttribute("data-ms-index", c_opt.index);
+                    if(c_itemObj.isSelected) {
+                        this._setSelectedByItem(c_li, true);
+                    }
                     bindEvents(c_li, c_itemObj);
                     ul2.appendChild(c_li);
                 }
@@ -451,6 +480,7 @@ export default class ddMaker {
             if(!itemObj.isOptGroup) {
                 bindEvents(li, itemObj);
             }
+
             ul.appendChild(li);
 
             if(itemObj.isSelected) {
@@ -471,29 +501,41 @@ export default class ddMaker {
      * @private
      */
     _makeLayout() {
-        tabIndex = (this.ele.tabIndex===0) ? tabIndex+1 : this.ele.tabIndex+1;
         this.ele.tabIndex = -1;
         let css = this._css;
-        let wrapper = this._createEle("div", {tabIndex:tabIndex, className:css.dd});
+
+        let wrapper = this._createEle("div", {tabIndex:0, className:css.dd});
+
+        let name = this.ele.name;
+        let isRequired = this.ele.required;
+
+        let valueBox = this._createEle("input", {tabIndex:-1, name:name, type:"text", className:this._css.valueInput, required:isRequired});
+        wrapper.appendChild(valueBox);
+        this.ele.required = false;
+        this.ele.name = "";
+
+        //This is for multiple select
+        let moreValueBox = this._createEle("div", {className:"more", style:"display:none"});
+        wrapper.appendChild(moreValueBox);
+
+        this._wrapper.valueBox = valueBox;
+        this._wrapper.moreValueBox = moreValueBox;
+
 
         //Make header
         let divHeader = this._makeHeader();
 
+        //Filter box
         let filterBox = this._makeFilterBox();
         divHeader.appendChild(filterBox);
         this._showHideFilterBox(false);
 
         //make options
-        let childHolder = this._createEle("div", {className:"ms-options"});
         let ul = this._makeChildren();
         wrapper.appendChild(divHeader);
-
-        //wrapper.appendChild(filterBox);
         wrapper.appendChild(ul);
-        wrapper.appendChild(childHolder);
 
         this._wrapper.holder = wrapper;
-
 
 
         //add in document
@@ -513,6 +555,11 @@ export default class ddMaker {
         let style = this._getInternalStyle(this.ele);
         wrapper.setAttribute("style", style);
 
+        if(this._settings.byJson.data !== null) {
+            wrapper.setAttribute("style", `width:${this._settings.byJson.width}px`);
+        }
+
+
         //clear
         let div = this._createEle("div", {style:"clear:both"});
         wrapper.appendChild(div);
@@ -520,13 +567,52 @@ export default class ddMaker {
         this._bindEvents(this._wrapper.holder, "focus", (evt) => {
             if(this._isList) {
                 this._bindDocumentEvents(null, false, true);
+            } else {
+                if(_oldC) {
+                    _oldC.close(null);
+                    _oldC = null;
+                }
+                this._bindDocumentEvents(null, true, true);
+                _oldC = this;
             }
+            this._fireLocalEventIfExist("focus");
+            this._fireEventIfExist("focus");
         });
+
         this._bindEvents(this._wrapper.holder, "blur", (evt) => {
             if(this._isList) {
                 this._unbindDocumentEvents();
             }
+            this._fireLocalEventIfExist("blur");
+            this._fireEventIfExist("blur");
         });
+
+        this._bindEvents(this._wrapper.holder, "dblclick", (evt) => {
+            this._fireLocalEventIfExist("blur");
+            this._fireEventIfExist("blur");
+        });
+
+        //For custom message on required
+        valueBox.addEventListener("invalid", (evt)=> {
+            evt.target.setCustomValidity("");
+            if (!evt.target.validity.valid) {
+                evt.target.setCustomValidity(this._settings.errorMessage);
+            }
+        });
+        valueBox.addEventListener("input", (evt)=> {
+            evt.target.setCustomValidity("");
+        });
+
+
+        let events = ["click", "dblclick", "mousemove", "mouseover", "mouseout", "mousedown", "mouseup"];
+        for (let i=0,len=events.length;i<len;i++) {
+            let evtName = events[i];
+            this._bindEvents(this._wrapper.holder, evtName, (evt) => {
+                this._fireLocalEventIfExist(evtName);
+                this._fireEventIfExist(evtName);
+            });
+
+        }
 
         return wrapper;
     }
@@ -534,19 +620,17 @@ export default class ddMaker {
     /**
      * Create a row
      * @param obj
-     * @param withLi
      * @return {any}
      */
-    _createRow(obj, withLi=false) {
+    _createRow(obj) {
 
-        let labelText = obj.label;
         let desc = obj.desc;
         let imgSrc = obj.imgSrc;
         let itemCss = (obj.isOptGroup) ? this._css.optgroup : this._css.item;
 
         let li = this._createEle("li", {className:itemCss});
-        if(obj.isCheckbox && !obj.isOptGroup) {
-            let checkbox = this._createEle("input", {type:"checkbox", disabled:obj.isDisabled, "checked":false, value:obj.value, name:this.name+this._settings.checkboxNameSuffix+"[]"})
+       if(obj.isCheckbox && !obj.isOptGroup) {
+            let checkbox = this._createEle("input", {tabIndex:-1, className:this._css.checkbox,type:"checkbox", disabled:obj.isDisabled, "checked":false, value:obj.value, name:this._wrapper.valueBox.name+this._settings.checkboxNameSuffix+"[]"})
             li.appendChild(checkbox);
             li._refCheckbox = checkbox;
         }
@@ -555,7 +639,7 @@ export default class ddMaker {
 
         let itemSpan = this._createEle("span", {className:this._css.itemSpan+optTxtCss});
 
-        let text = (this._settings.showListCounter === true) ? `<span class='ms-list-counter'>${obj.counter}</span> ${obj.label.text}` : obj.label.text;
+        let text = (this._settings.showListCounter === true) ? `<span class='${this._css.listCounter}'>${obj.counter}</span> ${obj.label.text}` : obj.label.text;
 
         let textSpan = this._createEle("span", {className:obj.label.css}, text);
 
@@ -591,12 +675,12 @@ export default class ddMaker {
     /**
      * Parse option
      * @param opt
-     * @return {{image: *, description: *, index: *, className: *, disabled: *, text: *, imagecss: *, title: *, internalStyle: *, value: *, selected: *}}
+     * @return {{image: *, description: *, index: *, className: *, disabled: *, text: *, imageCss: *, title: *, internalStyle: *, value: *, selected: *}}
      * @private
      */
     _parseOption(opt) {
 
-        let image = null, title ='', description='', value='', text='', className='', imagecss = '', index=-1, selected, disabled, internalStyle;
+        let image = null, title ='', description='', value='', text='', className='', imageCss = '', index=-1, selected, disabled, internalStyle;
         if (opt !== undefined) {
             let optionType = opt.nodeName;
             let dataSet = opt.dataset;
@@ -614,12 +698,12 @@ export default class ddMaker {
             title = dataSet.title || '';
             description = dataSet.description || '';
             image = dataSet.image || image;
-            imagecss = dataSet.imagecss || '';
+            imageCss = dataSet.imageCss || '';
             internalStyle = this._getInternalStyle(opt);
 
         }
 
-        return {image, title, description, value, text, className, imagecss, index, selected, disabled, internalStyle};
+        return {image, title, description, value, text, className, imageCss, index, selected, disabled, internalStyle};
 
     }
 
@@ -633,7 +717,7 @@ export default class ddMaker {
         //remove old selected
         for(let i=0;i<oldSelected.length;i++) {
             oldSelected[i].classList.remove(this._css.itemSelected);
-            if(this._isMultiple) {
+            if(this._isMultiple && this._enableCheckbox.toString() === "true") {
                 oldSelected[i]._refCheckbox.checked = false;
                 //this._getEle("input", oldSelected[i]).checked = false;
             }
@@ -661,7 +745,7 @@ export default class ddMaker {
     /**
      * Toggle Select
      * @private
-     * @param evt
+     * @param checkbox
      * @param li
      */
     _setSelectedByItemToggle(checkbox, li) {
@@ -674,7 +758,7 @@ export default class ddMaker {
             li.classList.remove(this._css.itemSelected);
             this.ele.options[index].selected = false;
         }
-        this._updateUiAndValue();
+        this.updateUiAndValue();
     }
 
     /**
@@ -692,21 +776,28 @@ export default class ddMaker {
 
         } else {
             let index = ele.index;
+
             if(resetOldSelected === true) {
                 this._removeOldSelected();
                 this.ele.selectedIndex = index
+                //this.selectedIndex = index;
             } else {
                 //it could be multiple
                 this.ele.options[index].selected = true;
             }
             ele?.classList?.add(this._css.itemSelected);
-            this._updateUiAndValue();
+            this.updateUiAndValue();
         }
-        if(this._settings.enableCheckbox) {
+        if(this._enableCheckbox.toString() === "true") {
             if(ele?._refCheckbox) {
                 ele._refCheckbox.checked = true;
             }
         }
+        if(this._isFirstTime===false) {
+            this._fireLocalEventIfExist("change");
+            this._fireEventIfExist("change");
+        }
+        this._isFirstTime = false;
     }
 
     /**
@@ -731,7 +822,7 @@ export default class ddMaker {
         let dataAndUI = (byData === null) ? this.uiData : byData;
 
         let text = this._isArray(dataAndUI.index) ? dataAndUI.ui[0].innerHTML : null;
-        if(this._settings.showPlusItemCounter && text !== null) {
+        if(this._settings.showPlusItemCounter.toString() === "true" && text !== null) {
             text = text +  `<span class="${this._css.headerCounter}">&nbsp; (+${dataAndUI.ui.length-1})</span>`;
         }
         this._wrapper.headerA.innerHTML = (innerHTML !== null) ? innerHTML : text || dataAndUI?.ui?.innerHTML || "&nbsp;";
@@ -753,11 +844,11 @@ export default class ddMaker {
      * @private
      */
     _findElementByIndexProp(index) {
-        let options = this._getAllEle("ul li", this._wrapper.holder);
+        let options = this._getAllEle(`ul li.${this._css.item}`, this._wrapper.holder);
         let total = options.length;
         for(let i=0;i<total;i++) {
             let current = options[i];
-            if(current.index == index) {
+            if(current.index === index) {
                 return options[i];
             }
         }
@@ -767,7 +858,7 @@ export default class ddMaker {
     /**
      * Get data and value
      * @param byIndex
-     * @return {{data: *, ui: *, index: *, option: *}}
+     * @return {{data: *, ui: *, index: *, option: *, multiple:boolean}}
      * @private
      */
     _getDataAndUI(byIndex=null) {
@@ -775,6 +866,7 @@ export default class ddMaker {
         let ele = this.ele;
         let data, ui, option=null, index=-1;
         let obj, $this=this;
+        let isArray = false;
         let getByIndex = function(byIndex) {
             let option = ele.options[byIndex];
             let data = $this._parseOption(option);
@@ -791,6 +883,7 @@ export default class ddMaker {
             ui = obj.ui;
         } else {
             ui = this._getAllEle("ul li." + this._css.itemSelected, this._wrapper.holder);
+
             // if this is multiple
             if (ui.length > 1) {
                 let data_a = [], opt_a = [], ind_a = [], ui_a = [];
@@ -805,8 +898,9 @@ export default class ddMaker {
                 option = opt_a;
                 index = ind_a;
                 ui = ui_a;
+                isArray = true;
             } else {
-                obj = getByIndex(ui[0]?.index);
+                obj = getByIndex(ui[0]?.index || this.selectedIndex);
                 option = obj.option || null;
                 data = obj.data || null;
                 index = obj.index || -1;
@@ -815,7 +909,7 @@ export default class ddMaker {
         }
 
 
-        return {data, ui, index, option};
+        return {data, ui, index, option, isArray};
     }
 
     /**
@@ -825,17 +919,28 @@ export default class ddMaker {
      * @private
      */
     _isArray = function(obj) {
-        return (Object.prototype.toString.call(obj)=="[object Array]") ? true : false;
+        return (Object.prototype.toString.call(obj) === "[object Array]");
     };
 
     /**
      * Update Header UI by data
      * @param byData
-     * @private
+     *
      */
-    _updateUiAndValue(byData=null) {
+    updateUiAndValue(byData=null) {
         let dataAndUI = (byData === null) ? this.uiData : byData;
         this._updateHeaderUI(dataAndUI);
+        let valueBox = this._wrapper.valueBox;
+        valueBox.value = this.ele.value;
+
+        //this is multiple
+        if(this._isMultiple && valueBox.name.substr(valueBox.name.length-2, valueBox.name.length) === "[]") {
+            this._wrapper.moreValueBox.innerHTML = "";
+            for (let i=1;i<dataAndUI.data.length;i++) {
+                let valueBoxM = this._createEle("input", {type:"hidden", name:valueBox.name, value:dataAndUI.data[i].value});
+                this._wrapper.moreValueBox.appendChild(valueBoxM);
+            }
+        }
     }
 
     /**
@@ -845,7 +950,8 @@ export default class ddMaker {
      */
     _updateUiAndValueByIndex(index) {
         let dataAndUI = this._getDataAndUI(index);
-        this._updateHeaderUI(dataAndUI);
+        //this._updateHeaderUI(dataAndUI);
+        this.updateUiAndValue(dataAndUI);
     }
 
     /****  Elements and Helpers ****/
@@ -903,7 +1009,7 @@ export default class ddMaker {
      * @private
      */
     _getInternalStyle(ele) {
-        return (ele.style === undefined) ? "" : ele.style.cssText;;
+        return (ele.style === undefined) ? "" : ele.style.cssText;
     }
 
     /**
@@ -920,8 +1026,8 @@ export default class ddMaker {
      * @param ele
      * @private
      */
-    _show(ele) {
-        ele.style.display = "inherit";
+    _show(ele, dispaly="block") {
+        ele.style.display = dispaly;
     }
 
     /**
@@ -1028,7 +1134,7 @@ export default class ddMaker {
     _adjustChildHeight(row=null) {
         row = (row === null) ? parseInt(this._settings.visibleRows) : row;
         if(row !== null) {
-            let li = this._getEle("li", this._wrapper.listOfItems);
+            let li = this._getEle("li[data-ms-index='0']", this._wrapper.listOfItems);
             let size = (this._settings.rowHeight !== null) ? this._settings.rowHeight : li.clientHeight;
             this._wrapper.listOfItems.style.height = (row * size)+'px';
         }
@@ -1066,16 +1172,23 @@ export default class ddMaker {
      */
     _makeUiAsList(val, row) {
         if(val === true) {
+            //make ui as list
             //update height
             this._hide(this._wrapper.header);
             this.open(null, true);
             this._adjustChildHeight(row);
             this._wrapper.listOfItems.style.position = "relative";
             this._wrapper.listOfItems.style.display = "inline-block";
+            this._wrapper.listOfItems.style.zIndex = null;
+            this._isList = true;
         } else {
+            //reset to dropdown
             this._show(this._wrapper.header);
             this._wrapper.listOfItems.style.height = null;
             this._wrapper.listOfItems.style.position = "absolute";
+            this._wrapper.listOfItems.style.zIndex = this._settings.zIndex;
+            this._wrapper.holder.style.zIndex = this._settings.zIndex;
+            this._isList = false;
             this.close(null);
         }
     }
@@ -1102,7 +1215,6 @@ export default class ddMaker {
         };
 
         this._onDocumentKeyDown = (evt) => {
-
             switch (evt.keyCode) {
                 case this._DOWN_ARROW:
                 case this._RIGHT_ARROW:
@@ -1117,6 +1229,7 @@ export default class ddMaker {
                     evt.preventDefault();
                     evt.stopPropagation();
                     this.previous();
+
                     break;
                 case this._ESCAPE:
                 case this._ENTER:
@@ -1130,13 +1243,15 @@ export default class ddMaker {
                     break;
                 case this._CONTROL:
                 case this._MAC_CONTROL:
-
                     this._controlHolded = true;
                     break;
+                case this._SPACE:
+                    this._show(this._wrapper.listOfItems);
+                    this._isOpen = true;
+                    break;
                 default:
-                    if (evt.keyCode >= this._ALPHABETS_START && this._isList === false) {
+                    if (evt.keyCode >= this._ALPHABETS_START && this._isList === false && this._settings.enableAutoFilter.toString() === "true") {
                         this._showHideFilterBox(true);
-                        //this._applyFilters();
                     }
                     this._shiftHolded = false;
                     this._controlHolded = false;
@@ -1211,6 +1326,110 @@ export default class ddMaker {
         }
     }
 
+    /**
+     * Fire event that is bind on settings
+     * @param evt_n
+     * @private
+     */
+    _fireLocalEventIfExist(evt_n, data=null) {
+        if (typeof this._settings.on[evt_n] === "function") {
+            let dataAndUI = (data===null) ? this._getDataAndUI() : data;
+            let fn = this._settings.on[evt_n];
+            try {
+                fn(dataAndUI);
+            } catch (e) {
+                console.error(e.message);
+            }
+
+        }
+    }
+
+    /**
+     * Fire event if exist
+     * @param evt_n
+     * @return {boolean}
+     * @private
+     */
+    _fireEventIfExist(evt_n) {
+        //data event
+        if(this.ele.dataset[evt_n]) {
+            let fn = new Function(this.ele.dataset[evt_n]);
+            try {
+                fn();
+            } catch (e) {
+                console.error(e.message);
+            }
+
+        }
+
+        //check if original has some
+        if (this._has_handler(evt_n).hasEvent) {
+            if (this._has_handler(evt_n).byElement) {
+                this.ele["on" + evt_n]();
+            } else if (this._has_handler(evt_n).byJQuery) {
+                switch (evt_n) {
+                    case "keydown":
+                    case "keyup":
+                        //key down/up will check later
+                        break;
+                    default:
+                        try {
+                            if(typeof jQuery !== "undefined") {
+                                jQuery(this.ele).triggerHandler(evt_n);
+                            }
+                        } catch (e) {
+                            //silence is bliss
+                        }
+
+                        break;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Has any event
+     * @param name
+     * @return {{byJQuery: boolean, hasEvent: boolean, byElement: boolean}}
+     * @private
+     */
+    _has_handler(name) {
+        //True if a handler has been added in the html.
+        let evt = {byElement: false, local:false, byJQuery: false, hasEvent: false};
+
+        if (this._settings.on[name] !== null) {
+            evt.hasEvent = true;
+            evt.local = true;
+        }
+
+        //console.log(name)
+        try {
+            //console.log(obj.prop("on" + name) + " "+name);
+            if (this._getProp(this.ele, "on" + name) !== null) {
+                evt.hasEvent = true;
+                evt.byElement = true;
+            }
+        } catch(e) {
+            //console.log(e.message);
+        }
+        // True if a handler has been added using jQuery.
+        if(typeof jQuery !== "undefined") {
+            let obj = jQuery(this.ele);
+            let evs;
+            if (typeof jQuery?._data === "function") { //1.8
+                evs = jQuery?._data(this.ele, "events");
+            } else {
+                evs = obj.data("events");
+            }
+            if (evs && evs[name]) {
+                evt.hasEvent = true;
+                evt.byJQuery = true;
+            }
+        }
+        return evt;
+    }
+
     /*****************  Public methods and props *********** /
      /**
      * Add an item to select
@@ -1218,14 +1437,14 @@ export default class ddMaker {
      * new Option("Label", "value") or
      * {text:"Label", value:"value"}
      * or Label as string
-     * or full object ie {text:"", value:"", description:'', image:'', className:'' title:''}
+     * or full object ie {text:"", value:"", description:'', image:'', className:'' title:'', imageCss:''}
      * @param obj
-     *
+     * @param index
      */
 
     add(obj, index=null) {
         //
-        let text, value, title, image, description, imagecss;
+        let text, value, title, image, description, imageCss;
         let opt;
         if(obj instanceof HTMLOptionElement) {
             opt = obj;
@@ -1238,16 +1457,17 @@ export default class ddMaker {
             value = obj.value || text;
             title = obj.title || '';
             image = obj.image || '';
-            imagecss = obj.imagecss || '';
+            imageCss = obj.imageCss || '';
             description = obj.description || '';
             opt = new Option(text, value);
             opt.setAttribute("data-description", description);
             opt.setAttribute("data-image", image);
             opt.setAttribute("data-title", title);
-            opt.setAttribute("data-imagecss", imagecss);
+            opt.setAttribute("data-image-css", imageCss);
         }
         this.ele.add(opt, index);
         this._makeChildren();
+        this._fireLocalEventIfExist("add");
     }
 
     /**
@@ -1255,24 +1475,33 @@ export default class ddMaker {
      * @param index
      */
     remove(index) {
+        let uiAndData = this._getDataAndUI(index);
         this.ele.remove(index);
         this._makeChildren();
+        this._fireLocalEventIfExist("remove", uiAndData);
+        return uiAndData;
     }
 
     /**
      * Move to next index
      */
     next() {
-        let items = this.optionsUI;
         let $this = this;
-        let allOptions = $this._getAllEle(`li.${$this._css.item}`, $this._wrapper.listOfItems);
+        let allOptions = this.optionsUI;
         let totalOpt = allOptions.length;
+        let counterStart;
+        if(this._isFilterApplied) {
+            counterStart = this._nexPrevCounter;
+        } else {
+            counterStart = this.selectedIndex;
+        }
 
         let _getNextElem = function() {
-            let i = $this.selectedIndex;
+            let i = counterStart;
             for(i;i<totalOpt;i++) {
                 let next = i+1;
                 next = next >= totalOpt ? totalOpt-1 : next;
+                $this._nexPrevCounter++;
                 if(!allOptions[next].classList.contains($this._css.itemDisabled)) {
                     return allOptions[next];
                 }
@@ -1280,7 +1509,7 @@ export default class ddMaker {
             return null;
         };
 
-        if(items.length > 0) {
+        if(totalOpt > 0) {
             let nextEle = _getNextElem();
             if(nextEle) {
                 this._setSelectedByItem(nextEle, false, true);
@@ -1294,16 +1523,21 @@ export default class ddMaker {
      * Move to previous index
      */
     previous() {
-        let items = this.optionsUI;
         let $this = this;
-        let allOptions = $this._getAllEle(`li.${$this._css.item}`, $this._wrapper.listOfItems);
+        let allOptions = this.optionsUI;//$this._getAllEle(`li.${$this._css.item}`, $this._wrapper.listOfItems);
         let totalOpt = allOptions.length;
-
+        let counterStart;
+        if(this._isFilterApplied) {
+            counterStart = this._nexPrevCounter;
+        } else {
+            counterStart = this.selectedIndex;
+        }
         let _getPreviousElem = function(ele) {
-            let i = $this.selectedIndex;
+            let i = counterStart;
             for(i;i>0;i--) {
                 let next = i-1;
                 next = next >= 0 ? next: 0;
+                $this._nexPrevCounter--;
                 if(!allOptions[next].classList.contains($this._css.itemDisabled)) {
                     return allOptions[next];
                 }
@@ -1343,6 +1577,8 @@ export default class ddMaker {
             this._adjustChildHeight();
             this._scrollToItem();
 
+            this._fireLocalEventIfExist("open");
+
         } else {
             this.close(null);
         }
@@ -1375,32 +1611,58 @@ export default class ddMaker {
         this._isMouseDown = false;
         this._shiftHolded = false;
         this._controlHolded = false;
+        this._isFilterApplied = false;
         this._showHideFilterBox(false);
         this._unbindDocumentEvents();
+
         this._updateHeaderUI();
 
         //reset list if required
         if(this.ele.length !== this._getAllEle(`li.${this._css.item}`, this._wrapper.listOfItems).length) {
             this._makeChildren();
-            this._updateUiAndValue();
+            this.updateUiAndValue();
         }
+
+        this._fireLocalEventIfExist("close");
 
     }
 
     /**
      * Return named item element with data
      * @param name
+     * @param withData
      */
-    namedItem(name) {
-        return this.ele.querySelector(`option[name='${name}']`);
+    namedItem(name, withData=false) {
+        let obj = null;
+        let ele = this.ele.querySelector(`option[name='${name}']`);
+        if(ele && withData) {
+            obj = {};
+            let data = this._parseOption(ele);
+            obj.option = ele;
+            obj.data = data;
+        } else {
+            obj = ele;
+        }
+        return obj;
     }
 
     /**
      * Get data by index
      * @param index
+     * @param withData
      */
-    item(index) {
-        return this.ele.options[index];
+    item(index, withData=false) {
+        let obj = null;
+        let ele = this.ele.options[index];
+        if(ele && withData) {
+            obj = {};
+            let data = this._parseOption(ele);
+            obj.option = ele;
+            obj.data = data;
+        } else {
+            obj = ele;
+        }
+        return obj;
     }
 
     /**
@@ -1411,21 +1673,22 @@ export default class ddMaker {
     visible(isShow=null) {
 
         if(isShow === true) {
-            this._show(this._wrapper);
+            this._show(this._wrapper.holder, "inline-block");
         } else if(isShow === false) {
-            this._hide(this._wrapper);
+            this._hide(this._wrapper.holder);
         }
         if(isShow === null) {
-            return this._wrapper.style.display === "none";
+            return (this._wrapper.holder.style.display !== "none");
         }
     }
 
     /**
-     * Calculate item height and set child height - undecided
+     * Calculate item height and set child height
      * @param numberOfRows
      */
     showRows(numberOfRows) {
-
+        this._settings.visibleRows = (numberOfRows > this.length) ? this.length : numberOfRows;
+        this._adjustChildHeight();
     }
 
     /**
@@ -1442,7 +1705,8 @@ export default class ddMaker {
      * @param fn
      */
     on(type, fn) {
-        this._bindEvents(this.ele, type, fn);
+       //this._bindEvents(this.ele, type, fn);
+        this._settings.on[type] = fn;
     }
 
     /**
@@ -1451,7 +1715,8 @@ export default class ddMaker {
      * @param fn
      */
     off(type, fn) {
-        this._unbindEvents(this.ele, type, fn);
+        //this._unbindEvents(this.ele, type, fn);
+        this._settings.on[type] = null;
     };
 
     /**
@@ -1459,7 +1724,7 @@ export default class ddMaker {
      */
     refresh() {
         this._makeChildren();
-        this._updateUiAndValue();
+        this.updateUiAndValue();
     }
 
     /**
@@ -1468,6 +1733,8 @@ export default class ddMaker {
     destroy() {
         //show original
         this._show(this.ele);
+        this.ele.required = this._wrapper.valueBox.required;
+        this.ele.name = this._wrapper.valueBox.name;
         this._wrapper.holder.parentNode.removeChild(this._wrapper.holder);
     }
 
@@ -1486,14 +1753,17 @@ export default class ddMaker {
      * @param index
      */
     set selectedIndex(index) {
-        this.ele.selectedIndex = index;
-        if(index === -1) {
-            //blank
-            this._updateHeaderUI(null, "");
-            this._removeOldSelected();
-        } else {
-            this._setSelectedByOptionItem(this.ele.options[index]);
+        if(index < this.length) {
+            this.ele.selectedIndex = index;
+            if(index === -1) {
+                //blank
+                this._updateHeaderUI(null, "");
+                this._removeOldSelected();
+            } else {
+                this._setSelectedByOptionItem(this.ele.options[index]);
+            }
         }
+
     }
 
     /**
@@ -1506,18 +1776,18 @@ export default class ddMaker {
 
     /**
      * Set options length
-     * @param len
+     * @param option
      */
     set options(option) {
 
         if(option instanceof HTMLOptionElement) {
             this.ele.add(option);
             this._makeChildren();
-            this._updateUiAndValue();
+            this.updateUiAndValue();
         } else if (typeof option === "number") {
             this.ele.length = option;
             this._makeChildren();
-            this._updateUiAndValue();
+            this.updateUiAndValue();
         }
     }
 
@@ -1529,7 +1799,7 @@ export default class ddMaker {
         if(this._cacheEle["allItems"]) {
            //return this._cacheEle["allItems"];
         }
-        return this._cacheEle["allItems"] = this._getAllEle("li", this._wrapper.listOfItems);
+        return this._cacheEle["allItems"] = this._getAllEle(`li.${this._css.item}`, this._wrapper.listOfItems);
     }
 
     /**
@@ -1547,7 +1817,7 @@ export default class ddMaker {
     set length(size) {
         this.ele.options.length = size;
         this._makeChildren();
-        this._updateUiAndValue();
+        this.updateUiAndValue();
     }
 
 
@@ -1565,7 +1835,7 @@ export default class ddMaker {
      */
     set value(val) {
         this.ele.value = val;
-        this._updateUiAndValue();
+        this.selectedIndex = this.ele.selectedIndex;
     }
 
     /**
@@ -1622,11 +1892,17 @@ export default class ddMaker {
     set multiple(val) {
         if (val) {
             this.ele.setAttribute('multiple', '');
-            //update now
+            this._enableCheckbox = this._settings.enableCheckbox;
         } else {
             this.ele.removeAttribute('multiple');
-            this.size = 0;
         }
+        this._isMultiple = val;
+        //reset if this is not multiple
+        if(!val) {
+            this.selectedIndex = this.ele.selectedIndex;
+            this._enableCheckbox = false;
+        }
+        this._makeChildren();
     }
 
     /**
@@ -1634,7 +1910,10 @@ export default class ddMaker {
      * @return {*}
      */
     get name() {
-        return this.ele.name || "";
+        if(this._wrapper?.valueBox) {
+            return this._wrapper.valueBox.name || "";
+        }
+        return this.ele.name;
     }
 
     /**
@@ -1642,7 +1921,14 @@ export default class ddMaker {
      * @param val
      */
     set name(val) {
-        this.ele.name = val;
+
+        if(this._wrapper?.valueBox) {
+            this._wrapper.valueBox.name = val;
+        } else {
+            this.ele.name = val;
+        }
+
+
     }
 
     /**
@@ -1650,7 +1936,7 @@ export default class ddMaker {
      * @return {*}
      */
     get required() {
-        return this.ele.required;
+        return this._wrapper.valueBox.required;
     }
 
     /**
@@ -1659,10 +1945,10 @@ export default class ddMaker {
      */
     set required(val) {
         if (val) {
-            this.ele.setAttribute('required', '');
+            this._wrapper.valueBox.setAttribute('required', true);
             //update now
         } else {
-            this.ele.removeAttribute('required');
+            this._wrapper.valueBox.removeAttribute('required');
         }
     }
 
@@ -1689,7 +1975,22 @@ export default class ddMaker {
      * @return {null}
      */
     get selectedOptions() {
-        return ( this.selectedIndex >=0 ) ? this.ele.options[this.selectedIndex] : null;
+        let selectedOptions = null;
+        if(this.selectedIndex >=0 ) {
+            selectedOptions = this.ele.options[this.selectedIndex];
+            if(this.multiple) {
+                selectedOptions = [];
+                let options = this.options;
+                let total = options.length;
+                for (let i=0; i<total; i++) {
+                    if(options[i].selected) {
+                        selectedOptions.push(options[i])
+                    }
+                }
+                selectedOptions = selectedOptions.length === 1 ? selectedOptions[0] : selectedOptions;
+            }
+        }
+        return selectedOptions;
     }
 
     /**
