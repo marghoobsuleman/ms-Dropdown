@@ -6,12 +6,6 @@ window.MsDropdown = MsDropdown;
 (function () {
     let isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 && navigator.userAgent && navigator.userAgent.indexOf('CriOS') == -1 && navigator.userAgent.indexOf('FxiOS') == -1;
     if(isSafari) {
-        /*let selects = document.querySelectorAll("select[is='ms-dropdown']");
-        let total = selects.length;
-        for(let i=0;i<total;i++) {
-            let current = selects[i];
-
-        }*/
         MsDropdown.make("select[is='ms-dropdown']");
         /**
          * Not a good idea to override this
