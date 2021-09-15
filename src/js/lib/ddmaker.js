@@ -1179,7 +1179,8 @@ export default class ddMaker {
             this._adjustChildHeight(row);
             this._wrapper.listOfItems.style.position = "relative";
             this._wrapper.listOfItems.style.display = "inline-block";
-            this._wrapper.listOfItems.style.zIndex = null;
+            this._wrapper.listOfItems.style.zIndex = 0;
+            this._wrapper.holder.style.zIndex = 0;
             this._isList = true;
         } else {
             //reset to dropdown
@@ -1187,7 +1188,7 @@ export default class ddMaker {
             this._wrapper.listOfItems.style.height = null;
             this._wrapper.listOfItems.style.position = "absolute";
             this._wrapper.listOfItems.style.zIndex = this._settings.zIndex;
-            this._wrapper.holder.style.zIndex = this._settings.zIndex;
+            this._wrapper.holder.style.zIndex = 0;
             this._isList = false;
             this.close(null);
         }

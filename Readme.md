@@ -5,6 +5,9 @@
 - [Image Dropdown Home](https://www.marghoobsuleman.com/image-dropdown)
 - [Image Dropdown Help Document](https://www.marghoobsuleman.com/image-dropdown/help)
 
+### v4.0.1 update: 15 Sep, 2021
+- Fixed List zIndex issue
+
 ### v4.0 update: 09 Sep, 2021
 - Written in ES6 (class) Style 
 - Remove jQuery dependency
