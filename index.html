@@ -42,7 +42,9 @@
 </div>
 
 <form action="submitdata.php" method="post" enctype="multipart/form-data" name="frmdata">
-  <select id="multigames" name="games[]" is="ms-dropdown" multiple required>
+  <select style="margin-bottom: 50px" id="multigames" name="games[]"
+          is="ms-dropdown" multiple required onchange="showMe(this)"
+          >
     <option value="" selected>Please select one</option>
     <option data-image="./dist/images/icons/icon_email.gif"  value="email">Email</option>
     <option data-image="./dist/images/icons/icon_faq.gif"  value="faq">FAQ</option>
@@ -73,7 +75,7 @@
   </select>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-  <select id="tech" name="tech" is="ms-dropdown" data-enable-checkbox="true">
+  <select id="tech" name="tech" is="ms-dropdown" data-enable-checkbox="true" data-show-Filter-Always="true">
     <option data-image="./dist/images/icons/icon_email.gif"  value="email">Email</option>
     <option data-image="./dist/images/icons/icon_faq.gif"  value="faq">FAQ</option>
     <option data-image="./dist/images/icons/icon_games.gif"  selected value="games">Games</option>
@@ -368,6 +370,9 @@
 
 
 <script>
+  function showMe(evt) {
+    console.log("evt.value ",evt.value);
+  }
   function makeDd() {
     'use strict';
     let json = new Function(`return ${document.getElementById('json_data').innerHTML}`)();
@@ -384,7 +389,7 @@
   }
 
 </script>
-<script src="./dist/js/dd.min.js"></script>
+<script src="./dist/js/dd.min.js?ver=4.0"></script>
 
 </body>
 </html>

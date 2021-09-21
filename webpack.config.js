@@ -12,7 +12,7 @@ const cssnano = require('cssnano');
 
 const fs = require('fs');
 
-const version = "4.0";
+const version = "4.0.2";
 
 const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 

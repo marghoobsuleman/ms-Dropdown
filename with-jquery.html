@@ -20,7 +20,10 @@
 
   <link rel="stylesheet" href="./dist/css/dd.css?v=4.0">
   <link rel="stylesheet" type="text/css" href="./dist/css/flags.css?v=1.0" />
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
   <style>
     body {
       font-size: 12px;
@@ -367,6 +370,52 @@
 </form>
 
 
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <select is="ms-dropdown" id="car_group2" name="car_group2">
+          <optgroup label="Mercedes Benz">
+            <option>Mercedes-Benz GLA</option>
+            <option>Mercedes-Benz E-Class</option>
+            <option>Mercedes-Benz S-Class</option>
+            <option>Mercedes-Benz GLS</option>
+          </optgroup>
+          <optgroup label="Jaguar">
+            <option>Jaguar F-TYPE</option>
+            <option selected>Jaguar XE</option>
+            <option>Jaguar F-Pace</option>
+            <option>Jaguar I-Pace</option>
+            <option>Jaguar XF</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+
+
+
+
 <script>
 
   function makeDd() {
@@ -384,12 +433,23 @@
     });
   }
 
-  $("#tech").on("change", function (arg) {
-    console.log(document.getElementById("tech").msDropdown.uiData);
-  })
+  (function () {
+    $("#tech").on("change", function (arg) {
+      console.log(document.getElementById("tech").msDropdown.uiData);
+    })
+  })()
+
 
 </script>
 <script src="./dist/js/dd.min.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 </body>
 </html>

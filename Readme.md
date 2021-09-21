@@ -5,6 +5,14 @@
 - [Image Dropdown Home](https://www.marghoobsuleman.com/image-dropdown)
 - [Image Dropdown Help Document](https://www.marghoobsuleman.com/image-dropdown/help)
 
+### v4.0.2 update: 21 Sep, 2021
+- Safari blue border on focus removed
+- selectedIndex can be set as an array if "&lt;select&gt;" is multiple.
+  - Example: element.msDropdown.selectedIndex = [1, 4]; 
+- imagePosition:'right' is added. Default value is left.
+- showFilterAlways functionality is added. 
+- Little bit code refactoring
+
 ### v4.0.1 update: 15 Sep, 2021
 - Fixed List zIndex issue
 
