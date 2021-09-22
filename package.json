@@ -36,8 +36,6 @@
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
     "cssnano": "^5.0.7",
-    "esdoc": "^1.1.0",
-    "esdoc-standard-plugin": "^1.0.0",
     "fs": "0.0.1-security",
     "html-webpack-plugin": "^5.3.2",
     "mini-css-extract-plugin": "^2.2.0",

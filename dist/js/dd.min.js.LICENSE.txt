@@ -4,7 +4,7 @@
  *  * @author: Marghoob Suleman
  *  * @website: https://www.marghoobsuleman.com/
  *  * @version: 4.0.2
- *  * @date: Tue Sep 21 2021 14:37:33 GMT+0530 (India Standard Time)
+ *  * @date: Wed Sep 22 2021 13:32:31 GMT+0530 (India Standard Time)
  *  * msDropdown is free web component: you can redistribute it and/or modify
  *  * it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
  *  * /
