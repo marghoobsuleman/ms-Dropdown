@@ -5,6 +5,9 @@
 - [Image Dropdown Home](https://www.marghoobsuleman.com/image-dropdown)
 - [Image Dropdown Help Document](https://www.marghoobsuleman.com/image-dropdown/help)
 
+### v4.0.3 update: 13 Oct, 2021
+- Fixed bootstrap modal issue 
+
 ### v4.0.2 update: 21 Sep, 2021
 - Safari blue border on focus removed
 - selectedIndex can be set as an array if "&lt;select&gt;" is multiple.

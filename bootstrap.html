@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>MsDropdown Example</title>
+  <meta name="description" content="Convert your SELECT to image dropdown">
+  <meta name="author" content="Marghoob Suleman">
+
+  <meta property="og:title" content="MsDropdown Example">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.marghoobsuleman/image-dropdown">
+  <meta property="og:description" content="Convert your SELECT to image dropdown">
+  <meta property="og:image" content="image-dropdown.png">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="./dist/css/dd.css?v=4.0">
+  <link rel="stylesheet" type="text/css" href="./dist/css/flags.css?v=1.0" />
+
+  <style>
+    body {
+      font-size: 12px;
+      font-family: Arial;
+    }
+    .header, .footer {
+      padding: 50px 0 20px;
+    }
+    .highlight{background-color: lightyellow}
+    .strong{font-weight: bold}
+  </style>
+  <script type="text/javascript" src="//code.jquery.com/jquery-2.1.3.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="./dist/css/dd.css?v=4.0">
+  <script src="./dist/js/dd.min.js?ver=4.0"></script>
+</head>
+
+<body>
+
+
+<div class="header">
+  <h1><a href="https://www.marghoobsuleman.com/image-dropdown">msDropdown</a></h1>
+</div>
+
+<!-- Button trigger modal -->
+<button type="button" id="mymodal" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        <select style="margin-bottom: 50px" id="multigames" name="games" is="ms-dropdown">
+          <option value="" selected>Please select one</option>
+          <option data-image="https://cdn.jsdelivr.net/npm/ms-dropdown@4.0.2/dist/images/icons/icon_email.gif"  value="email">Email</option>
+          <option data-image="https://cdn.jsdelivr.net/npm/ms-dropdown@4.0.2/dist/images/icons/icon_faq.gif"  value="faq">FAQ</option>
+          <option data-image="https://cdn.jsdelivr.net/npm/ms-dropdown@4.0.2/dist/images/icons/icon_games.gif"  value="games">Games</option>
+          <option data-image="https://cdn.jsdelivr.net/npm/ms-dropdown@4.0.2/dist/images/icons/icon_music.gif" value="music">Music</option>
+          <option data-image="https://cdn.jsdelivr.net/npm/ms-dropdown@4.0.2/dist/images/icons/icon_phone.gif" value="phone">Phone</option>
+          <option data-image="https://cdn.jsdelivr.net/npm/ms-dropdown@4.0.2/dist/images/icons/icon_sales.gif"  value="graph">Graph</option>
+          <option data-image="https://cdn.jsdelivr.net/npm/ms-dropdown@4.0.2/dist/images/icons/icon_secure.gif" value="secured">Secured</option>
+          <option data-image="https://cdn.jsdelivr.net/npm/ms-dropdown@4.0.2/dist/images/icons/icon_video.gif" value="video">Video</option>
+          <option data-image="https://cdn.jsdelivr.net/npm/ms-dropdown@4.0.2/dist/images/icons/icon_cd.gif" name="cd" value="cd">CD</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  jQuery(document).ready(function(e) {
+    jQuery('#mymodal').trigger('click');
+  });
+</script>
+</body>
+</html>

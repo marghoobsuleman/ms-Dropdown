@@ -2,8 +2,8 @@
  * MSDropdown - ddmaker.js
  * @author: Marghoob Suleman
  * @website: https://www.marghoobsuleman.com/
- * @version: 4.0.2
- * @revision: 5
+ * @version: 4.0.3
+ * @revision: 6
  * @date: 21st Sep 2021
  * msDropdown is free web component: you can redistribute it and/or modify
  * it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
@@ -105,7 +105,6 @@ export default class ddMaker {
         //console.log(this.name, this.selectedIndex)
         this._makeLayout();
 
-        //console.log(this.name, this.selectedIndex)
         this._updateUiAndValueByIndex(this.selectedIndex);
 
         if(this.ele.size > 1) {
@@ -870,7 +869,8 @@ export default class ddMaker {
         this._wrapper.headerContent.innerHTML = (innerHTML !== null) ? innerHTML : text || dataAndUI?.ui?.innerHTML || "&nbsp;";
 
         let contentHolder = this._getEle("."+this._css.itemLabel, this._wrapper.headerContent);
-        if(this._settings.showPlusItemCounter.toString() === "true" && dataAndUI.ui.length > 1) {
+
+        if(this._settings.showPlusItemCounter.toString() === "true" && dataAndUI.ui !== null && dataAndUI.ui.length > 1) {
             contentHolder.innerHTML = contentHolder.innerHTML +  `<span class="${this._css.headerCounter}">&nbsp; (+${dataAndUI.ui.length-1})</span>`;
         }
 
@@ -2092,7 +2092,7 @@ export default class ddMaker {
      * @return {string}
      */
     get version() {
-        return "4.0.2";
+        return "4.0.3";
     }
 
 }

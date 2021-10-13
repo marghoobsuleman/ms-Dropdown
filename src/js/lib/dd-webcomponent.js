@@ -8,26 +8,26 @@ class dd extends HTMLSelectElement {
 
 
     connectedCallback() {
-        if(!this.msDropdown) {
-            this.msDropdown = new MsDropdown(this);
-        }
-        try {
-            this.addEventListener("change", (evt)=> {if(!this.multiple) {
-                this.msDropdown.selectedIndex = this.selectedIndex;
-            } else {
-                this.msDropdown.refresh();
+        setTimeout(()=> {
+            if(!this.msDropdown) {
+                this.msDropdown = new MsDropdown(this);
             }
-            });
+            try {
+                this.addEventListener("change", (evt)=> {if(!this.multiple) {
+                    this.msDropdown.selectedIndex = this.selectedIndex;
+                } else {
+                    this.msDropdown.refresh();
+                }
+                });
 
-        } catch (e) {
-            console.log(e.message);
-        }
-
-
+            } catch (e) {
+                console.log(e.message);
+            }
+        },1);
     }
 
     disconnectedCallback() {
-        //console.log('disconnectedCallback');
+       // console.log('disconnectedCallback');
     }
 
     adoptedCallback() {
@@ -48,6 +48,7 @@ class dd extends HTMLSelectElement {
             }
 
         }
+        console.log('attributeChangedCallback');
 
     }
 

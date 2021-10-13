@@ -2,8 +2,8 @@
  * MSDropdown - dd.js
  * @author: Marghoob Suleman
  * @website: https://www.marghoobsuleman.com/
- * @version: 4.0.2
- * @revision: 5
+ * @version: 4.0.3
+ * @revision: 6
  * @date: 5th Sep 2021
  * msDropdown is free web component: you can redistribute it and/or modify
  * it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
@@ -65,6 +65,7 @@ export default class MsDropdown {
     next() {
         this._ddMaker.next();
     }
+
 
     /**
      * Move to previous index
@@ -393,7 +394,7 @@ export default class MsDropdown {
      * @return {string}
      */
     static get version() {
-        return "4.0.2";
+        return "4.0.3";
     }
 
     /**
