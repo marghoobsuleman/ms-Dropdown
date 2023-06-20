@@ -32,6 +32,7 @@ export default class ddMaker {
             showPlusItemCounter:true,
             enableAutoFilter:true,
             showFilterAlways:false,
+            filterPlaceholder:'',
             showListCounter:false,
             imagePosition:'left',
             errorMessage:'Please select an item from this list',
@@ -49,7 +50,7 @@ export default class ddMaker {
         this._shiftHolded = false; this._controlHolded = false;
         this._isFirstTime = true; this._cacheEle = {};
         this._isMouseDown = false; this._itemsArr = [];
-        
+
         this._css = {dd:this._settings.mainCss+ " ms-pr",
             wrapperDisabled:'disabled',
             headerA:"ms-list-option option-selected",
@@ -174,6 +175,7 @@ export default class ddMaker {
         settings.showPlusItemCounter = dataSet?.showPlusItemCounter || settings.showPlusItemCounter;
         settings.errorMessage = dataSet?.errorMessage || settings.errorMessage;
         settings.showFilterAlways = dataSet?.showFilterAlways || settings.showFilterAlways;
+        settings.filterPlaceholder = dataSet?.filterPlaceholder || settings.filterPlaceholder;
         settings.showListCounter = dataSet?.showListCounter || settings.showListCounter;
         settings.imagePosition = dataSet?.imagePosition || settings.imagePosition;
 
@@ -316,8 +318,11 @@ export default class ddMaker {
      * @private
      */
     _makeFilterBox() {
-        let div = this._createEle("div", {className:'ms-filter-box'})
-        let input = this._createEle("input", {type:"text"});
+        const div = this._createEle("div", {className:'ms-filter-box'});
+        const input = this._createEle("input", {
+            type:"text",
+            placeholder:this._settings.filterPlaceholder,
+        });
         div.appendChild(input);
         this._wrapper.filterInput = input;
         this._wrapper.filterHolder = div;
@@ -456,7 +461,7 @@ export default class ddMaker {
             }
         };
 
-        
+
         //use old one holder if required
         if(!this._wrapper.listOfItems) {
             ul = this._createEle("ul", {className:css.listOfItems, zIndex: this._settings.zIndex});
@@ -701,7 +706,7 @@ export default class ddMaker {
 
 
         li.appendChild(itemSpan);
-        
+
         if(obj.isDisabled) {
             li.classList.add(this._css.itemDisabled);
         } else if(!obj.isOptGroup) {
@@ -1419,7 +1424,7 @@ export default class ddMaker {
                     try {
                         this.ele["on" + evt_n]();
                     }catch (e2) {
-                        
+
                     }
                 }
 
@@ -1826,7 +1831,7 @@ export default class ddMaker {
                 $this._setSelectedByOptionItem($this.ele.options[ind]);
             }
         };
-        
+
         if(index < this.length && !this._isArray(index)) {
             selectNow(index);
         } else {
