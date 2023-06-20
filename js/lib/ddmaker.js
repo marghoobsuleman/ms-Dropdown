@@ -32,6 +32,7 @@ export default class ddMaker {
             showPlusItemCounter:true,
             enableAutoFilter:true,
             showFilterAlways:false,
+            showFilterInList:false,
             showListCounter:false,
             imagePosition:'left',
             errorMessage:'Please select an item from this list',
@@ -49,7 +50,7 @@ export default class ddMaker {
         this._shiftHolded = false; this._controlHolded = false;
         this._isFirstTime = true; this._cacheEle = {};
         this._isMouseDown = false; this._itemsArr = [];
-        
+
         this._css = {dd:this._settings.mainCss+ " ms-pr",
             wrapperDisabled:'disabled',
             headerA:"ms-list-option option-selected",
@@ -126,6 +127,11 @@ export default class ddMaker {
             this._showHideFilterBox(true);
         }
 
+        if(this._settings.showFilterInList.toString() === "true") {
+            this._settings.enableAutoFilter = false;
+            this._showHideFilterBox(true); // fixme
+        }
+
         if(this.ele.autofocus) {
             this._wrapper.holder.focus();
             this._wrapper.filterInput.focus();
@@ -175,6 +181,7 @@ export default class ddMaker {
         settings.showPlusItemCounter = dataSet?.showPlusItemCounter || settings.showPlusItemCounter;
         settings.errorMessage = dataSet?.errorMessage || settings.errorMessage;
         settings.showFilterAlways = dataSet?.showFilterAlways || settings.showFilterAlways;
+        settings.showFilterInList = dataSet?.showFilterInList || settings.showFilterInList;
         settings.showListCounter = dataSet?.showListCounter || settings.showListCounter;
         settings.imagePosition = dataSet?.imagePosition || settings.imagePosition;
 
@@ -291,6 +298,9 @@ export default class ddMaker {
             this._isFilterApplied = false;
         } else {
 
+            if(this._settings.showFilterInList.toString() === "true") {
+                this._hide(this._wrapper.headerA); // todo
+            }
             if(this._settings.showFilterAlways.toString() === "false") {
                 this._hide(this._wrapper.headerA);
             }
@@ -457,7 +467,7 @@ export default class ddMaker {
             }
         };
 
-        
+
         //use old one holder if required
         if(!this._wrapper.listOfItems) {
             ul = this._createEle("ul", {className:css.listOfItems, zIndex: this._settings.zIndex});
@@ -702,7 +712,7 @@ export default class ddMaker {
 
 
         li.appendChild(itemSpan);
-        
+
         if(obj.isDisabled) {
             li.classList.add(this._css.itemDisabled);
         } else if(!obj.isOptGroup) {
@@ -1419,7 +1429,7 @@ export default class ddMaker {
                     try {
                         this.ele["on" + evt_n]();
                     }catch (e2) {
-                        
+
                     }
                 }
 
@@ -1826,7 +1836,7 @@ export default class ddMaker {
                 $this._setSelectedByOptionItem($this.ele.options[ind]);
             }
         };
-        
+
         if(index < this.length && !this._isArray(index)) {
             selectNow(index);
         } else {
