@@ -1279,8 +1279,9 @@ export default class ddMaker {
                 case this._RIGHT_ARROW:
                     evt.preventDefault();
                     evt.stopPropagation();
-                    this._show(this._wrapper.listOfItems);
-                    this._isOpen = true;
+                    if (!this._isOpen) {
+                        this.open(null);
+                    }
                     this.next();
                     break;
                 case this._UP_ARROW:
