@@ -32,6 +32,7 @@ export default class ddMaker {
             showPlusItemCounter:true,
             enableAutoFilter:true,
             showFilterAlways:false,
+            showFilterWithList:false,
             showListCounter:false,
             imagePosition:'left',
             errorMessage:'Please select an item from this list',
@@ -49,7 +50,7 @@ export default class ddMaker {
         this._shiftHolded = false; this._controlHolded = false;
         this._isFirstTime = true; this._cacheEle = {};
         this._isMouseDown = false; this._itemsArr = [];
-        
+
         this._css = {dd:this._settings.mainCss+ " ms-pr",
             wrapperDisabled:'disabled',
             headerA:"ms-list-option option-selected",
@@ -120,6 +121,10 @@ export default class ddMaker {
         this._showHideOriginal(false);
 
 
+        if(this._settings.showFilterWithList.toString() === "true") {
+            this._settings.showFilterAlways = false;
+        }
+
         if(this._settings.showFilterAlways.toString() === "true") {
             this._settings.enableAutoFilter = true;
             this._showHideFilterBox(true);
@@ -174,6 +179,7 @@ export default class ddMaker {
         settings.showPlusItemCounter = dataSet?.showPlusItemCounter || settings.showPlusItemCounter;
         settings.errorMessage = dataSet?.errorMessage || settings.errorMessage;
         settings.showFilterAlways = dataSet?.showFilterAlways || settings.showFilterAlways;
+        settings.showFilterWithList = dataSet?.showFilterWithList || settings.showFilterWithList;
         settings.showListCounter = dataSet?.showListCounter || settings.showListCounter;
         settings.imagePosition = dataSet?.imagePosition || settings.imagePosition;
 
@@ -456,7 +462,7 @@ export default class ddMaker {
             }
         };
 
-        
+
         //use old one holder if required
         if(!this._wrapper.listOfItems) {
             ul = this._createEle("ul", {className:css.listOfItems, zIndex: this._settings.zIndex});
@@ -565,15 +571,19 @@ export default class ddMaker {
 
         //Make header
         let divHeader = this._makeHeader();
+        wrapper.appendChild(divHeader);
 
         //Filter box
         let filterBox = this._makeFilterBox();
-        divHeader.appendChild(filterBox);
+        if(this._settings.showFilterWithList.toString() === "true") {
+            wrapper.appendChild(filterBox);
+        } else {
+            divHeader.appendChild(filterBox);
+        }
         this._showHideFilterBox(false);
 
         //make options
         let ul = this._makeChildren();
-        wrapper.appendChild(divHeader);
         wrapper.appendChild(ul);
 
         this._wrapper.holder = wrapper;
@@ -701,7 +711,7 @@ export default class ddMaker {
 
 
         li.appendChild(itemSpan);
-        
+
         if(obj.isDisabled) {
             li.classList.add(this._css.itemDisabled);
         } else if(!obj.isOptGroup) {
@@ -1269,8 +1279,9 @@ export default class ddMaker {
                 case this._RIGHT_ARROW:
                     evt.preventDefault();
                     evt.stopPropagation();
-                    this._show(this._wrapper.listOfItems);
-                    this._isOpen = true;
+                    if (!this._isOpen) {
+                        this.open(null);
+                    }
                     this.next();
                     break;
                 case this._UP_ARROW:
@@ -1419,7 +1430,7 @@ export default class ddMaker {
                     try {
                         this.ele["on" + evt_n]();
                     }catch (e2) {
-                        
+
                     }
                 }
 
@@ -1623,6 +1634,9 @@ export default class ddMaker {
         if(!this._isOpen) {
             this._isOpen = true;
             this._show(this._wrapper.listOfItems);
+            if (this._settings.showFilterWithList.toString() === "true") {
+                this._show(this._wrapper.filterHolder);
+            }
 
             //don't bind event if just opening - useful when making as list
             if(justOpen === false) {
@@ -1660,6 +1674,10 @@ export default class ddMaker {
         }
         this._scrollToIfNeeded(null, 0);
         this._hide(this._wrapper.listOfItems);
+        if (this._settings.showFilterWithList.toString() === "true") {
+            this._hide(this._wrapper.filterHolder);
+        }
+
         this._wrapper.arrow.classList.add(this._css.arrowDown);
         this._wrapper.arrow.classList.remove(this._css.arrowUp);
 
@@ -1826,7 +1844,7 @@ export default class ddMaker {
                 $this._setSelectedByOptionItem($this.ele.options[ind]);
             }
         };
-        
+
         if(index < this.length && !this._isArray(index)) {
             selectNow(index);
         } else {

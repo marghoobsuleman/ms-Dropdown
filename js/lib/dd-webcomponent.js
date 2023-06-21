@@ -64,6 +64,7 @@ class dd extends HTMLSelectElement {
         'data-show-plus-item-counter',
         'data-error-message',
         'data-show-filter-always',
+        'data-show-filter-in-list',
         'data-show-list-counter',
         'data-image-position'
     ];
