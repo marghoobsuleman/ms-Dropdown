@@ -14,7 +14,7 @@ const fs = require('fs');
 
 const version = "4.0.2";
 
-const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
+const RemoveEmptyScripts = require("webpack-remove-empty-scripts");
 
 
 let entries = {
@@ -62,7 +62,7 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new FixStyleOnlyEntriesPlugin(),
+        new RemoveEmptyScripts(),
 
         new CopyPlugin({
             patterns: copyFolders,
