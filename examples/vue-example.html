@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MsDropdown Vue Example</title>
+    <link href="../dist/css/dd.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <h1>MsDropdown Vue Example</h1>
+        <ms-dropdown
+            v-model="selectedValue"
+            :options="options"
+            name="social"
+            required
+            @change="handleChange"
+        />
+        <p>Selected value: {{ selectedValue }}</p>
+    </div>
+
+    <script type="module">
+        import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+        import MsDropdown from '../src/frameworks/vue/MsDropdown.vue';
+
+        const app = createApp({
+            components: {
+                MsDropdown
+            },
+            data() {
+                return {
+                    selectedValue: '',
+                    options: [
+                        { text: 'Facebook', value: 'fb', image: '../src/images/icons/fb.gif' },
+                        { text: 'Twitter', value: 'tw', image: '../src/images/icons/tw.gif' },
+                        { text: 'LinkedIn', value: 'in', image: '../src/images/icons/in.gif' }
+                    ]
+                };
+            },
+            methods: {
+                handleChange(event) {
+                    console.log('Value changed:', event.target.value);
+                }
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>

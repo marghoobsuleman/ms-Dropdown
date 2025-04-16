@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MsDropdown Bootstrap Example</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../dist/css/dd.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-5">
+        <h1>MsDropdown Bootstrap Example</h1>
+
+        <!-- Basic Example -->
+        <div class="mb-4">
+            <h3>Basic Example</h3>
+            <select class="ms-dropdown form-select" name="basic">
+                <option value="fb" data-image="../src/images/icons/fb.gif">Facebook</option>
+                <option value="tw" data-image="../src/images/icons/tw.gif">Twitter</option>
+                <option value="in" data-image="../src/images/icons/in.gif">LinkedIn</option>
+            </select>
+        </div>
+
+        <!-- In Modal -->
+        <div class="mb-4">
+            <h3>Modal Example</h3>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Open Modal
+            </button>
+
+            <div class="modal fade" id="exampleModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Modal Example</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <select class="ms-dropdown form-select" name="modal">
+                                <option value="fb" data-image="../src/images/icons/fb.gif">Facebook</option>
+                                <option value="tw" data-image="../src/images/icons/tw.gif">Twitter</option>
+                                <option value="in" data-image="../src/images/icons/in.gif">LinkedIn</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Tabs -->
+        <div class="mb-4">
+            <h3>Tabs Example</h3>
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">Tab 1</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2">Tab 2</button>
+                </li>
+            </ul>
+            <div class="tab-content pt-3">
+                <div class="tab-pane fade show active" id="tab1">
+                    <select class="ms-dropdown form-select" name="tab1">
+                        <option value="fb" data-image="../src/images/icons/fb.gif">Facebook</option>
+                        <option value="tw" data-image="../src/images/icons/tw.gif">Twitter</option>
+                        <option value="in" data-image="../src/images/icons/in.gif">LinkedIn</option>
+                    </select>
+                </div>
+                <div class="tab-pane fade" id="tab2">
+                    <select class="ms-dropdown form-select" name="tab2">
+                        <option value="fb" data-image="../src/images/icons/fb.gif">Facebook</option>
+                        <option value="tw" data-image="../src/images/icons/tw.gif">Twitter</option>
+                        <option value="in" data-image="../src/images/icons/in.gif">LinkedIn</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../src/frameworks/bootstrap/MsDropdownBootstrap.js" type="module"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize all dropdowns
+            MsDropdownBootstrap.init();
+        });
+    </script>
+</body>
+</html>

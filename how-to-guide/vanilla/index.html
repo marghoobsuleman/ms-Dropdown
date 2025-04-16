@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ms-Dropdown Vanilla JavaScript Example</title>
+  <link rel="stylesheet" href="../../dist/css/dd.css">
+  <link rel="stylesheet" href="../../dist/css/flags.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .example-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow: auto;
+    }
+    code {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .demo-container {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px 0;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>ms-Dropdown Vanilla JavaScript Example</h1>
+  
+  <div class="example-section">
+    <h2>Basic Example</h2>
+    <div class="demo-container">
+      <select id="basicDropdown">
+        <option value="">Please select</option>
+        <option value="fb" data-image="../../dist/images/icons/icon_email.gif">Facebook</option>
+        <option value="tw" data-image="../../dist/images/icons/icon_faq.gif">Twitter</option>
+        <option value="li" data-image="../../dist/images/icons/icon_games.gif">LinkedIn</option>
+      </select>
+    </div>
+    <pre><code>
+// JavaScript
+const dropdown = new MsDropdown('#basicDropdown', {
+  showFilterAlways: true,
+  visibleRows: 5
+});
+
+// Access properties
+console.log(dropdown.value);
+
+// Call methods
+dropdown.refresh();
+    </code></pre>
+  </div>
+
+  <div class="example-section">
+    <h2>Multiple Selection</h2>
+    <div class="demo-container">
+      <select id="multipleDropdown" multiple>
+        <option value="js" data-image="../../dist/images/icons/icon_home.gif">JavaScript</option>
+        <option value="ts" data-image="../../dist/images/icons/icon_cart.gif">TypeScript</option>
+        <option value="py" data-image="../../dist/images/icons/icon_search.gif">Python</option>
+        <option value="rb" data-image="../../dist/images/icons/icon_print.gif">Ruby</option>
+      </select>
+    </div>
+    <pre><code>
+// JavaScript
+const multiDropdown = new MsDropdown('#multipleDropdown', {
+  enableCheckbox: true
+});
+
+// Get multiple values
+console.log(multiDropdown.value); // Returns array of selected values
+    </code></pre>
+  </div>
+
+  <div class="example-section">
+    <h2>Creating from JSON</h2>
+    <div class="demo-container">
+      <div id="jsonDropdown"></div>
+      <button onclick="createFromJson()">Create Dropdown from JSON</button>
+    </div>
+    <pre><code>
+// JavaScript
+function createFromJson() {
+  const jsonData = [
+    { text: 'Facebook', value: 'fb', image: '../../dist/images/icons/icon_email.gif' },
+    { text: 'Twitter', value: 'tw', image: '../../dist/images/icons/icon_faq.gif' },
+    { text: 'LinkedIn', value: 'li', image: '../../dist/images/icons/icon_games.gif' }
+  ];
+
+  MsDropdown.make('#jsonDropdown', {
+    byJson: {
+      data: jsonData,
+      selectedIndex: 0
+    }
+  });
+}
+    </code></pre>
+  </div>
+
+  <div class="example-section">
+    <h2>Adding Options Dynamically</h2>
+    <div class="demo-container">
+      <select id="dynamicDropdown">
+        <option value="">Please select</option>
+        <option value="apple" data-image="../../dist/images/icons/icon_home.gif">Apple</option>
+        <option value="orange" data-image="../../dist/images/icons/icon_cart.gif">Orange</option>
+      </select>
+      <button onclick="addOption()">Add New Option</button>
+    </div>
+    <pre><code>
+// JavaScript
+const dynamicDropdown = new MsDropdown('#dynamicDropdown');
+
+function addOption() {
+  dynamicDropdown.add({
+    text: 'Banana',
+    value: 'banana',
+    image: '../../dist/images/icons/icon_search.gif'
+  });
+}
+    </code></pre>
+  </div>
+
+  <script src="../../dist/js/dd.min.js"></script>
+  <script>
+    // Initialize examples when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Basic example
+      const dropdown = new MsDropdown('#basicDropdown', {
+        showFilterAlways: true,
+        visibleRows: 5
+      });
+      
+      // Multiple selection example
+      const multiDropdown = new MsDropdown('#multipleDropdown', {
+        enableCheckbox: true
+      });
+      
+      // Dynamic dropdown
+      window.dynamicDropdown = new MsDropdown('#dynamicDropdown');
+    });
+    
+    // Create dropdown from JSON
+    window.createFromJson = function() {
+      const jsonData = [
+        { text: 'Facebook', value: 'fb', image: '../../dist/images/icons/icon_email.gif' },
+        { text: 'Twitter', value: 'tw', image: '../../dist/images/icons/icon_faq.gif' },
+        { text: 'LinkedIn', value: 'li', image: '../../dist/images/icons/icon_games.gif' }
+      ];
+
+      MsDropdown.make('#jsonDropdown', {
+        byJson: {
+          data: jsonData,
+          selectedIndex: 0
+        }
+      });
+    };
+    
+    // Add option dynamically
+    window.addOption = function() {
+      dynamicDropdown.add({
+        text: 'Banana',
+        value: 'banana',
+        image: '../../dist/images/icons/icon_search.gif'
+      });
+    };
+  </script>
+</body>
+</html>

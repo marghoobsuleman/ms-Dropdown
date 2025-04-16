@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ms-Dropdown Demo</title>
+    <link rel="stylesheet" href="../dist/css/dd.css">
+    <link rel="stylesheet" href="../dist/images/flags/css/flags.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .demo-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .demo-item {
+            flex: 1;
+            min-width: 300px;
+            margin-bottom: 20px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>ms-Dropdown Demo</h1>
+    <p>A JavaScript library for converting HTML select elements into enhanced image-based dropdowns.</p>
+
+    <div class="demo-section">
+        <h2>Basic Example</h2>
+        <div class="demo-container">
+            <div class="demo-item">
+                <select id="basic" class="ms-dropdown">
+                    <option value="facebook">Facebook</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="instagram">Instagram</option>
+                </select>
+            </div>
+            <div class="demo-item">
+                <pre><code>&lt;select id="basic" class="ms-dropdown"&gt;
+    &lt;option value="facebook"&gt;Facebook&lt;/option&gt;
+    &lt;option value="twitter"&gt;Twitter&lt;/option&gt;
+    &lt;option value="linkedin"&gt;LinkedIn&lt;/option&gt;
+    &lt;option value="instagram"&gt;Instagram&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>With Images</h2>
+        <div class="demo-container">
+            <div class="demo-item">
+                <select id="with-images" class="ms-dropdown">
+                    <option value="facebook" data-image="../dist/images/icons/facebook.png">Facebook</option>
+                    <option value="twitter" data-image="../dist/images/icons/twitter.png">Twitter</option>
+                    <option value="linkedin" data-image="../dist/images/icons/linkedin.png">LinkedIn</option>
+                    <option value="instagram" data-image="../dist/images/icons/instagram.png">Instagram</option>
+                </select>
+            </div>
+            <div class="demo-item">
+                <pre><code>&lt;select id="with-images" class="ms-dropdown"&gt;
+    &lt;option value="facebook" data-image="../dist/images/icons/facebook.png"&gt;Facebook&lt;/option&gt;
+    &lt;option value="twitter" data-image="../dist/images/icons/twitter.png"&gt;Twitter&lt;/option&gt;
+    &lt;option value="linkedin" data-image="../dist/images/icons/linkedin.png"&gt;LinkedIn&lt;/option&gt;
+    &lt;option value="instagram" data-image="../dist/images/icons/instagram.png"&gt;Instagram&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Country Flags</h2>
+        <div class="demo-container">
+            <div class="demo-item">
+                <select id="countries" class="ms-dropdown">
+                    <option value="us" data-image="../dist/images/flags/us.png">United States</option>
+                    <option value="gb" data-image="../dist/images/flags/gb.png">United Kingdom</option>
+                    <option value="ca" data-image="../dist/images/flags/ca.png">Canada</option>
+                    <option value="au" data-image="../dist/images/flags/au.png">Australia</option>
+                    <option value="jp" data-image="../dist/images/flags/jp.png">Japan</option>
+                    <option value="de" data-image="../dist/images/flags/de.png">Germany</option>
+                    <option value="fr" data-image="../dist/images/flags/fr.png">France</option>
+                    <option value="in" data-image="../dist/images/flags/in.png">India</option>
+                </select>
+            </div>
+            <div class="demo-item">
+                <pre><code>&lt;select id="countries" class="ms-dropdown"&gt;
+    &lt;option value="us" data-image="../dist/images/flags/us.png"&gt;United States&lt;/option&gt;
+    &lt;option value="gb" data-image="../dist/images/flags/gb.png"&gt;United Kingdom&lt;/option&gt;
+    &lt;option value="ca" data-image="../dist/images/flags/ca.png"&gt;Canada&lt;/option&gt;
+    &lt;option value="au" data-image="../dist/images/flags/au.png"&gt;Australia&lt;/option&gt;
+    &lt;option value="jp" data-image="../dist/images/flags/jp.png"&gt;Japan&lt;/option&gt;
+    &lt;option value="de" data-image="../dist/images/flags/de.png"&gt;Germany&lt;/option&gt;
+    &lt;option value="fr" data-image="../dist/images/flags/fr.png"&gt;France&lt;/option&gt;
+    &lt;option value="in" data-image="../dist/images/flags/in.png"&gt;India&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Multiple Selection</h2>
+        <div class="demo-container">
+            <div class="demo-item">
+                <select id="multiple" class="ms-dropdown" multiple>
+                    <option value="html" data-image="../dist/images/icons/html.png">HTML</option>
+                    <option value="css" data-image="../dist/images/icons/css.png">CSS</option>
+                    <option value="javascript" data-image="../dist/images/icons/javascript.png">JavaScript</option>
+                    <option value="vue" data-image="../dist/images/icons/vue.png">Vue</option>
+                    <option value="react" data-image="../dist/images/icons/react.png">React</option>
+                </select>
+            </div>
+            <div class="demo-item">
+                <pre><code>&lt;select id="multiple" class="ms-dropdown" multiple&gt;
+    &lt;option value="html" data-image="../dist/images/icons/html.png"&gt;HTML&lt;/option&gt;
+    &lt;option value="css" data-image="../dist/images/icons/css.png"&gt;CSS&lt;/option&gt;
+    &lt;option value="javascript" data-image="../dist/images/icons/javascript.png"&gt;JavaScript&lt;/option&gt;
+    &lt;option value="vue" data-image="../dist/images/icons/vue.png"&gt;Vue&lt;/option&gt;
+    &lt;option value="react" data-image="../dist/images/icons/react.png"&gt;React&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="../dist/js/dd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all dropdowns
+            const dropdowns = document.querySelectorAll('.ms-dropdown');
+            dropdowns.forEach(select => {
+                new MsDropdown(select);
+            });
+        });
+    </script>
+</body>
+</html>

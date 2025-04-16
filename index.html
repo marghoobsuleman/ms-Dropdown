@@ -20,6 +20,36 @@
 
   <link rel="stylesheet" href="./dist/css/dd.css?v=4.0">
   <link rel="stylesheet" type="text/css" href="./dist/css/flags.css?v=1.0" />
+  <!-- Fallback paths for dev server -->
+  <script>
+    // Check if CSS files loaded correctly, if not try alternative paths
+    document.addEventListener('DOMContentLoaded', function() {
+      function checkStylesheet(href) {
+        const found = Array.from(document.styleSheets).some(sheet => {
+          try {
+            return sheet.href && sheet.href.includes(href);
+          } catch(e) {
+            return false;
+          }
+        });
+        return found;
+      }
+      
+      if (!checkStylesheet('dd.css')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/css/dd.css?v=4.0';
+        document.head.appendChild(link);
+      }
+      
+      if (!checkStylesheet('flags.css')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/css/flags.css?v=1.0';
+        document.head.appendChild(link);
+      }
+    });
+  </script>
 
   <style>
     body {
@@ -389,7 +419,59 @@
   }
 
 </script>
-<script src="./dist/js/dd.min.js?ver=4.0"></script>
+<script>
+  // Function to load script with fallback
+  function loadScript(src, fallbackSrc) {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onerror = function() {
+      console.log('Failed to load script from ' + src + ', trying fallback...');
+      const fallbackScript = document.createElement('script');
+      fallbackScript.src = fallbackSrc;
+      document.body.appendChild(fallbackScript);
+    };
+    document.body.appendChild(script);
+  }
+  
+  // Fix image paths for both environments
+  document.addEventListener('DOMContentLoaded', function() {
+    // Find all options with data-image attribute
+    const options = document.querySelectorAll('option[data-image]');
+    options.forEach(option => {
+      const imagePath = option.getAttribute('data-image');
+      if (imagePath && imagePath.startsWith('./dist/')) {
+        // Create fallback path
+        const fallbackPath = imagePath.replace('./dist', '');
+        // Store original path
+        option.setAttribute('data-original-image', imagePath);
+        // Set up an observer to check if image fails to load
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+              const img = document.querySelector(`img[data-option-value="${option.value}"]`);
+              if (img && !img.complete) {
+                img.onerror = function() {
+                  img.src = fallbackPath;
+                };
+              }
+            }
+          });
+        });
+        
+        // Start observing after dropdown is initialized
+        setTimeout(() => {
+          const img = document.querySelector(`img[data-option-value="${option.value}"]`);
+          if (img) {
+            observer.observe(img, { attributes: true });
+          }
+        }, 500);
+      }
+    });
+  });
+  
+  // Load the main script with fallback
+  loadScript('./dist/js/dd.min.js?ver=4.0', '/js/dd.min.js?ver=4.0');
+</script>
 
 </body>
 </html>

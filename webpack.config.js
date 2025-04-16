@@ -1,7 +1,7 @@
 const path = require('path');
 
 const webpack = require('webpack');
-
+const { VueLoaderPlugin } = require('vue-loader');
 const CopyPlugin = require("copy-webpack-plugin");
 
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -12,14 +12,14 @@ const cssnano = require('cssnano');
 
 const fs = require('fs');
 
-const version = "4.0.2";
-
-const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
-
+const version = "4.0.4";
 
 let entries = {
-    '/js/dd.min.js': './src/js/index.js',
-    '/css/dd': './src/scss/style.scss'
+    '/js/dd.min.js': './src/js/index.ts',
+    '/css/dd': './src/scss/style.scss',
+    '/js/dd.react.min.js': './src/frameworks/react/MsDropdown.tsx',
+    '/js/dd.vue.min.js': './src/frameworks/vue/MsDropdown.vue',
+    '/js/dd.bootstrap.min.js': './src/frameworks/bootstrap/MsDropdownBootstrap.ts'
 };
 
 let copyFolders = [
@@ -34,9 +34,39 @@ module.exports = {
         filename:'[name]',
         clean: true
     },
+    
+    resolve: {
+        extensions: ['.tsx', '.ts', '.js', '.jsx', '.vue', '.json']
+    },
+    
+    devServer: {
+        static: [
+            { directory: path.join(__dirname, 'dist') },
+            { directory: path.join(__dirname) }
+        ],
+        compress: true,
+        port: 9000,
+        hot: true,
+        open: 'index-dev.html',
+        historyApiFallback: true
+    },
 
     module: {
         rules: [
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader',
+                options: {
+                    compilerOptions: {
+                        isCustomElement: tag => tag.startsWith('ms-')
+                    },
+                    transpileOptions: {
+                        transforms: {
+                            dangerousTaggedTemplateString: true
+                        }
+                    }
+                }
+            },
             {
                 test: /\.css$/i,
                 use: ["style-loader", "css-loader"],
@@ -54,6 +84,11 @@ module.exports = {
                 ],
             },
             {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/
+            },
+            {
                 test:/\.jsx$/,
                 use:'babel-loader',
                 exclude:/node_modules/
@@ -61,8 +96,8 @@ module.exports = {
         ],
     },
     plugins: [
+        new VueLoaderPlugin(),
         new CleanWebpackPlugin(),
-        new FixStyleOnlyEntriesPlugin(),
 
         new CopyPlugin({
             patterns: copyFolders,

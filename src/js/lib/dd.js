@@ -2,9 +2,9 @@
  * MSDropdown - dd.js
  * @author: Marghoob Suleman
  * @website: https://www.marghoobsuleman.com/
- * @version: 4.0.3
- * @revision: 6
- * @date: 5th Sep 2021
+ * @version: 4.0.4
+ * @revision: 7
+ * @date: 11th Apr 2025
  * msDropdown is free web component: you can redistribute it and/or modify
  * it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
  */
@@ -132,22 +132,36 @@ export default class MsDropdown {
     }
 
     /**
-     * Add event listener
-     * @param type {string}
-     * @param fn {function}
+     * Add event listener with support for options
+     * @param {string} type - Event type
+     * @param {Function} fn - Event handler
+     * @param {Object} [options] - Event options
+     * @param {boolean} [options.once] - Remove handler after first execution
+     * @param {boolean} [options.passive] - Indicates if handler will call preventDefault
+     * @param {boolean} [options.capture] - Use capture phase instead of bubbling
      */
-    on(type, fn) {
-        this._ddMaker.on(type, fn);
+    on(type, fn, options = {}) {
+        this._ddMaker.on(type, fn, options);
     }
 
     /**
      * Remove event listener
-     * @param type {string}
-     * @param fn {function}
+     * @param {string} type - Event type
+     * @param {Function} fn - Event handler to remove
      */
     off(type, fn) {
         this._ddMaker.off(type, fn);
-    };
+    }
+
+    /**
+     * Add one-time event listener
+     * @param {string} type - Event type
+     * @param {Function} fn - Event handler
+     * @param {Object} [options] - Additional event options (passive, capture)
+     */
+    once(type, fn, options = {}) {
+        this.on(type, fn, { ...options, once: true });
+    }
 
     /**
      * update ui and value

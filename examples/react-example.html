@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MsDropdown React Example</title>
+    <link href="../dist/css/dd.css" rel="stylesheet">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        import React from 'https://esm.sh/react';
+        import ReactDOM from 'https://esm.sh/react-dom';
+        import MsDropdown from '../src/frameworks/react/MsDropdown.jsx';
+
+        const App = () => {
+            const [value, setValue] = React.useState('');
+            
+            const options = [
+                { text: 'Facebook', value: 'fb', image: '../src/images/icons/fb.gif' },
+                { text: 'Twitter', value: 'tw', image: '../src/images/icons/tw.gif' },
+                { text: 'LinkedIn', value: 'in', image: '../src/images/icons/in.gif' }
+            ];
+
+            const handleChange = (event) => {
+                setValue(event.target.value);
+            };
+
+            return (
+                <div>
+                    <h1>MsDropdown React Example</h1>
+                    <MsDropdown
+                        options={options}
+                        value={value}
+                        onChange={handleChange}
+                        name="social"
+                        required
+                    />
+                    <p>Selected value: {value}</p>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

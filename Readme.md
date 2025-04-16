@@ -1,9 +1,127 @@
 <img src="./dist/images/ms-dropdown.jpg?v=4.0" />
 
+### Basic Usage
+
+#### Vanilla JavaScript
+```javascript
+// Initialize with a selector
+const dropdown = new MsDropdown('#mySelect', {
+  showFilterAlways: true,
+  visibleRows: 5,
+  imagePosition: 'left'
+});
+
+// Access properties
+console.log(dropdown.value);
+
+// Call methods
+dropdown.add({
+  text: 'New Option',
+  value: 'new',
+  image: 'path/to/image.png'
+});
+
+// Refresh the dropdown
+dropdown.refresh();
+```
+
+#### TypeScript
+```typescript
+import MsDropdown, { MsDropdownOptions } from 'ms-dropdown';
+
+// Define options with type safety
+const options: MsDropdownOptions = {
+  showFilterAlways: true,
+  visibleRows: 5,
+  imagePosition: 'left'
+};
+
+// Create a dropdown with type checking
+const dropdown = new MsDropdown('#mySelect', options);
+
+// Type-safe property access
+const value: string = dropdown.value;
+console.log(`Selected value: ${value}`);
+
+// Type-safe method calls
+dropdown.add({
+  text: 'New Option',
+  value: 'new',
+  image: 'path/to/image.png',
+  description: 'This is a new option'
+});
+```
+
+### Framework Integration
+
+#### React
+```jsx
+import MsDropdown from 'ms-dropdown/frameworks/react';
+
+const MyComponent = () => (
+  <MsDropdown
+    options={[
+      { text: 'Facebook', value: 'fb', image: 'fb.gif' },
+      { text: 'Twitter', value: 'tw', image: 'tw.gif' }
+    ]}
+    onChange={(e) => console.log(e.target.value)}
+  />
+);
+```
+
+#### Vue
+```vue
+<template>
+  <ms-dropdown
+    v-model="selected"
+    :options="options"
+    @change="handleChange"
+  />
+</template>
+
+<script>
+import MsDropdown from 'ms-dropdown/frameworks/vue';
+
+export default {
+  components: { MsDropdown },
+  data: () => ({
+    selected: '',
+    options: [
+      { text: 'Facebook', value: 'fb', image: 'fb.gif' },
+      { text: 'Twitter', value: 'tw', image: 'tw.gif' }
+    ]
+  })
+};
+</script>
+```
+
+#### Bootstrap
+```html
+<!-- Auto-initializes with Bootstrap classes -->
+<select class="ms-dropdown form-select">
+  <option value="fb" data-image="fb.gif">Facebook</option>
+  <option value="tw" data-image="tw.gif">Twitter</option>
+</select>
+
+<script>
+  // Initialize manually if needed
+  MsDropdownBootstrap.init();
+</script>
+```
+
 ### Help
 - [Marghoob Suleman's Website](https://www.marghoobsuleman.com/)
 - [Image Dropdown Home](https://www.marghoobsuleman.com/image-dropdown)
 - [Image Dropdown Help Document](https://www.marghoobsuleman.com/image-dropdown/help)
+
+### v4.0.4 update: 12 Apr, 2025
+- Improved event binding
+- Added how-to guides for each framework
+- Added test cases for each framework
+- Added React support
+- Added Vue support
+- Added Bootstrap support
+- Added TypeScript support
 
 ### v4.0.3 update: 13 Oct, 2021
 - Fixed bootstrap modal issue 

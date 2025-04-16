@@ -2,9 +2,9 @@
  * MSDropdown - ddmaker.js
  * @author: Marghoob Suleman
  * @website: https://www.marghoobsuleman.com/
- * @version: 4.0.3
- * @revision: 6
- * @date: 21st Sep 2021
+ * @version: 4.0.4
+ * @revision: 7
+ * @date: 11th Apr 2025
  * msDropdown is free web component: you can redistribute it and/or modify
  * it under the terms of the either the MIT License or the Gnu General Public License (GPL) Version 2
  */
@@ -1762,24 +1762,55 @@ export default class ddMaker {
     }
 
     /**
-     * Add event listener
-     * @param type
-     * @param fn
+     * Add event listener with support for options
+     * @param {string} type - Event type
+     * @param {Function} fn - Event handler
+     * @param {Object} options - Event options (once, passive, capture)
      */
-    on(type, fn) {
-       //this._bindEvents(this.ele, type, fn);
-        this._settings.on[type] = fn;
+    on(type, fn, options = {}) {
+        if (!this._eventHandlers) {
+            this._eventHandlers = new Map();
+        }
+
+        if (!this._eventHandlers.has(type)) {
+            this._eventHandlers.set(type, new Set());
+        }
+
+        const handler = (event) => {
+            const result = fn.call(this, event);
+            if (options.once) {
+                this.off(type, fn);
+            }
+            return result;
+        };
+
+        // Store reference for removal
+        fn._wrapper = handler;
+        this._eventHandlers.get(type).add(fn);
+        this.ele.addEventListener(type, handler, options);
+        this._settings.on[type] = fn; // Keep for backward compatibility
     }
 
     /**
      * Remove event listener
-     * @param type
-     * @param fn
+     * @param {string} type - Event type
+     * @param {Function} fn - Event handler to remove
      */
     off(type, fn) {
-        //this._unbindEvents(this.ele, type, fn);
-        this._settings.on[type] = null;
-    };
+        if (!this._eventHandlers?.has(type)) return;
+
+        const handlers = this._eventHandlers.get(type);
+        if (handlers.has(fn)) {
+            this.ele.removeEventListener(type, fn._wrapper);
+            handlers.delete(fn);
+        }
+
+        if (handlers.size === 0) {
+            this._eventHandlers.delete(type);
+        }
+        
+        this._settings.on[type] = null; // Keep for backward compatibility
+    }
 
     /**
      * Remake Everything

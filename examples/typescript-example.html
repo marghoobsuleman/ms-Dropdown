@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ms-Dropdown TypeScript Examples</title>
+  <link rel="stylesheet" href="../dist/css/dd.css">
+  <link rel="stylesheet" href="../dist/css/flags.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .example-section {
+      margin-bottom: 40px;
+      padding: 20px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow: auto;
+    }
+    code {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    .tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-bottom: none;
+      border-radius: 5px 5px 0 0;
+      margin-right: 5px;
+      background-color: #f1f1f1;
+    }
+    .tab.active {
+      background-color: #fff;
+      border-bottom: 1px solid #fff;
+      position: relative;
+      z-index: 1;
+    }
+    .tab-content {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 0 5px 5px 5px;
+      margin-top: -1px;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    .demo-container {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>ms-Dropdown TypeScript Examples</h1>
+  <p>This page demonstrates how to use ms-Dropdown with TypeScript in various scenarios.</p>
+
+  <div class="example-section">
+    <h2>Basic Usage with TypeScript</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('vanilla-ts', this)">TypeScript</div>
+      <div class="tab" onclick="switchTab('vanilla-html', this)">HTML</div>
+      <div class="tab" onclick="switchTab('vanilla-demo', this)">Demo</div>
+    </div>
+    <div class="tab-content">
+      <div id="vanilla-ts" class="tab-pane active">
+        <pre><code>// Import the MsDropdown class and its types
+import MsDropdown, { MsDropdownOptions } from 'ms-dropdown';
+
+// Define options with type safety
+const options: MsDropdownOptions = {
+  showFilterAlways: true,
+  visibleRows: 5,
+  imagePosition: 'left'
+};
+
+// Create a dropdown with type checking
+const dropdown = new MsDropdown('#basicDropdown', options);
+
+// Type-safe property access
+const value: string = dropdown.value;
+console.log(`Selected value: ${value}`);
+
+// Type-safe method calls
+dropdown.showRows(8);
+
+// Add a new option with type checking
+dropdown.add({
+  text: 'New Option',
+  value: 'new',
+  image: 'path/to/image.png',
+  description: 'This is a new option'
+});</code></pre>
+      </div>
+      <div id="vanilla-html" class="tab-pane">
+        <pre><code>&lt;!-- HTML Structure --&gt;
+&lt;select id="basicDropdown"&gt;
+  &lt;option value=""&gt;Please select&lt;/option&gt;
+  &lt;option value="fb" data-image="images/fb.gif"&gt;Facebook&lt;/option&gt;
+  &lt;option value="tw" data-image="images/tw.gif"&gt;Twitter&lt;/option&gt;
+  &lt;option value="li" data-image="images/in.gif"&gt;LinkedIn&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+      </div>
+      <div id="vanilla-demo" class="tab-pane">
+        <div class="demo-container">
+          <select id="basicDropdown">
+            <option value="">Please select</option>
+            <option value="fb" data-image="../dist/images/icons/icon_email.gif">Facebook</option>
+            <option value="tw" data-image="../dist/images/icons/icon_faq.gif">Twitter</option>
+            <option value="li" data-image="../dist/images/icons/icon_games.gif">LinkedIn</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="example-section">
+    <h2>React with TypeScript</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('react-ts', this)">TypeScript</div>
+      <div class="tab" onclick="switchTab('react-tsx', this)">TSX</div>
+    </div>
+    <div class="tab-content">
+      <div id="react-ts" class="tab-pane active">
+        <pre><code>// Type definitions for props
+import React, { useState } from 'react';
+import MsDropdown, { MsDropdownOptionProps } from 'ms-dropdown/react';
+
+// Type-safe option definition
+const socialOptions: MsDropdownOptionProps[] = [
+  { text: 'Facebook', value: 'fb', image: './images/fb.gif' },
+  { text: 'Twitter', value: 'tw', image: './images/tw.gif' },
+  { text: 'LinkedIn', value: 'li', image: './images/in.gif' }
+];
+
+// Component with TypeScript
+const SocialDropdown: React.FC = () => {
+  const [selected, setSelected] = useState&lt;string&gt;('');
+
+  const handleChange = (e: React.ChangeEvent&lt;HTMLSelectElement&gt;) => {
+    setSelected(e.target.value);
+    console.log(`Selected: ${e.target.value}`);
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;Select a Social Network&lt;/h3&gt;
+      &lt;MsDropdown
+        options={socialOptions}
+        value={selected}
+        onChange={handleChange}
+        imagePosition="left"
+        showFilterAlways={false}
+      /&gt;
+      &lt;p&gt;Selected value: {selected}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+      </div>
+      <div id="react-tsx" class="tab-pane">
+        <pre><code>// App.tsx
+import React from 'react';
+import SocialDropdown from './SocialDropdown';
+
+const App: React.FC = () => {
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;ms-Dropdown React TypeScript Example&lt;/h1&gt;
+      &lt;SocialDropdown /&gt;
+    &lt;/div&gt;
+  );
+};
+
+export default App;</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="example-section">
+    <h2>Vue with TypeScript</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('vue-ts', this)">TypeScript</div>
+      <div class="tab" onclick="switchTab('vue-template', this)">Template</div>
+    </div>
+    <div class="tab-content">
+      <div id="vue-ts" class="tab-pane active">
+        <pre><code>// SocialDropdown.vue
+&lt;script lang="ts"&gt;
+import { defineComponent, ref } from 'vue';
+import MsDropdown from 'ms-dropdown/vue';
+
+interface SocialOption {
+  text: string;
+  value: string;
+  image?: string;
+  description?: string;
+}
+
+export default defineComponent({
+  components: {
+    MsDropdown
+  },
+  setup() {
+    const selected = ref('');
+    
+    // Type-safe options array
+    const options = ref&lt;SocialOption[]&gt;([
+      { text: 'Facebook', value: 'fb', image: './images/fb.gif' },
+      { text: 'Twitter', value: 'tw', image: './images/tw.gif' },
+      { text: 'LinkedIn', value: 'li', image: './images/in.gif' }
+    ]);
+    
+    const handleChange = (value: string) => {
+      selected.value = value;
+      console.log(`Selected: ${value}`);
+    };
+    
+    return {
+      selected,
+      options,
+      handleChange
+    };
+  }
+});
+&lt;/script&gt;</code></pre>
+      </div>
+      <div id="vue-template" class="tab-pane">
+        <pre><code>&lt;template&gt;
+  &lt;div&gt;
+    &lt;h3&gt;Select a Social Network&lt;/h3&gt;
+    &lt;MsDropdown
+      v-model="selected"
+      :options="options"
+      imagePosition="left"
+      :showFilterAlways="false"
+      @update:modelValue="handleChange"
+    /&gt;
+    &lt;p&gt;Selected value: {{ selected }}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="example-section">
+    <h2>Bootstrap with TypeScript</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('bootstrap-ts', this)">TypeScript</div>
+      <div class="tab" onclick="switchTab('bootstrap-html', this)">HTML</div>
+      <div class="tab" onclick="switchTab('bootstrap-demo', this)">Demo</div>
+    </div>
+    <div class="tab-content">
+      <div id="bootstrap-ts" class="tab-pane active">
+        <pre><code>// Import the Bootstrap integration with TypeScript
+import MsDropdownBootstrap from 'ms-dropdown/bootstrap';
+
+// Define options with TypeScript interface
+interface BootstrapOptions {
+  className?: string;
+  showFilterAlways?: boolean;
+  imagePosition?: string;
+}
+
+// Create options with type safety
+const options: BootstrapOptions = {
+  className: 'form-select-lg',
+  showFilterAlways: true
+};
+
+// Initialize specific dropdown with type checking
+const dropdown = new MsDropdownBootstrap(
+  document.querySelector('#bootstrapDropdown') as HTMLElement,
+  options
+);
+
+// Or initialize all dropdowns with a selector
+const allDropdowns = MsDropdownBootstrap.init('select.ms-dropdown');
+
+// Type-safe method calls
+dropdown.refresh();
+
+// Event handling with TypeScript
+document.querySelector('#refreshButton')?.addEventListener('click', () => {
+  dropdown.refresh();
+});</code></pre>
+      </div>
+      <div id="bootstrap-html" class="tab-pane">
+        <pre><code>&lt;!-- Bootstrap Integration --&gt;
+&lt;div class="mb-3"&gt;
+  &lt;label for="bootstrapDropdown" class="form-label"&gt;Select Country&lt;/label&gt;
+  &lt;select id="bootstrapDropdown" class="form-select ms-dropdown"&gt;
+    &lt;option value=""&gt;Select Country&lt;/option&gt;
+    &lt;option value="us" data-image-css="flag us"&gt;United States&lt;/option&gt;
+    &lt;option value="uk" data-image-css="flag uk"&gt;United Kingdom&lt;/option&gt;
+    &lt;option value="ca" data-image-css="flag ca"&gt;Canada&lt;/option&gt;
+    &lt;option value="au" data-image-css="flag au"&gt;Australia&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/div&gt;
+&lt;button id="refreshButton" class="btn btn-primary"&gt;Refresh Dropdown&lt;/button&gt;</code></pre>
+      </div>
+      <div id="bootstrap-demo" class="tab-pane">
+        <div class="demo-container">
+          <label for="bootstrapDropdown" style="display: block; margin-bottom: 5px;">Select Country</label>
+          <select id="bootstrapDropdown" class="form-select ms-dropdown">
+            <option value="">Select Country</option>
+            <option value="us" data-image-css="flag us">United States</option>
+            <option value="uk" data-image-css="flag uk">United Kingdom</option>
+            <option value="ca" data-image-css="flag ca">Canada</option>
+            <option value="au" data-image-css="flag au">Australia</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="example-section">
+    <h2>TypeScript Configuration</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('tsconfig', this)">tsconfig.json</div>
+      <div class="tab" onclick="switchTab('webpack-config', this)">webpack.config.js</div>
+    </div>
+    <div class="tab-content">
+      <div id="tsconfig" class="tab-pane active">
+        <pre><code>{
+  "compilerOptions": {
+    "outDir": "./dist/ts",
+    "sourceMap": true,
+    "strict": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "lib": ["dom", "es2015", "es2016", "es2017"],
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.js",
+    "**/*.jsx"
+  ]
+}</code></pre>
+      </div>
+      <div id="webpack-config" class="tab-pane">
+        <pre><code>const path = require('path');
+
+module.exports = {
+  // ... other webpack config
+  
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js', '.jsx', '.vue', '.json']
+  },
+  
+  module: {
+    rules: [
+      // ... other rules
+      
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  }
+};</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <script src="../dist/js/dd.min.js"></script>
+  <script>
+    // Initialize the basic dropdown example
+    document.addEventListener('DOMContentLoaded', function() {
+      new MsDropdown('#basicDropdown', {
+        showFilterAlways: true,
+        visibleRows: 5
+      });
+      
+      new MsDropdown('#bootstrapDropdown', {
+        showFilterAlways: true,
+        imagePosition: 'left'
+      });
+    });
+    
+    // Tab switching functionality
+    function switchTab(tabId, tabElement) {
+      // Get the parent tabs container
+      const tabsContainer = tabElement.parentElement;
+      const tabContentContainer = tabsContainer.nextElementSibling;
+      
+      // Remove active class from all tabs
+      const tabs = tabsContainer.querySelectorAll('.tab');
+      tabs.forEach(tab => tab.classList.remove('active'));
+      
+      // Add active class to clicked tab
+      tabElement.classList.add('active');
+      
+      // Hide all tab panes
+      const tabPanes = tabContentContainer.querySelectorAll('.tab-pane');
+      tabPanes.forEach(pane => pane.classList.remove('active'));
+      
+      // Show the selected tab pane
+      document.getElementById(tabId).classList.add('active');
+    }
+  </script>
+</body>
+</html>
